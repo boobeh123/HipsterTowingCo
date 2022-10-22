@@ -1,7 +1,7 @@
 ## Description
 A full stack web application that supports local account creation. Each registered user may post & store their own individual to-do tasks that describe the task, due date, & priority. Tasks may be marked as uncomplete, completed or deleted entirely. This web application is completely responsive across all device viewports.
 
-The project is deployed here: 
+The project is deployed here: https://salty-castle-61426.herokuapp.com/
 
 ## Demo
 ![demo](todomvcauthdemo.gif)
