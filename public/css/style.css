@@ -165,7 +165,6 @@ a {
 }
 .collapsible {
     border: 0;
-    overflow: auto;
 }
 .todoItem {
     border-bottom: 1px solid #202225;
@@ -179,6 +178,7 @@ a {
 .collapsible-body {
     background-color: #202225;
     border-bottom: 0;
+    overflow: auto;
 }
 .collapsible-body * {
     color: #fefefe;
