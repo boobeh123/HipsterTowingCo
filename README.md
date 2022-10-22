@@ -1,44 +1,33 @@
-# Introduction
+## Description
+A full stack web application that supports local account creation. Each registered user may post & store their own individual to-do tasks that describe the task, due date, & priority. Tasks may be marked as uncomplete, completed or deleted entirely. This web application is completely responsive across all device viewports.
 
-A Simple ToDo App is built using the MVC Architecture, we have also implemented "authorization" so folx can sign up, customize & personalize the app 
+The project is deployed here: 
 
----
+## Demo
+![demo](todomvcauthdemo.gif)
 
-> Be sure to add that lovely star 😀 and fork it for your own copy
+## Features
+* MVC Architecture
+* Local account creation using passport-local strategies
+* Individual posts with additional fields describing the task.
+* Accounts & Posts are stored into a database (long-term memory).
+* Completely responsive across all viewports.
 
----
+## Lessons learned
+I have built many iterations of the to-do list. This project is my most advanced form of the to-do list.
 
-# Objectives
+I had FUN building this project because I took two different approaches:
+I have always built responsive web pages-- this time I tried the `mobile-first` approach AND IT IS SO MUCH EASIER & I SHOULD HAVE BEEN BUILDING THIS WAY FROM THE BEGINNING. THIS WOULD HAVE SAVED ME SO MUCH TIME. WHY DID I WAIT SO LONG?!?
+I used the `Materialize-CSS` framework to style my pages, and just going through the documentation & trying EVERYTHING made me eager to build. I wanted to use everything and I can't wait until my next project to test even more components!!
 
-- It's a beginner level app created to understand how MVC concept and logins are added
+## Technologies
+<img src="https://profilinator.rishav.dev/skills-assets/html5-original-wordmark.svg" alt="HTML5" height="50" /><img src="https://profilinator.rishav.dev/skills-assets/css3-original-wordmark.svg" alt="CSS3" height="50" /><img src="https://profilinator.rishav.dev/skills-assets/javascript-original.svg" alt="JavaScript" height="40" /><img src="https://profilinator.rishav.dev/skills-assets/nodejs-original-wordmark.svg" alt="NodeJS" height="50" /><img src="https://profilinator.rishav.dev/skills-assets/mongodb-original-wordmark.svg" alt="MongoDB" height="50" /><img src="https://profilinator.rishav.dev/skills-assets/express-original-wordmark.svg" alt="ExpressJS" height="50" />
+<img src="https://img.shields.io/badge/Materialize--CSS-ee6e73?style=for-the-badge&logoColor=white" alt="MaterializeCSS"/>
+<img src="https://img.shields.io/badge/Mongoose.js-8A0403?style=for-the-badge&logoColor=white" alt="MongooseJS"/>
+<img src="https://profilinator.rishav.dev/skills-assets/git-scm-icon.svg" alt="Git" height="50" />
 
----
-
-# Who is this for? 
-
-- It's for beginners & intermediates with little more experience, to help understand the various aspects of building a node app with some complex features
-
----
-
-# Packages/Dependencies used 
-
-bcrypt, connect-mongo, dotenv, ejs, express, express-flash, express-session, mongodb, mongoose, morgan, nodemon, passport, passport-local, validator
-
----
-
-# Install all the dependencies or node packages used for development via Terminal
-
-`npm install` 
-
----
-
-# Things to add
-
-- Create a `.env` file and add the following as `key: value` 
-  - PORT: 2121 (can be any port example: 3000) 
-  - DB_STRING: `your database URI` 
- ---
- 
- Have fun testing and improving it! 😎
-
-
+## Optimizations
+* Multiple `.completed` classes invoke both `markComplete` & `markIncomplete` functions. Both functions send PUT requests.
+* Edit button.
+* Sorting (by priority) functionality.
+* Add Passport-Google-OAuth-20 to support gmail/google account creation/login.
