@@ -104,9 +104,10 @@ a {
     background-color: #202225;
     text-align: center;
     padding: 1rem;
-    position: absolute;
+    position: fixed;
     bottom: 0;
     width: 100vw;
+    
 }
 /**************************************************************
 * Main - todos.ejs
