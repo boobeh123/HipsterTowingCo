@@ -165,6 +165,7 @@ a {
 }
 .collapsible {
     border: 0;
+    overflow: auto;
 }
 .todoItem {
     border-bottom: 1px solid #202225;
