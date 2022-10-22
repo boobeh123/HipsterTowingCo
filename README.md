@@ -29,5 +29,5 @@ I used the `Materialize-CSS` framework to style my pages, and just going through
 ## Optimizations
 * Multiple `.completed` classes invoke both `markComplete` & `markIncomplete` functions. Both functions send PUT requests.
 * Edit button.
-* Sorting (by priority) functionality.
+* ~~Sorting (by priority) functionality.~~ Sorting functionalities added.
 * Add Passport-Google-OAuth-20 to support gmail/google account creation/login.
