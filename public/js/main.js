@@ -1,7 +1,6 @@
 const deleteBtn = document.querySelectorAll('.del')
 const todoComplete = document.querySelectorAll('.checkbox')
 const todoItem = document.querySelectorAll('.checkbox')
-const sortBtn = document.querySelector('.sort').addEventListener('click', sortTodos)
 const editBtn = document.querySelector('.edit').addEventListener('click', editTodos)
 
 Array.from(deleteBtn).forEach((el)=>{
@@ -18,14 +17,6 @@ Array.from(todoComplete).forEach((el)=>{
         el.addEventListener('click', markIncomplete)
     }
 })
-
-async function sortTodos() {
-    let item = document.querySelectorAll('.priority')
-    Array.from(item).forEach((element)=>{
-        console.log(element.innerHTML)
-    })
-    alert("in development");
-}
 
 async function editTodos() {
     alert("in development");
