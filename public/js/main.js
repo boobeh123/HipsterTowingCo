@@ -1,21 +1,38 @@
 const deleteBtn = document.querySelectorAll('.del')
-const todoItem = document.querySelectorAll('span.not')
-const todoComplete = document.querySelectorAll('span.completed')
+const todoComplete = document.querySelectorAll('.checkbox')
+const todoItem = document.querySelectorAll('.checkbox')
+const sortBtn = document.querySelector('.sort').addEventListener('click', sortTodos)
+const editBtn = document.querySelector('.edit').addEventListener('click', editTodos)
 
 Array.from(deleteBtn).forEach((el)=>{
     el.addEventListener('click', deleteTodo)
 })
 
 Array.from(todoItem).forEach((el)=>{
-    el.addEventListener('click', markComplete)
+    if (document.querySelector('.not')) {
+        el.addEventListener('click', markComplete)
+    }
+})
+Array.from(todoComplete).forEach((el)=>{
+    if (document.querySelector('.completed')) {
+        el.addEventListener('click', markIncomplete)
+    }
 })
 
-Array.from(todoComplete).forEach((el)=>{
-    el.addEventListener('click', markIncomplete)
-})
+async function sortTodos() {
+    let item = document.querySelectorAll('.priority')
+    Array.from(item).forEach((element)=>{
+        console.log(element.innerHTML)
+    })
+    alert("in development");
+}
+
+async function editTodos() {
+    alert("in development");
+}
 
 async function deleteTodo(){
-    const todoId = this.parentNode.dataset.id
+    const todoId = this.parentNode.parentNode.dataset.id;
     try{
         const response = await fetch('todos/deleteTodo', {
             method: 'delete',
@@ -33,7 +50,7 @@ async function deleteTodo(){
 }
 
 async function markComplete(){
-    const todoId = this.parentNode.dataset.id
+    const todoId = this.parentNode.parentNode.parentNode.dataset.id;
     try{
         const response = await fetch('todos/markComplete', {
             method: 'put',
@@ -51,7 +68,7 @@ async function markComplete(){
 }
 
 async function markIncomplete(){
-    const todoId = this.parentNode.dataset.id
+    const todoId = this.parentNode.parentNode.parentNode.dataset.id;
     try{
         const response = await fetch('todos/markIncomplete', {
             method: 'put',
