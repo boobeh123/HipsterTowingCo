@@ -1,10 +1,214 @@
-h1{
-    color: red;
+/**************************************************************
+* Clearfix
+***************************************************************/
+.clearfix:before,
+.clearfix:after {
+    content: "";
+    display: table;
 }
-.completed{
+.clearfix:after {
+    clear: both;
+}
+.clearfix {
+    clear: both;
+    *zoom: 1;
+}
+/**************************************************************
+* Base styles
+***************************************************************/
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', 'Times New Roman', sans-serif;
+    font-size: 1rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0, .5);
+    height: 100vh;
+    overflow: hidden;
+    background-color: #333;
+} 
+
+.float-left {
+    float: left;
+}
+.float-right {
+    float: right;
+}
+/**************************************************************
+* Typography
+***************************************************************/
+strong, .bold {
+    font-weight: 700;
+}
+cite, em {
+    font-style: italic;
+}
+/**************************************************************
+* Links
+***************************************************************/
+a {
+    text-decoration: none;
+}
+.fa-github {
+    color: #fefefe;
+}
+.fa-github:hover {
+    color: #333;
+}
+.fa-github:active {
+    transform: translateY(-4.5px);
+}
+/**************************************************************
+* index.ejs + login + signup
+***************************************************************/
+.index-header {
+    background-color: #202225;
+    padding: .1rem 1rem;
+}
+.index-header h1 {
+    display: inline-block;
+    color: #fefefe;
+    font-family: Lato;
+    cursor: pointer;
+}
+.index-header .btn {
+    margin-top: 1.25rem;
+    background-color: #333;
+}
+
+.index-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 10rem;
+}
+
+.index-div .card {
+    background-color: transparent;
+}
+.index-div .card form input {
+    /* border: 2px solid red; */
+    margin-bottom: 2rem;
+}
+.index-div .card form .btn {
+    margin-bottom: 2rem;
+    width: 100%;
+}
+.index-footer {
+    background-color: #202225;
+    text-align: center;
+    padding: 1rem;
+    position: absolute;
+    bottom: 0;
+    width: 100vw;
+}
+/**************************************************************
+* Main - todos.ejs
+***************************************************************/
+.dropdown-content li {
+    background-color: #999;
+}
+.dropdown-content .tabs {
+    background-color: #333;
+}
+.sidenav {
+    background-color: #202225;
+}
+.sidenav h2 {
+    font-size: 2rem;
+    text-align: center;
+    color: #fefefe;
+    border: 2px solid #999;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+.sidenav input,
+.sidenav textarea {
+    color: #fefefe;
+}
+.margin {
+    margin: 1rem 0;
+}
+.marginH {
+    margin: 0 1rem;
+}
+.marginT {
+    margin-top: 1rem;
+}
+.sidenav select {
+    display: block;
+    background-color: #202225;
+    color: #fefefe;
+}
+.todoBtns {
+    display: none;
+    margin: 0 .25rem;
+}
+.task-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.icon-container {
+    display: flex;
+    flex-direction: row;
+}
+.icon-container * {
+    color: #fefefe;
+}
+.collapsible {
+    border: 0;
+}
+.todoItem {
+    border-bottom: 1px solid #202225;
+}
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    background-color: #333;
+    border-bottom: 0;
+}
+.collapsible-body {
+    background-color: #202225;
+    border-bottom: 0;
+}
+.collapsible-body * {
+    color: #fefefe;
+}
+.border-bottom {
+    border-bottom: 2px solid #333;
+}
+.collapsible-body button {
+    width: 100%;
+}
+/**************************************************************
+* Media queries
+***************************************************************/
+@media screen and (min-device-width: 565px) {
+
+    .dropdown-trigger {
+        display: none;
+    }
+
+    .todoBtns {
+        display: inline-block;
+    }
+
+}
+/**************************************************************
+* Previous styles
+***************************************************************/
+.completed {
     text-decoration: line-through;
     color: gray;
 }
-.not{
-    text-decoration: underline;
+.not {
+    
 }
