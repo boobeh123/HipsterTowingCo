@@ -19,7 +19,7 @@ const TodoSchema = new mongoose.Schema({
     type: Date,
   },
   todoLevel: {
-    type: String,
+    type: Number,
   }
 })
 
