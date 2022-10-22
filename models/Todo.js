@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 const TodoSchema = new mongoose.Schema({
   todo: {
     type: String,
-    required: true,
   },
   completed: {
     type: Boolean,
@@ -12,6 +11,15 @@ const TodoSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: true
+  },
+  todoInfo: {
+    type: String,
+  },
+  todoDate: {
+    type: Date,
+  },
+  todoLevel: {
+    type: String,
   }
 })
 
