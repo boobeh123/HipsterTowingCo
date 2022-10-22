@@ -4,29 +4,107 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100&family=Roboto:wght@100;400;700&display=swap" rel="stylesheet">
+    <!-- MaterializeCSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- External css -->
+    <link rel="stylesheet" href="/css/reset.css" type="text/css">
+    <link rel="stylesheet" href="/css/normalize.css" type="text/css">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <title>Organize projects into small tasks</title>
 </head>
 <body>
-    <h1>Todos</h1>
-    <ul>
-    <% todos.forEach( el => { %>
-            <li class='todoItem' data-id='<%=el._id%>'>
-                <span class='<%= el.completed === true ? 'completed' : 'not'%>'><%= el.todo %></span>
-                <span class='del'> Delete </span>
-            </li>
-    <% }) %>    
+    <header class="index-header">
+        <a href="/"><h1>// My To-do list</h1></a>
+        <a class='dropdown-trigger btn float-right' href='#' data-target='dropdown1'>&#9776;</a>
+        <a href="/logout" class="hoverable waves-effect waves-light btn blue-grey todoBtns float-right">Logout</a>
+        <a href="#" data-target="slide-out" class="sidenav-trigger hoverable waves-effect waves-light btn blue-grey lighten-4 todoBtns float-right">Add task</a>
+        <ul id='dropdown1' class='dropdown-content'>
+            <li class="tabs"><a href="#" data-target="slide-out" class="sidenav-trigger">Add task</a></li>
+            <li class="divider" tabindex="-1"></li>
+            <li class="tabs"><a href="/logout">Logout</a></li>
+          </ul>     
+    </header>
+    <ul id="slide-out" class="sidenav">
+        <h2>Add a task</h2>
+        <form action="/todos/createTodo" method='POST'>
+              <label for="title">Title:</label>
+              <input type="text" placeholder="(e.g.) Schedule, Chores, Exercise," name="todoItem" class="margin">
+              <label for="description">Description:</label>
+              <textarea name="todoInfo" cols="30" rows="6" placeholder="(e.g) Wish dad happy birthday this weekend... Water grass before 7pm..." class="margin"></textarea>
+              <label for="todoDate">Due date:</label>
+              <input type="date" name="todoDate" class="margin">
+              <label for="todoLevel">Priority:</label>
+              <select name="todoLevel" class="margin">
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+              </select>
+              <input type="submit" class="hoverable waves-effect waves-light btn blue-grey">
+          </form>
+      </div>
     </ul>
-
-    <h2><%= user.userName %> has <%= left %> things left to do.</h2>
-
-    <form action="/todos/createTodo" method='POST'>
-        <input type="text" placeholder="Enter Todo Item" name='todoItem'>
-        <input type="submit">
-    </form>
-
-    <a href="/logout">Logout</a>
-
-    <script src="js/main.js"></script>
+    <div class="container">
+        <section class="container task-container">
+            <h1>Tasks</h1>
+            <div class="clearfix icon-container">
+                <a href="#" class="sort"><i class="fas fa-sort tooltipped" data-tooltip="Sort by priority"></i></a>
+            </div>
+        </section>
+        <div class="container">
+            <ul class="collapsible">
+                <% todos.forEach( el => { %>
+                    <li class='todoItem' data-id='<%=el._id%>'>
+                        <div class="collapsible-header container">
+                            <!-- <Span> ( & <label> ? ) required to display checkbox inputs w/ MaterializeCSS -->
+                            <label>
+                                <input type="checkbox" class="checkbox"/>
+                                <span></span>
+                            </label> 
+                            <span class='<%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+                            <span class='del' id="delete"><i class="fas fa-trash"></i></span>
+                        </div class="margin border-bottom">
+                        <div class="collapsible-body">
+                            <div class="margin border-bottom">
+                                <span class="bold">Title:</span>
+                                <span class='marginH <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+                            </div>
+                            <div class="margin border-bottom">
+                                <span class="bold">Priority:</span>
+                                <span class='marginH priority <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoLevel %></span>
+                            </div>
+                            <div class="margin border-bottom">
+                                <span class="bold">Due date:</span>
+                                <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoDate %></p>
+                            </div>
+                            <div class="margin border-bottom">
+                                <span class="bold">Description:</span>
+                                <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoInfo %></p>
+                            </div>
+                            <div class="margin">
+                                <button class="hoverable waves-effect waves-light btn blue-grey edit"><i class="fas fa-edit"></i></button>
+                            </div>
+                        </div>
+                    </li>
+                <% }) %>    
+            </ul>
+        </div>
+    </div>
+    <footer class="index-footer">
+        <span class="float-left">&copy; My To-do list</span>
+        <a href="https://github.com/boobeh123/" target="_blank"><i class="fa-brands fa-github fa-2xl"></i></a>
+    </footer>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://kit.fontawesome.com/9f91d488b5.js" crossorigin="anonymous"></script>
+    <script>
+    M.Dropdown.init(document.querySelector('.dropdown-trigger'))
+    M.Sidenav.init(document.querySelector('.sidenav'))
+    M.Collapsible.init(document.querySelector('.collapsible'))
+    M.Tooltip.init(document.querySelector('.tooltipped'))
+    </script>
 </body>
 </html>
