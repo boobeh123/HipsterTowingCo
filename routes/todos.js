@@ -12,6 +12,7 @@ router.post('/createTodo', todosController.createTodo)
 router.put('/markComplete', todosController.markComplete)
 
 router.put('/markIncomplete', todosController.markIncomplete)
+// router.put('/editTodos', todosController.editTodos)
 
 router.delete('/deleteTodo', todosController.deleteTodo)
 
