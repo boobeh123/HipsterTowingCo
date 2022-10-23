@@ -51,7 +51,9 @@
         <section class="container task-container">
             <h1>Tasks</h1>
             <div class="clearfix icon-container">
-                <a href="/todos/sorted" class="sort"><i class="fas fa-sort tooltipped" data-tooltip="Sort by priority"></i></a>
+                <a href="/todos/" class="sort"><i class="fas fa-redo tooltipped" data-position="bottom" data-tooltip="Reset to default"></i></a>
+                <a href="/todos/sorted" class="sort"><i class="fas fa-sort tooltipped marginH" data-position="bottom" data-tooltip="Sort by priority"></i></a>
+                <a href="/todos/dueDate" class="sort"><i class="far fa-calendar tooltipped" data-position="bottom" data-tooltip="Sort by date"></i></a>
             </div>
         </section>
         <div class="container">
@@ -104,7 +106,7 @@
     M.Dropdown.init(document.querySelector('.dropdown-trigger'))
     M.Sidenav.init(document.querySelector('.sidenav'))
     M.Collapsible.init(document.querySelector('.collapsible'))
-    M.Tooltip.init(document.querySelector('.tooltipped'))
+    M.Tooltip.init(document.querySelectorAll('.tooltipped'))
     </script>
 </body>
 </html>
