@@ -86,6 +86,21 @@ module.exports = {
             console.log(err)
         }
     },
+    // editTodos: async (req, res)=>{
+    //     try{
+    //         await Todo.findOneAndUpdate({_id:req.body.todoIdFromJSFile},{
+    //             todo: req.body.todoItem,
+    //             completed: false,
+    //             userId: req.user.id,
+    //             todoInfo: req.body.todoInfo,
+    //             todoDate: req.body.todoDate,
+    //             todoLevel: req.body.todoLevel})
+    //         console.log('Edit')
+    //         res.json('Edit Complete')
+    //     }catch(err){
+    //         console.log(err)
+    //     }
+    // },
     deleteTodo: async (req, res)=>{
         console.log(req.body.todoIdFromJSFile)
         try{
