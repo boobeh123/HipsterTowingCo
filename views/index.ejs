@@ -10,31 +10,57 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100&family=Roboto:wght@100;400;700&display=swap" rel="stylesheet">
     <!-- MaterializeCSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Font-awesome -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- External css -->
-    <link rel="stylesheet" href="/css/reset.css" type="text/css">
     <link rel="stylesheet" href="/css/normalize.css" type="text/css">
     <link rel="stylesheet" href="/css/style.css" type="text/css">
     <title>Get started with your list</title>
 </head>
 <body>
-    <header class="index-header">
-        <h1>// My To-do list</h1>
-    </header>
-    <div class="index-div row">
-        <div class="card col">
-            <section class="card-content">
-                <h1>Organize projects into small tasks.</h1>
-                <a href="/login" class="hoverable waves-effect waves-light btn blue-grey lighten-4">Login</a>
-                <a href="/signup" class="hoverable waves-effect waves-light btn blue-grey">Start for free</a>
-            </div>
-        </div>
-    </section>
-    <footer class="index-footer">
-        <span class="float-left">&copy; My To-do list</span>
-        <a href="https://github.com/boobeh123/" target="_blank"><i class="fa-brands fa-github fa-2xl"></i></a>
-    </footer>
+    <%- include('./partials/header.ejs') %>
+    <main>
+        <section class="container">
+            <h1 class="border-bottom">How to use All Pau</h1>
+            <p>Please sign in or create an account to access services.</p>
+            <p>A test account is provided on the Login page for previewing preferences.</p>
+        </section>
+        <section class="container">
+            <h5 class="border-bottom">About All Pau</h1>
+            <p>All Pau To-Do List was created to help increase productivity and accountability by dividing your project into smaller objectives.</p>
+            <p>"All Pau" is a phrase commonly used on the islands of Hawaii. It means "finished;done".</p>
+        </section>
+        <section class="container">
+            <h5 class="border-bottom">Our Mission</h1>
+            <p>To help you grow and scale through task management. With our to do list, we strive to bring convenience and inspiration.</p>
+        </section>
+        <section class="container">
+            <h5 class="border-bottom">What makes us different</h1>
+            <div class="row">
+                <div class="col s4 center-align">
+                    <i class="material-icons">unarchive</i>
+                    <h5>Open-sourced</h5>
+                    <p>Our task management platform was developed with you in mind. Every moving part is available for you to inspect and examine how this all works.</p>
+                </div>
+                <div class="col s4 center-align">
+                    <i class="material-icons">verified_user</i>
+                    <h5>Reliable</h5>
+                    <p>All Pau ensures that your account & tasks will be here long term. This data is stored into a database and your login credentials are hashed and salted with the bCrypt algorithm.</p>
+                </div>
+                <div class="col s4 center-align">
+                    <i class="material-icons">phonelink_setup</i>
+                    <h5>Responsive</h5>
+                    <p>All Pau is friendly across every screen and device. This flexibility paves the path to keep track of your tasks anywhere, anytime.</p>
+                </div>
+              </div>
+        </section>
+    </main>
+    <%- include('./partials/footer.ejs') %>
     <script type="text/javascript" src="js/main.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://kit.fontawesome.com/9f91d488b5.js" crossorigin="anonymous"></script>
+    <script>
+        M.Sidenav.init(document.querySelector('.sidenav'))
+    </script>
 </body>
 </html>
