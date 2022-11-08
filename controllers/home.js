@@ -3,7 +3,7 @@ module.exports = {
         if (req.isAuthenticated()) {
             res.redirect('/todos')
           } else {
-              res.render('index.ejs')
+            res.render('index.ejs')
           }
     }
     // getIndex: (req,res)=>{
