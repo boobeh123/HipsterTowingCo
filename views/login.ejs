@@ -10,42 +10,58 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100&family=Roboto:wght@100;400;700&display=swap" rel="stylesheet">
     <!-- MaterializeCSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Font-awesome -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- External css -->
-    <link rel="stylesheet" href="/css/reset.css" type="text/css">
     <link rel="stylesheet" href="/css/normalize.css" type="text/css">
     <link rel="stylesheet" href="/css/style.css" type="text/css">
     <title>Log in to My To-do list</title>
 </head>
 <body>
-    <header class="index-header">
-        <a href="/"><h1>// My To-do list</h1></a>
-    </header>
-    <div class="index-div row">
-        <div class="card col hoverable">
-            <div class="card-content">
-                <% if (locals.messages.errors) { %>
-                    <% messages.errors.forEach( el => { %>
-                        <h5 class="alert alert-danger"><%= el.msg %></h5>
-                    <% }) %>    
-                <% } %>
-                <% if (locals.messages.info) { %>
-                    <% messages.info.forEach( el => { %>
-                        <h5 class="alert alert-danger"><%= el.msg %></h5>
-                    <% }) %>    
-                <% } %>
-                <form action="/login" method="POST">
-                    <input type="email" name="email" placeholder="Email">
-                    <input type="password" name="password" placeholder="Password">
-                    <input type="submit" class="btn waves-effect waves-light blue-grey hoverable">
-                </form>
-                <a href="/signup">Create an account</a>
+    <%- include('./partials/header.ejs') %>
+    <main class="login-main">
+        <div class="row">
+            <% if (locals.messages.errors) { %>
+                <% messages.errors.forEach( el => { %>
+                    <div class="card alert-danger">
+                        <div class="card-content">
+                            <p class="center-align"><%= el.msg %></p>
+                        </div>
+                    </div>
+                <% }) %>    
+            <% } %>
+            <% if (locals.messages.info) { %>
+                <% messages.info.forEach( el => { %>
+                    <div class="card alert-danger">
+                        <div class="card-content">
+                            <p class="center-align"><%= el.msg %></p>
+                        </div>
+                    </div>
+                <% }) %>    
+            <% } %>
+            <div class="card hoverable">
+                <div class="card-content">
+                    <form action="/login" method="POST">
+                        <input type="email" name="email" placeholder="Email" autofocus required autocomplete='email'>
+                        <input type="password" name="password" placeholder="Password" required autocomplete='current-password'>
+                        <input type="submit" class="btn waves-effect waves-light blue-grey hoverable">
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <section class="card-content">
+                    <h1 class="border-bottom center-align">Guidelines</h1>
+                    <p>If clicking the submit button does not process:</p>
+                    <p>Press the "Enter" key after typing credentials.</p>
+                    <ul>
+                        <li><span>Username: user@gmail.com</span></li> 
+                        <li><span>Password: password</span></li> 
+                    </ul>
+                </section>
             </div>
         </div>
-    </div>
-    <footer class="index-footer">
-        <span class="float-left">&copy; My To-do list</span>
-        <a href="https://github.com/boobeh123/" target="_blank"><i class="fa-brands fa-github fa-2xl"></i></a>
-    </footer>
+    </main>
+    <%- include('./partials/footer.ejs') %>
     <script type="text/javascript" src="js/main.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://kit.fontawesome.com/9f91d488b5.js" crossorigin="anonymous"></script>
