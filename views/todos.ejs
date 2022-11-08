@@ -18,10 +18,10 @@
 </head>
 <body>
     <header class="index-header">
-        <a href="/"><h1>// My To-do list</h1></a>
-        <a class='dropdown-trigger btn float-right' href='#' data-target='dropdown1'>&#9776;</a>
-        <a href="/logout" class="hoverable waves-effect waves-light btn blue-grey todoBtns float-right">Logout</a>
-        <a href="#" data-target="slide-out" class="sidenav-trigger hoverable waves-effect waves-light btn blue-grey lighten-4 todoBtns float-right">Add task</a>
+        <a href="/todos"><h1 class="brand-logo clearfix">// All Pau</h1></a>
+            <a class='dropdown-trigger btn right' href='#' data-target='dropdown1'>&#9776;</a>
+            <a href="#" data-target="slide-out" class="sidenav-trigger hoverable waves-effect waves-light btn blue-grey todoBtns right">Add task</a>
+            <a href="/logout" class="hoverable waves-effect waves-light btn blue-grey lighten-4 todoBtns right">Logout</a>
         <ul id='dropdown1' class='dropdown-content'>
             <li class="tabs"><a href="#" data-target="slide-out" class="sidenav-trigger">Add task</a></li>
             <li class="divider" tabindex="-1"></li>
@@ -47,58 +47,57 @@
           </form>
       </div>
     </ul>
-    <div class="container">
-        <section class="container task-container">
-            <h1>Tasks</h1>
-            <div class="clearfix icon-container">
-                <a href="/todos/" class="sort"><i class="fas fa-redo tooltipped" data-position="bottom" data-tooltip="Reset to default"></i></a>
-                <a href="/todos/sorted" class="sort"><i class="fas fa-sort tooltipped marginH" data-position="bottom" data-tooltip="Sort by priority"></i></a>
-                <a href="/todos/dueDate" class="sort"><i class="far fa-calendar tooltipped" data-position="bottom" data-tooltip="Sort by date"></i></a>
-            </div>
-        </section>
+    <main>
         <div class="container">
-            <ul class="collapsible">
-                <% todos.forEach( el => { %>
-                    <li class='todoItem' data-id='<%=el._id%>'>
-                        <div class="collapsible-header container">
-                            <!-- <Span> ( & <label> ? ) required to display checkbox inputs w/ MaterializeCSS -->
-                            <label>
-                                <input type="checkbox" class="checkbox"/>
-                                <span></span>
-                            </label> 
-                            <span class='<%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
-                            <span class='del' id="delete"><i class="fas fa-trash"></i></span>
-                        </div class="margin border-bottom">
-                        <div class="collapsible-body">
-                            <div class="margin border-bottom">
-                                <span class="bold">Title:</span>
-                                <span class='marginH <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+            <section class="container task-container">
+                <h1>Tasks</h1>
+                <div class="clearfix icon-container">
+                    <a href="/todos/" class="sort"><i class="fas fa-redo tooltipped" data-position="bottom" data-tooltip="Reset to default"></i></a>
+                    <a href="/todos/sorted" class="sort"><i class="fas fa-sort tooltipped marginH" data-position="bottom" data-tooltip="Sort by priority"></i></a>
+                    <a href="/todos/dueDate" class="sort"><i class="far fa-calendar tooltipped" data-position="bottom" data-tooltip="Sort by date"></i></a>
+                </div>
+            </section>
+            <div class="container">
+                <ul class="collapsible">
+                    <% todos.forEach( el => { %>
+                        <li class='todoItem' data-id='<%=el._id%>'>
+                            <div class="collapsible-header container">
+                                <!-- <Span> ( & <label> ? ) required to display checkbox inputs w/ MaterializeCSS -->
+                                <label>
+                                    <input type="checkbox" class="checkbox"/>
+                                    <span></span>
+                                </label> 
+                                <span class='<%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+                                <span class='del' id="delete"><i class="fas fa-trash"></i></span>
+                            </div class="margin border-bottom">
+                            <div class="collapsible-body">
+                                <div class="margin border-bottom">
+                                    <span class="bold">Title:</span>
+                                    <span class='marginH <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+                                </div>
+                                <div class="margin border-bottom">
+                                    <span class="bold">Priority:</span>
+                                    <span class='marginH priority <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoLevel %></span>
+                                </div>
+                                <div class="margin border-bottom">
+                                    <span class="bold">Due date:</span>
+                                    <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoDate %></p>
+                                </div>
+                                <div class="margin border-bottom">
+                                    <span class="bold">Description:</span>
+                                    <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoInfo %></p>
+                                </div>
+                                <div class="margin">
+                                    <button class="hoverable waves-effect waves-light btn blue-grey edit"><i class="fas fa-edit"></i></button>
+                                </div>
                             </div>
-                            <div class="margin border-bottom">
-                                <span class="bold">Priority:</span>
-                                <span class='marginH priority <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoLevel %></span>
-                            </div>
-                            <div class="margin border-bottom">
-                                <span class="bold">Due date:</span>
-                                <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoDate %></p>
-                            </div>
-                            <div class="margin border-bottom">
-                                <span class="bold">Description:</span>
-                                <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoInfo %></p>
-                            </div>
-                            <div class="margin">
-                                <button class="hoverable waves-effect waves-light btn blue-grey edit"><i class="fas fa-edit"></i></button>
-                            </div>
-                        </div>
-                    </li>
-                <% }) %>    
-            </ul>
+                        </li>
+                    <% }) %>    
+                </ul>
+            </div>
         </div>
-    </div>
-    <footer class="index-footer">
-        <span class="float-left">&copy; My To-do list</span>
-        <a href="https://github.com/boobeh123/" target="_blank"><i class="fa-brands fa-github fa-2xl"></i></a>
-    </footer>
+    </main>
+    <%- include('./partials/footer.ejs') %>
     <script type="text/javascript" src="js/main.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://kit.fontawesome.com/9f91d488b5.js" crossorigin="anonymous"></script>
