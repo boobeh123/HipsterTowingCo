@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100&family=Roboto:wght@100;400;700&display=swap" rel="stylesheet">
+    <!-- MaterializeCSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- External css -->
+    <link rel="stylesheet" href="/css/reset.css" type="text/css">
+    <link rel="stylesheet" href="/css/normalize.css" type="text/css">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <title>Edit Todo</title>
+</head>
+<body>
+    <header class="index-header">
+        <a href="/todos"><h1 class="brand-logo clearfix">// All Pau</h1></a>
+        <div>
+            <a class='dropdown-trigger btn right' href='#' data-target='dropdown1'>&#9776;</a>
+            <a href="/logout" class="hoverable waves-effect waves-light btn blue-grey lighten-4 todoBtns right">Logout</a>
+        </div>
+        <ul id='dropdown1' class='dropdown-content'>
+            <li class="tabs"><a href="/logout">Logout</a></li>
+          </ul>     
+    </header>
+    <main class="edit-main">
+        <div class="container">
+            <div class="card">
+                <section class="card-content">
+                    <h2>Edit your task</h2>
+                    <% todos.forEach( el => { %>
+                    <form action="/todos/<%=el._id%>" data-id="<%=el._id%>" method="POST">
+                        <label for="title">Title:</label>
+                        <input type="text" placeholder="(e.g.) Schedule, Chores, Exercise," name="todoItem" class="margin" value="<%=el.todo%>" autofocus>
+                        <label for="description">Description:</label>
+                        <textarea name="todoInfo" cols="30" rows="6" placeholder="(e.g) Wish dad happy birthday this weekend... Water grass before 7pm..." class="margin"><%=el.todoInfo%></textarea>
+                        <label for="status">Status:</label>
+                        <select name="completed" class="margin">
+                            <option value="true">Complete</option>
+                            <option value="false">Incomplete</option>
+                        </select>
+                        <button type="button" class="hoverable waves-effect waves-light btn blue-grey update" id="updateBtn">Submit</button>
+                    </form>
+                    <% }) %>
+                </section>
+            </div>
+        </div>
+    </main>
+    <%- include('./partials/footer.ejs') %>
+    <script type="module" src="/js/main.js"></script>
+    <!-- <script type="text/javascript" src="js/main.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://kit.fontawesome.com/9f91d488b5.js" crossorigin="anonymous"></script>
+</body>
+</html>
