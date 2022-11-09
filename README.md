@@ -26,8 +26,11 @@ I used the `Materialize-CSS` framework to style my pages, and just going through
 <img src="https://img.shields.io/badge/Mongoose.js-8A0403?style=for-the-badge&logoColor=white" alt="MongooseJS"/>
 <img src="https://profilinator.rishav.dev/skills-assets/git-scm-icon.svg" alt="Git" height="50" />
 
-## Optimizations
-* Multiple `.completed` classes invoke both `markComplete` & `markIncomplete` functions. Both functions send PUT requests.
-* Edit button.
-* ~~Sorting (by priority) functionality.~~ Sorting functionalities added.
+## Optimizations (Strikethrough = completed/added)
+* ~~Multiple `.completed` classes invoke both `markComplete` & `markIncomplete` functions. Both functions send PUT requests.~~
+* ~~Edit button.~~
+* ~~Sorting (by priority) functionality.~~
 * Add Passport-Google-OAuth-20 to support gmail/google account creation/login.
+* Add "dismiss message" button onto login/account creation error messages
+* Format date
+* Allow edits on date & priority levels
