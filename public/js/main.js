@@ -1,49 +1,46 @@
 const deleteBtn = document.querySelectorAll('.del')
-const todoComplete = document.querySelectorAll('.checkbox')
-const todoItem = document.querySelectorAll('.checkbox')
-const editBtn = document.querySelectorAll('.edit')
+const markTaskComplete = document.querySelectorAll('.checkbox')
+const updateBtn = document.querySelectorAll('#updateBtn')
 
 Array.from(deleteBtn).forEach((el)=>{
     el.addEventListener('click', deleteTodo)
 })
 
-Array.from(todoItem).forEach((el)=>{
-    if (document.querySelector('.not')) {
+Array.from(markTaskComplete).forEach((el)=>{
         el.addEventListener('click', markComplete)
-    }
 })
-Array.from(todoComplete).forEach((el)=>{
-    if (document.querySelector('.completed')) {
-        el.addEventListener('click', markIncomplete)
-    }
-})
-Array.from(editBtn).forEach((element) => {
-    element.addEventListener('click', editTodos);
+Array.from(updateBtn).forEach((element) => {
+    element.addEventListener('click', updateTodos);
 })
 
-async function editTodos() {
-    alert("in development");
-    // const todoId = this.parentNode.parentNode.parentNode.dataset.id;
-    // try{
-    //     const response = await fetch('todos/editTodos', {
-    //         method: 'put',
-    //         headers: {'Content-type': 'application/json'},
-    //         body: JSON.stringify({
-    //             'todoIdFromJSFile': todoId
-    //         })
-    //     })
-    //     const data = await response.json()
-    //     console.log(data)
-    //     location.reload()
-    // }catch(err){
-    //     console.log(err)
-    // }
+async function updateTodos() {
+    const id = this.parentNode.dataset.id;
+    const title = this.parentNode.childNodes[3].value;
+    const body = this.parentNode.childNodes[7].value;
+    const status = this.parentNode.childNodes[9].value;
+    try{
+        const response = await fetch(`/todos/${id}`, {
+            method: 'put',
+            headers: {'Content-type': 'application/json'},
+            body: JSON.stringify({
+                'idFromJSFile': id,
+                'titleFromJSFile': title,
+                'bodyFromJSFile': body,
+                'statusFromJSFile': status
+            })
+        })
+        const data = await response.json()
+        console.log(data)
+        location.replace('/')
+    }catch(err){
+        console.log(err)
+    }
 }
 
 async function deleteTodo(){
     const todoId = this.parentNode.parentNode.dataset.id;
     try{
-        const response = await fetch('todos/deleteTodo', {
+        const response = await fetch('/todos/deleteTodo', {
             method: 'delete',
             headers: {'Content-type': 'application/json'},
             body: JSON.stringify({
@@ -60,9 +57,13 @@ async function deleteTodo(){
 
 async function markComplete(){
     const todoId = this.parentNode.parentNode.parentNode.dataset.id;
-    try{
-        const response = await fetch('todos/markComplete', {
-            method: 'put',
+    let status = this.parentNode.parentNode.childNodes[5].classList[0];
+    if (status === 'completed') {
+        alert('Task is marked as complete.')
+    } else {
+        try {
+            const response = await fetch('/todos/markComplete', {
+                method: 'put',
             headers: {'Content-type': 'application/json'},
             body: JSON.stringify({
                 'todoIdFromJSFile': todoId
@@ -71,25 +72,8 @@ async function markComplete(){
         const data = await response.json()
         console.log(data)
         location.reload()
-    }catch(err){
-        console.log(err)
-    }
-}
-
-async function markIncomplete(){
-    const todoId = this.parentNode.parentNode.parentNode.dataset.id;
-    try{
-        const response = await fetch('todos/markIncomplete', {
-            method: 'put',
-            headers: {'Content-type': 'application/json'},
-            body: JSON.stringify({
-                'todoIdFromJSFile': todoId
-            })
-        })
-        const data = await response.json()
-        console.log(data)
-        location.reload()
-    }catch(err){
-        console.log(err)
+        } catch(error) {
+        console.log(error)
+        }
     }
 }
