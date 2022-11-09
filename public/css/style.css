@@ -119,6 +119,9 @@ section {
 .signup-main .card form .btn {
     width: 100%;
 }
+.edit-main .container .card .card-content form select {
+    display: block;
+}
 /**************************************************************
 * Footer
 ***************************************************************/
@@ -131,15 +134,27 @@ section {
  .index-header {
     display: flex;
     background-color: #202225;
+    justify-content: space-between;
 }
 .index-header .btn {
     margin-top: 1.25rem;
+    background-color: #202225;
+    border: 1px solid #999
+}
+.index-header div {
+    margin-right: 1rem; 
+}
+.index-header > a {
+    margin-left: 1rem; 
 }
 /**************************************************************
 * Main - todos.ejs (prev code)
 ***************************************************************/
 .dropdown-content li {
     background-color: #999;
+}
+.dropdown-content li>a {
+    color: #fefefe;
 }
 .dropdown-content .tabs {
     background-color: #333;
@@ -207,12 +222,10 @@ section {
 }
 .collapsible-body * {
     color: black;
+    width: 100%;
 }
 .border-bottom {
     border-bottom: 2px solid #333;
-}
-.collapsible-body button {
-    width: 100%;
 }
 /**************************************************************
 * Media queries
