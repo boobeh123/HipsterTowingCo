@@ -1,4 +1,5 @@
 const Todo = require('../models/Todo')
+const User = require('../models/User')
 
 module.exports = {
     getTodos: async (req,res)=>{
@@ -86,21 +87,50 @@ module.exports = {
             console.log(err)
         }
     },
-    // editTodos: async (req, res)=>{
-    //     try{
-    //         await Todo.findOneAndUpdate({_id:req.body.todoIdFromJSFile},{
-    //             todo: req.body.todoItem,
-    //             completed: false,
-    //             userId: req.user.id,
-    //             todoInfo: req.body.todoInfo,
-    //             todoDate: req.body.todoDate,
-    //             todoLevel: req.body.todoLevel})
-    //         console.log('Edit')
-    //         res.json('Edit Complete')
-    //     }catch(err){
-    //         console.log(err)
-    //     }
-    // },
+    editTodos: async (req, res)=>{
+        try {
+            let todos = await Todo.find({_id:req.params.id})
+            let users = await User.find({_id:todos[0].userId})
+
+            if (!users) {
+              res.redirect('/')
+            }
+            
+            if (users[0].email != req.user.email) {
+              res.redirect('/')
+            } else {
+                res.render('edit', {
+                users,
+                todos})
+            }
+        } catch(error) {
+            console.error(error)
+        }
+    },
+    updateTodos: async (req, res)=>{
+        const currentTodo = await Todo.find({_id:req.body.idFromJSFile})
+        const currentUser = await User.find({_id:currentTodo[0].userId})
+
+        try {
+            if (!currentUser) {
+                res.redirect('/')
+            }
+          
+            if (currentUser[0].email != req.user.email) {
+                res.redirect('/')
+            } else {
+                await Todo.findByIdAndUpdate(req.body.idFromJSFile, {
+                todo: req.body.titleFromJSFile, 
+                todoInfo: req.body.bodyFromJSFile,
+                completed: req.body.statusFromJSFile
+            })
+                console.log('Edited Todo')
+                res.json('Edited It')
+            }
+        } catch(error) {
+          console.error(error)
+        }
+    },
     deleteTodo: async (req, res)=>{
         console.log(req.body.todoIdFromJSFile)
         try{
