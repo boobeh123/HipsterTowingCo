@@ -19,9 +19,11 @@
 <body>
     <header class="index-header">
         <a href="/todos"><h1 class="brand-logo clearfix">// All Pau</h1></a>
+        <div>
             <a class='dropdown-trigger btn right' href='#' data-target='dropdown1'>&#9776;</a>
-            <a href="#" data-target="slide-out" class="sidenav-trigger hoverable waves-effect waves-light btn blue-grey todoBtns right">Add task</a>
             <a href="/logout" class="hoverable waves-effect waves-light btn blue-grey lighten-4 todoBtns right">Logout</a>
+            <a href="#" data-target="slide-out" class="sidenav-trigger hoverable waves-effect waves-light btn blue-grey todoBtns right">Add task</a>
+        </div>
         <ul id='dropdown1' class='dropdown-content'>
             <li class="tabs"><a href="#" data-target="slide-out" class="sidenav-trigger">Add task</a></li>
             <li class="divider" tabindex="-1"></li>
@@ -52,9 +54,9 @@
             <section class="container task-container">
                 <h1>Tasks</h1>
                 <div class="clearfix icon-container">
-                    <a href="/todos/" class="sort"><i class="fas fa-redo tooltipped" data-position="bottom" data-tooltip="Reset to default"></i></a>
-                    <a href="/todos/sorted" class="sort"><i class="fas fa-sort tooltipped marginH" data-position="bottom" data-tooltip="Sort by priority"></i></a>
-                    <a href="/todos/dueDate" class="sort"><i class="far fa-calendar tooltipped" data-position="bottom" data-tooltip="Sort by date"></i></a>
+                    <a href="/todos/" class="sort"><i class="fas fa-redo" title="Reset to Default"></i></a>
+                    <a href="/todos/sorted" class="sort"><i class="fas fa-sort marginH" title="Sort by priority"></i></a>
+                    <a href="/todos/dueDate" class="sort"><i class="far fa-calendar" title="Sort by date"></i></a>
                 </div>
             </section>
             <div class="container">
@@ -65,10 +67,10 @@
                                 <!-- <Span> ( & <label> ? ) required to display checkbox inputs w/ MaterializeCSS -->
                                 <label>
                                     <input type="checkbox" class="checkbox"/>
-                                    <span></span>
+                                    <span title="Mark as complete"></span>
                                 </label> 
-                                <span class='<%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
-                                <span class='del' id="delete"><i class="fas fa-trash"></i></span>
+                                <span data-id='<%=el._id%>' class='<%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+                                <span class='del' id="delete" title="Delete Todo"><i class="fas fa-trash"></i></span>
                             </div class="margin border-bottom">
                             <div class="collapsible-body">
                                 <div class="margin border-bottom">
@@ -88,7 +90,7 @@
                                     <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoInfo %></p>
                                 </div>
                                 <div class="margin">
-                                    <button class="hoverable waves-effect waves-light btn blue-grey edit"><i class="fas fa-edit"></i></button>
+                                    <a href="/todos/edit/<%=el._id%>" class="hoverable waves-effect waves-light btn blue-grey" title="Edit Todo"><i class="fas fa-edit"></i></a>
                                 </div>
                             </div>
                         </li>
@@ -105,7 +107,6 @@
     M.Dropdown.init(document.querySelector('.dropdown-trigger'))
     M.Sidenav.init(document.querySelector('.sidenav'))
     M.Collapsible.init(document.querySelector('.collapsible'))
-    M.Tooltip.init(document.querySelectorAll('.tooltipped'))
     </script>
 </body>
 </html>
