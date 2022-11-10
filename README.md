@@ -32,5 +32,5 @@ I used the `Materialize-CSS` framework to style my pages, and just going through
 * ~~Sorting (by priority) functionality.~~
 * Add Passport-Google-OAuth-20 to support gmail/google account creation/login.
 * Add "dismiss message" button onto login/account creation error messages
-* Format date
+~~* Format date~~
 * Allow edits on date & priority levels
