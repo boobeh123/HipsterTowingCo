@@ -65,12 +65,16 @@
                         <li class='todoItem' data-id='<%=el._id%>'>
                             <div class="collapsible-header container">
                                 <!-- <Span> ( & <label> ? ) required to display checkbox inputs w/ MaterializeCSS -->
-                                <label>
-                                    <input type="checkbox" class="checkbox"/>
-                                    <span title="Mark as complete"></span>
-                                </label> 
+                                <form class="col-1" action="/todos/markComplete/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST">
+                                    <label>
+                                        <input type="checkbox" class="checkbox" onChange="this.form.submit()"/>
+                                        <span title="Mark as complete"></span>
+                                    </label>
+                                </form>
                                 <span data-id='<%=el._id%>' class='<%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
-                                <span class='del' id="delete" title="Delete Todo"><i class="fas fa-trash"></i></span>
+                                <form class="col-1" action="/todos/deleteTodo/<%=el._id%>?_method=DELETE" data-id="<%=el._id%>" method="POST"> 
+                                    <button type="submit" title="Delete Todo" class="hoverable waves-effect waves-light btn red">Delete</button>
+                                </form>
                             </div class="margin border-bottom">
                             <div class="collapsible-body">
                                 <div class="margin border-bottom">
@@ -83,7 +87,7 @@
                                 </div>
                                 <div class="margin border-bottom">
                                     <span class="bold">Due date:</span>
-                                    <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoDate %></p>
+                                    <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= moment(el.todoDate).format('LL') %></p>
                                 </div>
                                 <div class="margin border-bottom">
                                     <span class="bold">Description:</span>
