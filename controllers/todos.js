@@ -67,11 +67,11 @@ module.exports = {
     },
     markComplete: async (req, res)=>{
         try{
-            await Todo.findOneAndUpdate({_id:req.body.todoIdFromJSFile},{
+            await Todo.findOneAndUpdate({_id:req.params.id},{
                 completed: true
             })
             console.log('Marked Complete')
-            res.json('Marked Complete')
+            res.redirect('/todos')
         }catch(err){
             console.log(err)
         }
@@ -108,9 +108,8 @@ module.exports = {
         }
     },
     updateTodos: async (req, res)=>{
-        const currentTodo = await Todo.find({_id:req.body.idFromJSFile})
-        const currentUser = await User.find({_id:currentTodo[0].userId})
-
+        const currentUser = await User.find({_id:req.user._id})
+        const currentTodo = await Todo.find({userId:req.user._id})
         try {
             if (!currentUser) {
                 res.redirect('/')
@@ -119,24 +118,24 @@ module.exports = {
             if (currentUser[0].email != req.user.email) {
                 res.redirect('/')
             } else {
-                await Todo.findByIdAndUpdate(req.body.idFromJSFile, {
-                todo: req.body.titleFromJSFile, 
-                todoInfo: req.body.bodyFromJSFile,
-                completed: req.body.statusFromJSFile
+                await Todo.findByIdAndUpdate(req.params.id, {
+                todo: req.body.todoItem, 
+                todoInfo: req.body.todoInfo,
+                completed: req.body.completed
             })
                 console.log('Edited Todo')
-                res.json('Edited It')
+                res.redirect('/todos')
             }
         } catch(error) {
           console.error(error)
         }
     },
     deleteTodo: async (req, res)=>{
-        console.log(req.body.todoIdFromJSFile)
+        console.log(req.params.id)
         try{
-            await Todo.findOneAndDelete({_id:req.body.todoIdFromJSFile})
+            await Todo.findOneAndDelete({_id:req.params.id})
             console.log('Deleted Todo')
-            res.json('Deleted It')
+            res.redirect('/todos')
         }catch(err){
             console.log(err)
         }
