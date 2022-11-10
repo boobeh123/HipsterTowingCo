@@ -33,7 +33,8 @@
                 <section class="card-content">
                     <h2>Edit your task</h2>
                     <% todos.forEach( el => { %>
-                    <form action="/todos/<%=el._id%>" data-id="<%=el._id%>" method="POST">
+                    <form class="col-1" action="/todos/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST">
+                    <!-- <form action="/todos/<%=el._id%>" data-id="<%=el._id%>" method="POST"> -->
                         <label for="title">Title:</label>
                         <input type="text" placeholder="(e.g.) Schedule, Chores, Exercise," name="todoItem" class="margin" value="<%=el.todo%>" autofocus>
                         <label for="description">Description:</label>
@@ -43,7 +44,7 @@
                             <option value="true">Complete</option>
                             <option value="false">Incomplete</option>
                         </select>
-                        <button type="button" class="hoverable waves-effect waves-light btn blue-grey update" id="updateBtn">Submit</button>
+                        <button type="submit" class="hoverable waves-effect waves-light btn blue-grey">Submit</button>
                     </form>
                     <% }) %>
                 </section>
