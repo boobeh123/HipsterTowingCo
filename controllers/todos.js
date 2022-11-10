@@ -5,8 +5,8 @@ module.exports = {
     getTodos: async (req,res)=>{
         console.log(req.user)
         try{
-            const todoItems = await Todo.find({userId:req.user.id})
-            const itemsLeft = await Todo.countDocuments({userId:req.user.id,completed: false})
+            const todoItems = await Todo.find({userId:req.user.id}).lean()
+            const itemsLeft = await Todo.countDocuments({userId:req.user.id,completed: false}).lean()
             res.render('todos.ejs', {
                 todos: todoItems,
                 left: itemsLeft,
@@ -21,8 +21,8 @@ module.exports = {
     getSortedTodos: async (req,res)=>{
         console.log(req.user)
         try{
-            const todoItems = await Todo.find({userId:req.user.id}).sort({todoLevel: -1})
-            const itemsLeft = await Todo.countDocuments({userId:req.user.id,completed: false})
+            const todoItems = await Todo.find({userId:req.user.id}).sort({todoLevel: -1}).lean()
+            const itemsLeft = await Todo.countDocuments({userId:req.user.id,completed: false}).lean()
             res.render('todos.ejs', {
                 todos: todoItems,
                 left: itemsLeft,
@@ -37,8 +37,8 @@ module.exports = {
     getDueDate: async (req,res)=>{
         console.log(req.user)
         try{
-            const todoItems = await Todo.find({userId:req.user.id}).sort({todoDate: 1})
-            const itemsLeft = await Todo.countDocuments({userId:req.user.id,completed: false})
+            const todoItems = await Todo.find({userId:req.user.id}).sort({todoDate: 1}).lean()
+            const itemsLeft = await Todo.countDocuments({userId:req.user.id,completed: false}).lean()
             res.render('todos.ejs', {
                 todos: todoItems,
                 left: itemsLeft,
@@ -69,7 +69,7 @@ module.exports = {
         try{
             await Todo.findOneAndUpdate({_id:req.params.id},{
                 completed: true
-            })
+            }).lean()
             console.log('Marked Complete')
             res.redirect('/todos')
         }catch(err){
@@ -80,7 +80,7 @@ module.exports = {
         try{
             await Todo.findOneAndUpdate({_id:req.body.todoIdFromJSFile},{
                 completed: false
-            })
+            }).lean()
             console.log('Marked Incomplete')
             res.json('Marked Incomplete')
         }catch(err){
@@ -89,8 +89,8 @@ module.exports = {
     },
     editTodos: async (req, res)=>{
         try {
-            let todos = await Todo.find({_id:req.params.id})
-            let users = await User.find({_id:todos[0].userId})
+            let todos = await Todo.find({_id:req.params.id}).lean()
+            let users = await User.find({_id:todos[0].userId}).lean()
 
             if (!users) {
               res.redirect('/')
@@ -108,8 +108,8 @@ module.exports = {
         }
     },
     updateTodos: async (req, res)=>{
-        const currentUser = await User.find({_id:req.user._id})
-        const currentTodo = await Todo.find({userId:req.user._id})
+        const currentUser = await User.find({_id:req.user._id}).lean()
+        const currentTodo = await Todo.find({userId:req.user._id}).lean()
         try {
             if (!currentUser) {
                 res.redirect('/')
