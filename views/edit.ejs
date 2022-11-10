@@ -24,8 +24,8 @@
             <a href="/logout" class="hoverable waves-effect waves-light btn blue-grey lighten-4 todoBtns right">Logout</a>
         </div>
         <ul id='dropdown1' class='dropdown-content'>
-            <li class="tabs"><a href="/logout">Logout</a></li>
-          </ul>     
+            <a href="/logout"><li class="tabs">Logout</a></li>
+        </ul>
     </header>
     <main class="edit-main">
         <div class="container">
@@ -56,5 +56,8 @@
     <!-- <script type="text/javascript" src="js/main.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://kit.fontawesome.com/9f91d488b5.js" crossorigin="anonymous"></script>
+    <script>
+        M.Dropdown.init(document.querySelector('.dropdown-trigger'))
+    </script>
 </body>
 </html>
