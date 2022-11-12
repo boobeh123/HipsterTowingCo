@@ -17,47 +17,84 @@
     <!-- External css -->
     <link rel="stylesheet" href="/css/normalize.css" type="text/css">
     <link rel="stylesheet" href="/css/style.css" type="text/css">
-    <title>Get started with your list</title>
+    <title>Bo-TOW</title>
 </head>
 <body>
     <%- include('./partials/header.ejs') %>
-    <main>
-        <section class="container">
-            <h1 class="border-bottom">How to use All Pau</h1>
-            <p>Please sign in or create an account to access services.</p>
-            <p>A test account is provided on the Login page for previewing preferences.</p>
-            <p>Once signed in, locate the "Add Task" button and click it. Fill out the fields, add a date, a priority level & then click submit.</p>
-            <p>Submitted tasks appear on your dashboard. Clicking the task will expand a menu displaying additional details. Tasks can be edited, marked as complete, deleted, and sorted.</p>
-        </section>
-        <section class="container">
-            <h5 class="border-bottom">About All Pau</h1>
-            <p>All Pau To-Do List was created to help increase productivity and accountability by dividing your project into smaller objectives.</p>
-            <p>"All Pau" is a phrase used in Hawaii. It means "finished; done".</p>
-        </section>
-        <section class="container">
-            <h5 class="border-bottom">Our Mission</h1>
-            <p>To help you grow and scale through task management. With our to do list, we strive to bring convenience and inspiration.</p>
-        </section>
-        <section class="container">
-            <h5 class="border-bottom">What makes us different</h1>
-            <div class="row">
-                <div class="col s4 center-align">
-                    <i class="material-icons">unarchive</i>
-                    <h5>Open-sourced</h5>
-                    <p>Our task management platform was developed with you in mind. Every moving part is available for you to inspect and examine how this all works.</p>
-                </div>
-                <div class="col s4 center-align">
-                    <i class="material-icons">verified_user</i>
-                    <h5>Reliable</h5>
-                    <p>All Pau ensures that your account & tasks will be here long term. This data is stored into a database and your login credentials are hashed and salted with the bCrypt algorithm.</p>
-                </div>
-                <div class="col s4 center-align">
-                    <i class="material-icons">phonelink_setup</i>
-                    <h5>Responsive</h5>
-                    <p>All Pau is friendly across every screen and device. This flexibility paves the path to keep track of your tasks anywhere, anytime.</p>
-                </div>
+    <main class="index-main">
+        <div class="d-flex">
+            <section class="center-align">
+                <h1>Enrich your towing <strong class="text-primary green-text">experience</strong></h1>
+                <p>When you need roadside assistance, we are here to help. Call or create your account and schedule a tow today.</p>
+                <a href="/signup" class="btn waves-effect waves-light green accent-3">Get started</a>
+            </section>
+            <div class="slider">
+                <ul class="slides">
+                  <li>
+                    <img src="/imgs/One.JPG" alt="human-operating-flatbed-winch-on-SUV" class="responsive-img" id="firstImg">
+                  </li>
+                  <li>
+                    <img src="/imgs/Two.JPG" alt="human-operating-flatbed-winch-on-SUV" class="responsive-img">
+                  </li>
+                  <li>
+                    <img src="/imgs/Three.JPG" alt="human-operating-flatbed-winch-on-SUV" class="responsive-img">
+                  </li>
+                  <li>
+                    <img src="/imgs/Four.JPG" alt="human-operating-flatbed-winch-on-SUV" class="responsive-img">
+                  </li>
+                  <li>
+                    <img src="/imgs/Five.JPG" alt="human-operating-flatbed-winch-on-SUV" class="responsive-img">
+                  </li>
+                </ul>
               </div>
-        </section>
+            <!-- <div>
+                <img src="/imgs/Two.JPG" alt="human-operating-flatbed-winch-on-SUV" class="responsive-img">
+            </div> -->
+        </div>
+        <div class="row blue-grey lighten-4 d-flex">
+            <div class="col s12 m4 l3">
+                <div class="card large">
+                    <div class="card-image">
+                        <img src="/imgs/pexels-yan-krukov-8866721.jpg" alt="pexels-yan-krukov-8866721-headset-laptop">
+                        <span class="card-title">Customer Service</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Any company can provide towing services. What sets us apart is our open line of communication. If we are running late, about to arrive or unload, I will personally keep you in the loop.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m4 l3">
+                <div class="card large">
+                    <div class="card-image">
+                        <img src="/imgs/pexels-suntorn-somtong-1029243.jpg" alt="pexels-suntorn-somtong-1029243-variety-of-tools">
+                        <span class="card-title">Diverse Fleet</span>
+                    </div>
+                    <div class="card-content">
+                        <p>We have a wide variety of service trucks, each suited to handle different situations, vehicles & loads.</p>
+                        <p>From low clearance parking garages, motorcycles, boats, RVs, tractor-trailers, class B & C vehicles-- we do it all!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m4 l3">
+                <div class="card large">
+                    <div class="card-image">
+                    <img src="/imgs/pexels-stephan-müller-753876.jpg" alt="">
+                    <span class="card-title">Impounds</span>
+                    </div>
+                    <div class="card-content">
+                    <p>Is a vehicle abandoned on your property? We are specialized to handle private property impounds.</p>
+                    </div>
+                    <div class="card-action center-align">
+                        <a href="/signup" class="btn waves-effect waves-light blue-grey lighten-4">Tell me more</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex">
+            <div class="container">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/aTTrglc0jgw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
     </main>
     <%- include('./partials/footer.ejs') %>
     <script type="text/javascript" src="js/main.js"></script>
@@ -65,6 +102,8 @@
     <script src="https://kit.fontawesome.com/9f91d488b5.js" crossorigin="anonymous"></script>
     <script>
         M.Sidenav.init(document.querySelector('.sidenav'))
+        M.Slider.init(document.querySelector('.slider'))
+
     </script>
 </body>
 </html>
