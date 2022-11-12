@@ -20,80 +20,80 @@
 </head>
 <body>
     <%- include('./partials/header.ejs') %>
-    <h1 class="center-align" id="inDev">In development</h1>
-    <ul id="slide-out" class="sidenav">
-        <h2>Add a task</h2>
-        <form action="/todos/createTodo" method='POST'>
-              <label for="title">Title:</label>
-              <input type="text" placeholder="(e.g.) Schedule, Chores, Exercise," name="todoItem" class="margin">
-              <label for="description">Description:</label>
-              <textarea name="todoInfo" cols="30" rows="6" placeholder="(e.g) Wish dad happy birthday this weekend... Water grass before 7pm..." class="margin"></textarea>
-              <label for="todoDate">Due date:</label>
-              <input type="date" name="todoDate" class="margin">
-              <label for="todoLevel">Priority:</label>
-              <select name="todoLevel" class="margin">
-                  <option value="100">High</option>
-                  <option value="50">Medium</option>
-                  <option value="0">Low</option>
-              </select>
-              <input type="submit" class="hoverable waves-effect waves-light btn blue-grey">
-          </form>
-      </div>
-    </ul>
-    <main>
-        <div class="container">
-            <section class="container task-container">
-                <h1>Tasks</h1>
-                <div class="clearfix icon-container">
-                    <a href="/todos/" class="sort"><i class="fas fa-redo" title="Reset to Default"></i></a>
-                    <a href="/todos/sorted" class="sort"><i class="fas fa-sort marginH" title="Sort by priority"></i></a>
-                    <a href="/todos/dueDate" class="sort"><i class="far fa-calendar" title="Sort by date"></i></a>
-                </div>
-            </section>
+    <main class="todos-main">
+        <h1 class="center-align" id="inDev">In development</h1>
+        <ul id="slide-out" class="sidenav">
+            <h2>Add a task</h2>
+            <form action="/todos/createTodo" method='POST'>
+                  <label for="title">Title:</label>
+                  <input type="text" placeholder="(e.g.) Schedule, Chores, Exercise," name="todoItem" class="margin">
+                  <label for="description">Description:</label>
+                  <textarea name="todoInfo" cols="30" rows="6" placeholder="(e.g) Wish dad happy birthday this weekend... Water grass before 7pm..." class="margin"></textarea>
+                  <label for="todoDate">Due date:</label>
+                  <input type="date" name="todoDate" class="margin">
+                  <label for="todoLevel">Priority:</label>
+                  <select name="todoLevel" class="margin">
+                      <option value="100">High</option>
+                      <option value="50">Medium</option>
+                      <option value="0">Low</option>
+                  </select>
+                  <input type="submit" class="hoverable waves-effect waves-light btn blue-grey">
+              </form>
+          </div>
+        </ul>
             <div class="container">
-                <ul class="collapsible">
-                    <% todos.forEach( el => { %>
-                        <li class='todoItem' data-id='<%=el._id%>'>
-                            <div class="collapsible-header container">
-                                    <form class="col-1" action="/todos/markComplete/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST">
-                                        <label>
-                                            <input type="checkbox" class="checkbox" onChange="this.form.submit()"/>
-                                            <span title="Mark as complete"></span>
-                                        </label>
-                                    </form>
-                                    <span data-id='<%=el._id%>' class='<%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
-                                    <form class="col-1" action="/todos/deleteTodo/<%=el._id%>?_method=DELETE" data-id="<%=el._id%>" method="POST"> 
-                                        <button type="submit" title="Delete Todo" class="hoverable waves-effect waves-light btn red">Delete</button>
-                                    </form>
-                                </div class="margin border-bottom">
-                                <div class="collapsible-body">
-                                    <div class="margin border-bottom">
-                                        <span class="bold">Title:</span>
-                                        <span class='marginH <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+                <section class="container task-container">
+                    <h1>Tasks</h1>
+                    <div class="clearfix icon-container">
+                        <a href="/todos/" class="sort"><i class="fas fa-redo" title="Reset to Default"></i></a>
+                        <a href="/todos/sorted" class="sort"><i class="fas fa-sort marginH" title="Sort by priority"></i></a>
+                        <a href="/todos/dueDate" class="sort"><i class="far fa-calendar" title="Sort by date"></i></a>
+                    </div>
+                </section>
+                <div class="container">
+                    <ul class="collapsible">
+                        <% todos.forEach( el => { %>
+                            <li class='todoItem' data-id='<%=el._id%>'>
+                                <div class="collapsible-header container">
+                                        <form class="col-1" action="/todos/markComplete/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST">
+                                            <label>
+                                                <input type="checkbox" class="checkbox" onChange="this.form.submit()"/>
+                                                <span title="Mark as complete"></span>
+                                            </label>
+                                        </form>
+                                        <span data-id='<%=el._id%>' class='<%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+                                        <form class="col-1" action="/todos/deleteTodo/<%=el._id%>?_method=DELETE" data-id="<%=el._id%>" method="POST"> 
+                                            <button type="submit" title="Delete Todo" class="hoverable waves-effect waves-light btn red">Delete</button>
+                                        </form>
+                                    </div class="margin border-bottom">
+                                    <div class="collapsible-body">
+                                        <div class="margin border-bottom">
+                                            <span class="bold">Title:</span>
+                                            <span class='marginH <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+                                        </div>
+                                        <div class="margin border-bottom">
+                                            <span class="bold">Priority:</span>
+                                            <span class='marginH priority <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoLevel %></span>
+                                        </div>
+                                        <div class="margin border-bottom">
+                                            <span class="bold">Due date:</span>
+                                            <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= moment(el.todoDate).format('LL') %></p>
+                                        </div>
+                                        <div class="margin border-bottom">
+                                            <span class="bold">Description:</span>
+                                            <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoInfo %></p>
+                                        </div>
+                                        <div class="margin">
+                                            <a href="/todos/edit/<%=el._id%>" class="hoverable waves-effect waves-light btn blue-grey" title="Edit Todo"><i class="fas fa-edit"></i></a>
+                                        </div>
                                     </div>
-                                    <div class="margin border-bottom">
-                                        <span class="bold">Priority:</span>
-                                        <span class='marginH priority <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoLevel %></span>
-                                    </div>
-                                    <div class="margin border-bottom">
-                                        <span class="bold">Due date:</span>
-                                        <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= moment(el.todoDate).format('LL') %></p>
-                                    </div>
-                                    <div class="margin border-bottom">
-                                        <span class="bold">Description:</span>
-                                        <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoInfo %></p>
-                                    </div>
-                                    <div class="margin">
-                                        <a href="/todos/edit/<%=el._id%>" class="hoverable waves-effect waves-light btn blue-grey" title="Edit Todo"><i class="fas fa-edit"></i></a>
-                                    </div>
-                                </div>
-                            </li>
-                        <% }) %>    
-                    </ul>
+                                </li>
+                            <% }) %>    
+                        </ul>
+                    </div>
                 </div>
-            </div>
     </main>
-            <%- include('./partials/footer.ejs') %>
+    <%- include('./partials/footer.ejs') %>
     <script type="text/javascript" src="js/main.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://kit.fontawesome.com/9f91d488b5.js" crossorigin="anonymous"></script>
