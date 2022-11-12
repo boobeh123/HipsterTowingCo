@@ -63,11 +63,6 @@ strong, .bold {
 cite, em {
     font-style: italic;
 }
-.brand-logo {
-    color: #fefefe;
-    font-family: Lato;
-    cursor: pointer;
-}
 /**************************************************************
 * Links
 ***************************************************************/
@@ -78,7 +73,7 @@ a {
     color: #fefefe;
 }
 .fa-github:hover {
-    color: #333;
+    color: #fefefe;
 }
 .fa-github:active {
     transform: translateY(-4.5px);
@@ -86,13 +81,13 @@ a {
 /**************************************************************
 *Header
 ***************************************************************/
-.brand-logo {
-    color: #fefefe;
+.index-header nav .nav-wrapper .brand-logo {
+    color: black;
     font-family: Lato;
+    font-weight: 700;
 }
-nav, 
-.page-footer {
-    background-color: #202225;
+nav {
+    background-color: transparent;
 }
 nav ul {
     margin-right: 1rem;
@@ -122,18 +117,67 @@ section {
 .edit-main .container .card .card-content form select {
     display: block;
 }
+.green-text {
+    color: #00e676 !important; 
+}
+.index-main .d-flex {
+    border-bottom: 1px solid rgba(0,0,0, .25);
+    padding: 2rem 0;
+}
+.index-main .d-flex section {
+    padding-bottom: 2rem;
+}
+.index-main .d-flex .slider {
+    height: auto !important;
+}
+.index-main .d-flex .slider .indicators {
+    display: none;
+}
+.index-main .row .col .card {
+    border-radius: 1rem;
+}
+.index-main .row .col .card-image {
+    border-radius: 1rem 1rem 0 0;
+}
+.index-main .row .col .card-action {
+    border-radius: 0 0 1rem 1rem;
+} 
+.index-main .row .col {
+    padding: 1rem 0;
+}
+
+.index-main .row .col .card .card-title {
+    width: 100%;
+    text-align: center;
+    font-weight: 700;
+}
+.index-main .container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0;
+}
 /**************************************************************
 * Footer
 ***************************************************************/
 .page-footer {
     padding-top: 0;
+    background-color: transparent;
+}
+.footer-copyright {
+    background-color: transparent !important;
+}
+.page-footer .footer-copyright * {
+    color: black;
+}
+.page-footer .footer-copyright .fa-github:hover {
+    color: #fefefe;
 }
 /**************************************************************
 * index.ejs + login + signup (prev code)
 ***************************************************************/
  .index-header {
     display: flex;
-    background-color: #202225;
+    background-color: transparent;
     justify-content: space-between;
 }
 .index-header .btn {
@@ -160,7 +204,7 @@ section {
     background-color: #333;
 }
 .sidenav {
-    background-color: #202225;
+    background-color: #fefefe;
 }
 .sidenav h2 {
     font-size: 2rem;
@@ -240,8 +284,11 @@ section {
         display: inline-block;
     }
 
-    body {
-        overflow: hidden;
+    .index-main .d-flex {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 0;
     }
 
 }
@@ -254,6 +301,11 @@ section {
     }
     .index-header .nav-wrapper ul li a {
         margin: 1rem 0.25rem 0 0.25rem;
+    }
+
+    .index-main .d-flex .slider .slides li #firstImg {
+        background-repeat: no-repeat;
+        background-position: top;
     }
 
 }
