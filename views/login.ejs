@@ -17,7 +17,7 @@
     <!-- External css -->
     <link rel="stylesheet" href="/css/normalize.css" type="text/css">
     <link rel="stylesheet" href="/css/style.css" type="text/css">
-    <title>Log in to My To-do list</title>
+    <title>Log in to Bo-TOW</title>
 </head>
 <body>
     <%- include('./partials/header.ejs') %>
@@ -46,15 +46,13 @@
                     <form action="/login" method="POST">
                         <input type="email" name="email" placeholder="Email" autofocus required autocomplete='email'>
                         <input type="password" name="password" placeholder="Password" required autocomplete='current-password'>
-                        <button type="submit" class="btn waves-effect waves-light blue-grey hoverable">Submit</button>
+                        <button type="submit" class="btn waves-effect waves-light green accent-3 hoverable">Submit</button>
                     </form>
                 </div>
             </div>
             <div class="card">
                 <section class="card-content">
                     <h1 class="border-bottom center-align">Guidelines</h1>
-                    <p>If clicking the submit button does not process:</p>
-                    <p>Press the "Enter" key after typing credentials.</p>
                     <ul>
                         <li><span>Username: user@gmail.com</span></li> 
                         <li><span>Password: password</span></li> 
