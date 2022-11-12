@@ -52,7 +52,24 @@ main {
     color: #842029;
     background-color: #f8d7da;
     border: 1px solid #f5c2c7;
-
+}
+.margin {
+    margin: 1rem 0;
+}
+.marginH {
+    margin: 0 1rem;
+}
+.marginT {
+    margin-top: 1rem;
+}
+select {
+    display: block;
+    background-color: #202225;
+    color: #fefefe;
+}
+.completed {
+    text-decoration: line-through;
+    color: gray;
 }
 /**************************************************************
 * Typography
@@ -69,9 +86,6 @@ cite, em {
 a {
     text-decoration: none;
 }
-.fa-github {
-    color: #fefefe;
-}
 .fa-github:hover {
     color: #fefefe;
 }
@@ -81,7 +95,8 @@ a {
 /**************************************************************
 *Header
 ***************************************************************/
-.index-header nav .nav-wrapper .brand-logo {
+/* partials - header.ejs */
+.partial-header nav .nav-wrapper .brand-logo {
     color: black;
     font-family: Lato;
     font-weight: 700;
@@ -95,12 +110,9 @@ nav ul {
 /**************************************************************
 * Main
 ***************************************************************/
-section {
-    padding-bottom: 0.5rem;
-}
+/* Login.ejs & signup.ejs */
 .login-main, 
 .signup-main {
-    /* border: 2px solid red; */
     margin: 2rem auto;
 }
 .login-main ul li {
@@ -114,9 +126,13 @@ section {
 .signup-main .card form .btn {
     width: 100%;
 }
+
+/* Edit.ejs */
 .edit-main .container .card .card-content form select {
     display: block;
 }
+
+/* Index.ejs */
 .green-text {
     color: #00e676 !important; 
 }
@@ -145,7 +161,6 @@ section {
 .index-main .row .col {
     padding: 1rem 0;
 }
-
 .index-main .row .col .card .card-title {
     width: 100%;
     text-align: center;
@@ -159,9 +174,11 @@ section {
 /**************************************************************
 * Footer
 ***************************************************************/
+/* partials - footer.ejs */
 .page-footer {
     padding-top: 0;
     background-color: transparent;
+    border-top: 1px solid rgba(0,0,0, .25);
 }
 .footer-copyright {
     background-color: transparent !important;
@@ -173,26 +190,44 @@ section {
     color: #fefefe;
 }
 /**************************************************************
-* index.ejs + login + signup (prev code)
+* Media queries
 ***************************************************************/
- .index-header {
-    display: flex;
-    background-color: transparent;
-    justify-content: space-between;
+@media screen and (min-device-width: 565px) {
+
+    .dropdown-trigger {
+        display: none;
+    }
+
+    .todoBtns {
+        display: inline-block;
+    }
+
+    .index-main .d-flex {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 0;
+    }
+
 }
-.index-header .btn {
-    margin-top: 1.25rem;
-    background-color: #202225;
-    border: 1px solid #999
-}
-.index-header div {
-    margin-right: 1rem; 
-}
-.index-header > a {
-    margin-left: 1rem; 
+
+@media screen and (min-device-width: 1024px) {
+
+    .partial-header .nav-wrapper .brand-logo {
+        margin-left: 1rem;    
+    }
+    .partial-header .nav-wrapper ul li a {
+        margin: 1rem 0.25rem;
+    }
+
+    .index-main .d-flex .slider .slides li #firstImg {
+        background-repeat: no-repeat;
+        background-position: top;
+    }
+
 }
 /**************************************************************
-* Main - todos.ejs (prev code)
+* Todos.ejs Previous code
 ***************************************************************/
 .dropdown-content li {
     background-color: #999;
@@ -218,15 +253,6 @@ section {
 .sidenav input,
 .sidenav textarea {
     color: #fefefe;
-}
-.margin {
-    margin: 1rem 0;
-}
-.marginH {
-    margin: 0 1rem;
-}
-.marginT {
-    margin-top: 1rem;
 }
 .sidenav select {
     display: block;
@@ -268,54 +294,10 @@ section {
     color: black;
     width: 100%;
 }
-.border-bottom {
-    border-bottom: 2px solid #333;
-}
-/**************************************************************
-* Media queries
-***************************************************************/
-@media screen and (min-device-width: 565px) {
-
-    .dropdown-trigger {
-        display: none;
-    }
-
-    .todoBtns {
-        display: inline-block;
-    }
-
-    .index-main .d-flex {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        padding: 0 0;
-    }
-
-}
-
-@media screen and (min-device-width: 1024px) {
-
-    .index-header .nav-wrapper .brand-logo {
-        margin-left: 1rem;
-    
-    }
-    .index-header .nav-wrapper ul li a {
-        margin: 1rem 0.25rem 0 0.25rem;
-    }
-
-    .index-main .d-flex .slider .slides li #firstImg {
-        background-repeat: no-repeat;
-        background-position: top;
-    }
-
-}
-/**************************************************************
-* Previous styles
-***************************************************************/
-.completed {
-    text-decoration: line-through;
-    color: gray;
-}
-.not {
-    
+#inDev {
+    border: 2px solid red;
+    border-radius: 6px;
+    width: 50%;
+    margin: 0 auto;
+    padding: 5rem;
 }
