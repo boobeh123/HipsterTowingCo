@@ -19,19 +19,8 @@
     <title>Organize projects into small tasks</title>
 </head>
 <body>
-    <header class="index-header">
-        <a href="/todos"><h1 class="brand-logo clearfix">// All Pau</h1></a>
-        <div>
-            <a class='dropdown-trigger btn right' href='#' data-target='dropdown1'>&#9776;</a>
-            <a href="/logout" class="hoverable waves-effect waves-light btn blue-grey lighten-4 todoBtns right">Logout</a>
-            <a href="#" data-target="slide-out" class="sidenav-trigger hoverable waves-effect waves-light btn blue-grey todoBtns right">Add task</a>
-        </div>
-        <ul id='dropdown1' class='dropdown-content'>
-            <a href="#" data-target="slide-out" class="sidenav-trigger"><li class="tabs">Add task</a></li>
-            <li class="divider" tabindex="-1"></li>
-            <a href="/logout"><li class="tabs">Logout</a></li>
-          </ul>     
-    </header>
+    <%- include('./partials/header.ejs') %>
+    <h1 class="center-align" id="inDev">In development</h1>
     <ul id="slide-out" class="sidenav">
         <h2>Add a task</h2>
         <form action="/todos/createTodo" method='POST'>
@@ -66,46 +55,45 @@
                     <% todos.forEach( el => { %>
                         <li class='todoItem' data-id='<%=el._id%>'>
                             <div class="collapsible-header container">
-                                <!-- <Span> ( & <label> ? ) required to display checkbox inputs w/ MaterializeCSS -->
-                                <form class="col-1" action="/todos/markComplete/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST">
-                                    <label>
-                                        <input type="checkbox" class="checkbox" onChange="this.form.submit()"/>
-                                        <span title="Mark as complete"></span>
-                                    </label>
-                                </form>
-                                <span data-id='<%=el._id%>' class='<%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
-                                <form class="col-1" action="/todos/deleteTodo/<%=el._id%>?_method=DELETE" data-id="<%=el._id%>" method="POST"> 
-                                    <button type="submit" title="Delete Todo" class="hoverable waves-effect waves-light btn red">Delete</button>
-                                </form>
-                            </div class="margin border-bottom">
-                            <div class="collapsible-body">
-                                <div class="margin border-bottom">
-                                    <span class="bold">Title:</span>
-                                    <span class='marginH <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+                                    <form class="col-1" action="/todos/markComplete/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST">
+                                        <label>
+                                            <input type="checkbox" class="checkbox" onChange="this.form.submit()"/>
+                                            <span title="Mark as complete"></span>
+                                        </label>
+                                    </form>
+                                    <span data-id='<%=el._id%>' class='<%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+                                    <form class="col-1" action="/todos/deleteTodo/<%=el._id%>?_method=DELETE" data-id="<%=el._id%>" method="POST"> 
+                                        <button type="submit" title="Delete Todo" class="hoverable waves-effect waves-light btn red">Delete</button>
+                                    </form>
+                                </div class="margin border-bottom">
+                                <div class="collapsible-body">
+                                    <div class="margin border-bottom">
+                                        <span class="bold">Title:</span>
+                                        <span class='marginH <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+                                    </div>
+                                    <div class="margin border-bottom">
+                                        <span class="bold">Priority:</span>
+                                        <span class='marginH priority <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoLevel %></span>
+                                    </div>
+                                    <div class="margin border-bottom">
+                                        <span class="bold">Due date:</span>
+                                        <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= moment(el.todoDate).format('LL') %></p>
+                                    </div>
+                                    <div class="margin border-bottom">
+                                        <span class="bold">Description:</span>
+                                        <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoInfo %></p>
+                                    </div>
+                                    <div class="margin">
+                                        <a href="/todos/edit/<%=el._id%>" class="hoverable waves-effect waves-light btn blue-grey" title="Edit Todo"><i class="fas fa-edit"></i></a>
+                                    </div>
                                 </div>
-                                <div class="margin border-bottom">
-                                    <span class="bold">Priority:</span>
-                                    <span class='marginH priority <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoLevel %></span>
-                                </div>
-                                <div class="margin border-bottom">
-                                    <span class="bold">Due date:</span>
-                                    <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= moment(el.todoDate).format('LL') %></p>
-                                </div>
-                                <div class="margin border-bottom">
-                                    <span class="bold">Description:</span>
-                                    <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoInfo %></p>
-                                </div>
-                                <div class="margin">
-                                    <a href="/todos/edit/<%=el._id%>" class="hoverable waves-effect waves-light btn blue-grey" title="Edit Todo"><i class="fas fa-edit"></i></a>
-                                </div>
-                            </div>
-                        </li>
-                    <% }) %>    
-                </ul>
+                            </li>
+                        <% }) %>    
+                    </ul>
+                </div>
             </div>
-        </div>
     </main>
-    <%- include('./partials/footer.ejs') %>
+            <%- include('./partials/footer.ejs') %>
     <script type="text/javascript" src="js/main.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://kit.fontawesome.com/9f91d488b5.js" crossorigin="anonymous"></script>
