@@ -16,34 +16,15 @@
     <link rel="stylesheet" href="/css/reset.css" type="text/css">
     <link rel="stylesheet" href="/css/normalize.css" type="text/css">
     <link rel="stylesheet" href="/css/style.css" type="text/css">
-    <title>Organize projects into small tasks</title>
+    <title>Schedule a Tow</title>
 </head>
 <body>
     <%- include('./partials/header.ejs') %>
     <main class="todos-main">
-        <h1 class="center-align" id="inDev">In development</h1>
-        <ul id="slide-out" class="sidenav">
-            <h2>Add a task</h2>
-            <form action="/todos/createTodo" method='POST'>
-                  <label for="title">Title:</label>
-                  <input type="text" placeholder="(e.g.) Schedule, Chores, Exercise," name="todoItem" class="margin">
-                  <label for="description">Description:</label>
-                  <textarea name="todoInfo" cols="30" rows="6" placeholder="(e.g) Wish dad happy birthday this weekend... Water grass before 7pm..." class="margin"></textarea>
-                  <label for="todoDate">Due date:</label>
-                  <input type="date" name="todoDate" class="margin">
-                  <label for="todoLevel">Priority:</label>
-                  <select name="todoLevel" class="margin">
-                      <option value="100">High</option>
-                      <option value="50">Medium</option>
-                      <option value="0">Low</option>
-                  </select>
-                  <input type="submit" class="hoverable waves-effect waves-light btn blue-grey">
-              </form>
-          </div>
-        </ul>
+        <h1 class="center-align" id="inDev">Welcome <%=user.email%> In development</h1>
             <div class="container">
                 <section class="container task-container">
-                    <h1>Tasks</h1>
+                    <h1>History</h1>
                     <div class="clearfix icon-container">
                         <a href="/todos/" class="sort"><i class="fas fa-redo" title="Reset to Default"></i></a>
                         <a href="/todos/sorted" class="sort"><i class="fas fa-sort marginH" title="Sort by priority"></i></a>
@@ -79,19 +60,73 @@
                                             <span class="bold">Due date:</span>
                                             <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= moment(el.todoDate).format('LL') %></p>
                                         </div>
-                                        <div class="margin border-bottom">
-                                            <span class="bold">Description:</span>
-                                            <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoInfo %></p>
-                                        </div>
-                                        <div class="margin">
-                                            <a href="/todos/edit/<%=el._id%>" class="hoverable waves-effect waves-light btn blue-grey" title="Edit Todo"><i class="fas fa-edit"></i></a>
-                                        </div>
-                                    </div>
-                                </li>
-                            <% }) %>    
-                        </ul>
+                                <div class="margin border-bottom">
+                                    <span class="bold">Description:</span>
+                                    <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoInfo %></p>
+                                </div>
+                                <div class="margin">
+                                    <a href="/todos/edit/<%=el._id%>" class="hoverable waves-effect waves-light btn blue-grey" title="Edit Todo"><i class="fas fa-edit"></i></a>
+                                </div>
+                            </div>
+                        </li>
+                    <% }) %>    
+                </ul>
+            </div>
+        </div>
+        <div id="modal1" class="modal">
+            <section class="modal-content">
+                <h4 class="center-align marginB border-bottom">Provide details that will help us find you</h4>
+                <form action="/todos/createTodo" method='POST'>
+                    <h5 class="center-align">Customer</h5>
+                    <div class="locationContainer margin">
+                        <label for="contactNumber">Phone number:*</label>
+                        <input type="tel" placeholder="(800)-939-8252" name="contactNumber" class="margin">
+                        <label for="vehicleAddressPick">Pickup address:*</label>
+                        <input type="text" placeholder="2300 California Ave / i-5 Northbound after exit 4 far right shoulder" name="vehicleAddressPick" class="margin" required>
+                        <label for="vehicleAddressDrop">Dropoff address:</label>
+                        <input type="text" placeholder="Store at tow yard / Bob's Autobody" name="vehicleAddressDrop" class="margin">
+                        <label for="contactRideAlong">Ride with driver?:*</label>
+                        <select name="contactRideAlong" required>
+                            <option value="" selected>Please select an option</option>
+                            <option value="yes">Yes I will be with the vehicle</option>
+                            <option value="no">No the vehicle is unattended, key in car</option>
+                        </select>
                     </div>
-                </div>
+                    <h5 class="center-align">Vehicle</h5>
+                    <div class="vehicleContainer margin">
+                        <label for="vehicleType">Describe your vehicle:*</label>
+                        <select name="vehicleType" required>
+                            <option value="" selected>Please select an option</option>
+                            <option value="sedan">Sedan / Car</option>
+                            <option value="suv">SUV / Van</option>
+                            <option value="truck">Truck</option>
+                            <option value="motorcycle">Motorcycle</option>
+                            <option value="other">Box-truck / Heavy-duty / RV</option>
+                        </select>
+                        <select name="vehicleDoor" required>
+                            <option value="" selected>Please select an option</option>
+                            <option value="4">4-Door</option>
+                            <option value="2">2-Door</option>
+                            <option value="0">Motorcycle</option>
+                        </select>
+                        <label for="vehicleColor">Color*:</label>
+                        <input type="text" placeholder="Silver*" name="vehicleColor" class="margin" required>
+                    </div>
+                    <button type="submit" class="hoverable waves-effect waves-light btn blue lighten-3">Submit</button>
+                    <h5 class="center-align">Additional Details (optional)</h5>
+                    <div class="optionalContainer margin">
+                        <label for="vehicleYear">Year:</label>
+                        <input type="text" placeholder="2001" name="vehicleYear" class="margin">
+                        <label for="vehicleMake">Make:</label>
+                        <input type="text" placeholder="Toyota" name="vehicleMake" class="margin">
+                        <label for="vehicleModel">Model:</label>
+                        <input type="text" placeholder="Corolla" name="vehicleModel" class="margin">
+                        <label for="vehicleLocation">Pickup/Dropoff Information</label>
+                        <textarea name="vehicleLocation" cols="30" rows="6" placeholder="Key under passenger-side floormat...Unload in driveway, call after dropoff" class="margin"></textarea>
+                    </div>
+                </form>
+            </section>
+        </div>
     </main>
     <%- include('./partials/footer.ejs') %>
     <script type="text/javascript" src="js/main.js"></script>
@@ -101,6 +136,7 @@
     M.Dropdown.init(document.querySelector('.dropdown-trigger'))
     M.Sidenav.init(document.querySelector('.sidenav'))
     M.Collapsible.init(document.querySelector('.collapsible'))
+    M.Modal.init(document.querySelector('.modal'))
     </script>
 </body>
 </html>
