@@ -35,9 +35,15 @@
             <div class="card col hoverable">
                 <div class="card-content">
                     <form action="/signup" method="POST">
-                        <input type="email" name="email" placeholder="Email" autofocus autocomplete="email" required>
-                        <input type="password" name="password" placeholder="Password" autocomplete="new-password" minlength="8" required>
-                        <input type="password" name="confirmPassword" placeholder="Confirm Password" autocomplete="new-password" minlength="8" required>
+                        <label for="role">Which category best describes you?:*</label>
+                        <select name="role" required>
+                            <option value="customer" selected>Customer</option>
+                            <option value="driver">Driver</option>
+                            <option value="dispatcher">Dispatcher</option>
+                        </select>
+                        <input type="email" name="email" placeholder="Email*" autofocus autocomplete="email" required>
+                        <input type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required>
+                        <input type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required>
                         <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
                     </form>
                 </div>
