@@ -53,12 +53,20 @@ module.exports = {
     createTodo: async (req, res)=>{
         try{
             await Todo.create({
-                todo: req.body.todoItem,
                 completed: false,
                 userId: req.user.id,
-                todoInfo: req.body.todoInfo,
-                todoDate: req.body.todoDate,
-                todoLevel: req.body.todoLevel})
+                contactNumber: req.body.contactNumber,
+                vehicleAddressPick: req.body.vehicleAddressPick,
+                vehicleAddressDrop: req.body.vehicleAddressDrop,
+                contactRideAlong: req.body.contactRideAlong,
+                vehicleType: req.body.vehicleType,
+                vehicleDoor: req.body.vehicleDoor,
+                vehicleColor: req.body.vehicleColor,
+                vehicleYear: req.body.vehicleYear,
+                vehicleMake: req.body.vehicleMake,
+                vehicleModel: req.body.vehicleModel,
+                vehicleLocation: req.body.vehicleLocation,
+            })
             console.log('Todo has been added!')
             res.redirect('/todos')
         }catch(err){
