@@ -61,11 +61,13 @@ main {
 }
 .marginT {
     margin-top: 1rem;
+}.marginB {
+    margin-bottom: 1rem;
 }
 select {
     display: block;
-    background-color: #202225;
-    color: #fefefe;
+    background-color: transparent;
+    color: black;
 }
 .completed {
     text-decoration: line-through;
@@ -79,6 +81,9 @@ strong, .bold {
 }
 cite, em {
     font-style: italic;
+}
+label {
+    color: black;
 }
 /**************************************************************
 * Links
@@ -119,8 +124,12 @@ nav ul {
     list-style: inside;
 }
 .login-main .card form input,
-.signup-main .card form input {
+.signup-main .card form input,
+.signup-main .card form select {
     margin-bottom: 2rem;
+}
+.signup-main .card form select  {
+    margin-top: 0.5rem;
 }
 .login-main .card form .btn,
 .signup-main .card form .btn {
@@ -170,6 +179,24 @@ nav ul {
     display: flex;
     justify-content: center;
     padding: 2rem 0;
+}
+
+/* todos.ejs */
+.todos-main #modal1 .modal-content form select {
+    margin: 0.5rem 0 1rem 0;
+}
+.todos-main #modal1 .modal-content form .locationContainer,
+.todos-main #modal1 .modal-content form .vehicleContainer,
+.todos-main #modal1 .modal-content form .optionalContainer {
+    padding: 0 2rem;
+}
+.todos-main #modal1 .modal-content form label {
+    border-left: 1px solid rgba(230, 0, 0, 0.5); 
+    padding-left: .25rem;   
+}
+.todos-main #modal1 .modal-content form button {
+    margin-top: 0.5rem;
+    width: 100%;
 }
 /**************************************************************
 * Footer
