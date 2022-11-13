@@ -27,7 +27,7 @@
                 <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                 <ul class="right hide-on-med-and-down">
                     <% if (typeof user !== 'undefined'){ %>
-                        <li><a href="#" class="hoverable waves-effect waves-light btn blue darken-1">Profile</a></li>
+                        <li><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger">Request Tow</a></li>
                         <li><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text">Sign out</a></li>
                     <% } else { %>
                         <li><a href="/login" class="hoverable waves-effect waves-light btn transparent black-text">Login</a></li>
@@ -38,7 +38,7 @@
         </nav>    
         <ul class="sidenav" id="mobile-demo">
             <% if (typeof user !== 'undefined'){ %>
-                <li><a href="#" class="hoverable waves-effect waves-light btn blue darken-1">Profile</a></li>
+                <li><a href="#modal1" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger">Request Tow</a></li>
                 <li><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text">Sign out</a></li>
             <% } else { %>
                 <li><a href="/login" class="hoverable waves-effect waves-light btn transparent black-text">Login</a></li>
