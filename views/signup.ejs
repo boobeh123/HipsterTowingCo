@@ -22,30 +22,42 @@
 <body>
     <%- include('./partials/header.ejs') %>
     <main class="signup-main">
-        <div class="row">
-            <% if (locals.messages.errors) { %>
-                <% messages.errors.forEach( el => { %>
-                    <div class="card alert-danger">
-                        <div class="card-content">
-                            <p class="center-align"><%= el.msg %></p>
-                        </div>
+        <div class="container firstArea">
+            <section class="container">
+                <h3>Towing Reimagined</h3>
+                <p>Welcome to Bo-TOW</p>
+                <a href="/">Back to Home Page ></a>
+            </section>
+        </div>
+        <div class="container secondArea">
+            <div class="container">
+                <div class="card col hoverable">
+                    <% if (locals.messages.errors) { %>
+                        <% messages.errors.forEach( el => { %>
+                            <div id='scale-demo' class="card alert-danger scale-transition">
+                                <div class="card-content">
+                                    <span class="center-align"><%= el.msg %></span>
+                                    <button id="scale-demo-trigger" class="scale-transition float-right dismissBtn">X</button>
+                                </div>
+                            </div>
+                        <% }) %>    
+                    <% } %>
+                    <div class="card-content">
+                        <h4 class="center-align">Create an account</h4>
+                        <form action="/signup" method="POST">
+                            <label for="role">Which category best describes you?:*</label>
+                            <select name="role" required>
+                                <option value="customer" selected>Customer</option>
+                                <option value="driver">Driver</option>
+                                <option value="dispatcher">Dispatcher</option>
+                            </select>
+                            <input type="email" name="email" placeholder="Email*" autofocus autocomplete="email" required>
+                            <input type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required>
+                            <input type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required>
+                            <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
+                            <p class="center-align">Already have an account? <a href='/login'>Sign In</a></p>
+                        </form>
                     </div>
-                <% }) %>    
-            <% } %>
-            <div class="card col hoverable">
-                <div class="card-content">
-                    <form action="/signup" method="POST">
-                        <label for="role">Which category best describes you?:*</label>
-                        <select name="role" required>
-                            <option value="customer" selected>Customer</option>
-                            <option value="driver">Driver</option>
-                            <option value="dispatcher">Dispatcher</option>
-                        </select>
-                        <input type="email" name="email" placeholder="Email*" autofocus autocomplete="email" required>
-                        <input type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required>
-                        <input type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required>
-                        <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
-                    </form>
                 </div>
             </div>
         </div>
