@@ -22,36 +22,30 @@
 <body>
     <%- include('./partials/header.ejs') %>
     <main class="index-main">
-        <div class="d-flex">
+        <div class="d-flex firstArea">
             <section class="center-align">
                 <h1>Enrich your towing <strong class="text-primary green-text">experience</strong></h1>
                 <p>When you need roadside assistance, we are here to help. Call or create your account and schedule a tow today.</p>
                 <a href="/signup" class="btn waves-effect waves-light green lighten-1">Get started</a>
+                <div id='scale-demo' class="black scale-transition scale-out">
+                    <p>Get <span class='big bold'>10%</span> off <span class="bold">promo code: BoTOW</span></p>
+                    <button id="scale-demo-trigger" class="transparent scale-transition">X</button>     
+                </div>
             </section>
             <div class="slider">
                 <ul class="slides">
-                  <li>
-                    <img src="/imgs/One.JPG" alt="human-operating-flatbed-winch-on-SUV" class="responsive-img" id="firstImg">
-                  </li>
-                  <li>
-                    <img src="/imgs/Two.JPG" alt="human-operating-flatbed-winch-on-SUV" class="responsive-img">
-                  </li>
-                  <li>
-                    <img src="/imgs/Three.JPG" alt="human-operating-flatbed-winch-on-SUV" class="responsive-img">
-                  </li>
-                  <li>
-                    <img src="/imgs/Four.JPG" alt="human-operating-flatbed-winch-on-SUV" class="responsive-img">
-                  </li>
-                  <li>
-                    <img src="/imgs/Five.JPG" alt="human-operating-flatbed-winch-on-SUV" class="responsive-img">
-                  </li>
+                  <li><img src="/imgs/One.JPG" alt="Wheel-lift-tow-truck-SUV-human" class="responsive-img" id="firstImg"></li>
+                  <li><img src="/imgs/Two.JPG" alt="Human-shoveling-snow-SUV" class="responsive-img"></li>
+                  <li><img src="/imgs/Three.JPG" alt="Wheel-lift-tow-truck-SUV-human-connecting-winch" class="responsive-img"></li>
+                  <li><img src="/imgs/Four.JPG" alt="Human-operating-flatbed-winch-on-SUV" class="responsive-img"></li>
+                  <li><img src="/imgs/Five.JPG" alt="SUV-loaded-onto-flatbed" class="responsive-img"></li>
                 </ul>
-              </div>
-            <!-- <div>
-                <img src="/imgs/Two.JPG" alt="human-operating-flatbed-winch-on-SUV" class="responsive-img">
-            </div> -->
+            </div>
         </div>
-        <div class="row blue-grey lighten-4 d-flex">
+        <section class="d-flex mission blue-grey lighten-4">
+            <h1 class="center-align">What makes us different</h1>
+        </section>
+        <div class="row blue-grey lighten-4 d-flex secondArea">
             <div class="col s12 m4 l3">
                 <div class="card large">
                     <div class="card-image">
@@ -71,7 +65,7 @@
                     </div>
                     <div class="card-content">
                         <p>We have a wide variety of service trucks, each suited to handle different situations, vehicles & loads.</p>
-                        <p>From low clearance parking garages, motorcycles, boats, RVs, tractor-trailers, class B & C vehicles-- we do it all!</p>
+                        <p>From low clearance parking garages, motorcycles, boats, RVs, tractor-trailers, class B & C vehicles-- we have the tools to handle each job properly.</p>
                     </div>
                 </div>
             </div>
@@ -91,7 +85,7 @@
             </div>
         </div>
         <div class="d-flex">
-            <div class="container">
+            <div class="container thirdArea">
                 <iframe width="560" height="315" src="https://www.youtube.com/embed/aTTrglc0jgw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
