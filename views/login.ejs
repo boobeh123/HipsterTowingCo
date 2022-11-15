@@ -22,51 +22,46 @@
 <body>
     <%- include('./partials/header.ejs') %>
     <main class="login-main">
-        <div class="row">
-            <% if (locals.messages.errors) { %>
-                <% messages.errors.forEach( el => { %>
-                    <div class="card alert-danger">
-                        <div class="card-content">
-                            <p class="center-align"><%= el.msg %></p>
-                        </div>
+        <div class="container firstArea">
+            <section class="container">
+                <h3>Towing Reimagined</h3>
+                <p>Welcome to Bo-TOW</p>
+                <a href="/">Back to Home Page ></a>
+            </section>
+        </div>
+        <div class="container secondArea">
+            <div class="container">
+                <div class="card col hoverable">
+                    <% if (locals.messages.errors) { %>
+                        <% messages.errors.forEach( el => { %>
+                            <div id='scale-demo' class="card alert-danger scale-transition d-none">
+                                <div class="card-content">
+                                    <span class="center-align"><%= el.msg %></span>
+                                    <button id="scale-demo-trigger" class="scale-transition float-right dismissBtn">X</button>
+                                </div>
+                            </div>
+                        <% }) %>    
+                    <% } %>
+                    <% if (locals.messages.info) { %>
+                        <% messages.info.forEach( el => { %>
+                            <div id='scale-demo' class="card alert-danger scale-transition">
+                                <div class="card-content">
+                                    <span class="center-align"><%= el.msg %></span>
+                                    <button id="scale-demo-trigger" class="scale-transition float-right dismissBtn">X</button>
+                                </div>
+                            </div>
+                        <% }) %>    
+                    <% } %>
+                    <div class="card-content">
+                        <h4 class="center-align">Log in to your account</h4>
+                        <form action="/login" method="POST">
+                            <input type="email" name="email" placeholder="Email*" autofocus required autocomplete='email'>
+                            <input type="password" name="password" placeholder="Password*" required autocomplete='current-password'>
+                            <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
+                            <p class="center-align">Need an account? <a href='/signup'>Sign Up</a></p>
+                        </form>
                     </div>
-                <% }) %>    
-            <% } %>
-            <% if (locals.messages.info) { %>
-                <% messages.info.forEach( el => { %>
-                    <div class="card alert-danger">
-                        <div class="card-content">
-                            <p class="center-align"><%= el.msg %></p>
-                        </div>
-                    </div>
-                <% }) %>    
-            <% } %>
-            <div class="card hoverable">
-                <div class="card-content">
-                    <form action="/login" method="POST">
-                        <input type="email" name="email" placeholder="Email*" autofocus required autocomplete='email'>
-                        <input type="password" name="password" placeholder="Password*" required autocomplete='current-password'>
-                        <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
-                    </form>
                 </div>
-            </div>
-            <div class="card">
-                <section class="card-content">
-                    <h1 class="border-bottom center-align">Guidelines</h1>
-                    <ul>
-                        <p class="bold">Customer portal</p>
-                        <li><span>Username: user@gmail.com</span></li> 
-                        <li><span>Password: password</span></li> 
-                        <li class="divider margin"></li>
-                        <p class="bold">Driver portal</p>
-                        <li><span>Username: driver@gmail.com</span></li> 
-                        <li><span>Password: password</span></li> 
-                        <li class="divider margin"></li>
-                        <p class="bold">Dispatch portal</p>
-                        <li><span>Username: dispatch@gmail.com</span></li> 
-                        <li><span>Password: password</span></li> 
-                    </ul>
-                </section>
             </div>
         </div>
     </main>
@@ -76,3 +71,35 @@
     <script src="https://kit.fontawesome.com/9f91d488b5.js" crossorigin="anonymous"></script>
 </body>
 </html>
+
+<!-- 
+    <div class="card hoverable">
+        <div class="card-content">
+            <form action="/login" method="POST">
+                <input type="email" name="email" placeholder="Email*" autofocus required autocomplete='email'>
+                <input type="password" name="password" placeholder="Password*" required autocomplete='current-password'>
+                <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
+            </form>
+        </div>
+    </div>
+    <div class="card">
+        <section class="card-content">
+            <h1 class="border-bottom center-align">Guidelines</h1>
+            <ul>
+                <p class="bold">Customer portal</p>
+                <li><span>Username: user@gmail.com</span></li> 
+                <li><span>Password: password</span></li> 
+                <li class="divider margin"></li>
+                <p class="bold">Driver portal</p>
+                <li><span>Username: driver@gmail.com</span></li> 
+                <li><span>Password: password</span></li> 
+                <li class="divider margin"></li>
+                <p class="bold">Dispatch portal</p>
+                <li><span>Username: dispatch@gmail.com</span></li> 
+                <li><span>Password: password</span></li> 
+            </ul>
+        </section>
+    </div>
+</div> 
+
+-->
