@@ -85,6 +85,9 @@ cite, em {
 label {
     color: black;
 }
+.big {
+    font-size: 2rem;
+}
 /**************************************************************
 * Links
 ***************************************************************/
@@ -115,25 +118,72 @@ nav ul {
 /**************************************************************
 * Main
 ***************************************************************/
-/* Login.ejs & signup.ejs */
-.login-main, 
-.signup-main {
+/* Login.ejs */
+.login-main {
     margin: 2rem auto;
+    border: 2px solid red;
+    background-image: url('/imgs/pexels-steve-johnson-1781710.jpg');
+    background-repeat: no-repeat;
+    background-position:top;
 }
 .login-main ul li {
     list-style: inside;
 }
-.login-main .card form input,
-.signup-main .card form input,
-.signup-main .card form select {
+.login-main .card form input {
     margin-bottom: 2rem;
 }
-.signup-main .card form select  {
-    margin-top: 0.5rem;
-}
-.login-main .card form .btn,
-.signup-main .card form .btn {
+.login-main .card form .btn {
     width: 100%;
+}
+.login-main .container {
+    border: 2px solid fuchsia;
+}
+.login-main .container .container {
+    border: 2px solid black;
+}
+
+/* signup.ejs */
+.signup-main {
+    background-image: url('/imgs/pexels-steve-johnson-1781710.jpg');
+    background-repeat: no-repeat;
+    background-position:bottom;
+}
+.signup-main .firstArea {
+    text-align: center;
+}
+.signup-main .firstArea section h3 {
+    color: #fefefe;
+}
+.signup-main .firstArea section p {
+    font-size: 1.25rem;
+    color: #999;
+}
+.signup-main .secondArea .container h4 {
+    margin: 0 0 2rem 0;
+}
+.signup-main .secondArea .container .card .card-content form input {
+    margin-bottom: 2rem;
+}
+.signup-main .secondArea .container .card .card-content form select {
+    margin: 1rem 0;  
+}
+.signup-main .secondArea .container .card .card-content form .btn {
+    width: 100%;
+    margin-bottom: 2rem;    
+}
+.signup-main .secondArea .container .card #scale-demo .card-content span {
+    display: inline-block;
+    width: 80%;
+}
+.signup-main .secondArea .container .card #scale-demo .card-content button {
+    border:0; 
+    background-color: #f8d7da;
+    border-radius: .25rem;
+    opacity: 0.5;
+    color: #000;
+}
+.signup-main .secondArea .container .card #scale-demo .card-content button:hover {
+    color: #842029;
 }
 
 /* Edit.ejs */
@@ -147,35 +197,63 @@ nav ul {
 }
 .index-main .d-flex {
     border-bottom: 1px solid rgba(0,0,0, .25);
-    padding: 2rem 0;
 }
-.index-main .d-flex section {
+.index-main .firstArea section {
     padding-bottom: 2rem;
 }
-.index-main .d-flex .slider {
+.index-main .firstArea .slider {
     height: auto !important;
 }
-.index-main .d-flex .slider .indicators {
+.index-main .firstArea .slider .indicators {
     display: none;
 }
-.index-main .row .col .card {
+.index-main .firstArea section #scale-demo {
+    display: flex;
+    flex-direction: row;
+    width: 50%;
+    margin: 2rem auto 0 auto;
+    color: #fefefe;
+}
+.index-main .firstArea section button {
+    border: 0;
+    border-radius: .25rem;
+    opacity: 0.5;
+    font-size: 1.5rem;
+    padding: 1rem 1.25rem;
+    color: #fefefe;
+}
+.index-main .firstArea section button:hover {
+    color: #999;
+}
+.index-main .mission {
+    flex-direction: column;
+    border-bottom: 1px solid #cfd8dc;
+}
+.index-main .mission h1 {
+    margin: 0;
+    padding-top: 2rem;
+}
+.index-main .secondArea {
+    padding: 0 0 1rem 0;
+}
+.index-main .secondArea .col .card {
     border-radius: 1rem;
 }
-.index-main .row .col .card-image {
+.index-main .secondArea .col .card-image {
     border-radius: 1rem 1rem 0 0;
 }
-.index-main .row .col .card-action {
+.index-main .secondArea .col .card-action {
     border-radius: 0 0 1rem 1rem;
 } 
-.index-main .row .col {
+.index-main .secondArea .col {
     padding: 1rem 0;
 }
-.index-main .row .col .card .card-title {
+.index-main .secondArea .col .card .card-title {
     width: 100%;
     text-align: center;
     font-weight: 700;
 }
-.index-main .container {
+.index-main .thirdArea {
     display: flex;
     justify-content: center;
     padding: 2rem 0;
@@ -229,11 +307,17 @@ nav ul {
         display: inline-block;
     }
 
-    .index-main .d-flex {
+    .index-main .firstArea {
         display: flex;
-        flex-direction: row;
         align-items: center;
-        padding: 0 0;
+    }
+
+    .index-main .secondArea {
+        display: flex;
+    }
+
+    .index-main .secondArea .card {
+        margin-right: 5rem;
     }
 
 }
@@ -252,6 +336,30 @@ nav ul {
         background-position: top;
     }
 
+    .signup-main {
+        background-image: url('/imgs/pexels-steve-johnson-1781710.jpg');
+        background-repeat: no-repeat;
+        background-position:bottom;
+        display: flex;
+    }
+    .signup-main .firstArea {
+        display: flex;
+    }
+    .signup-main .firstArea section {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .signup-main .secondArea {
+        display: flex;
+    }
+    .signup-main .secondArea .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
 }
 /**************************************************************
 * Todos.ejs Previous code
