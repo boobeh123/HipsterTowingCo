@@ -241,7 +241,7 @@ nav ul {
     border-radius: 0 0 1rem 1rem;
 } 
 .index-main .secondArea .col {
-    padding: 1rem 0;
+    padding: 1rem;
 }
 .index-main .secondArea .col .card .card-title {
     width: 100%;
@@ -311,8 +311,8 @@ nav ul {
         display: flex;
     }
 
-    .index-main .secondArea .card {
-        margin-right: 5rem;
+    .index-main .secondArea .col {
+        width: 100%;
     }
 
 }
