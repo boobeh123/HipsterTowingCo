@@ -42,27 +42,40 @@
                                                 <span title="Mark as complete"></span>
                                             </label>
                                         </form>
-                                        <span data-id='<%=el._id%>' class='<%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
-                                        <form class="col-1" action="/todos/deleteTodo/<%=el._id%>?_method=DELETE" data-id="<%=el._id%>" method="POST"> 
-                                            <button type="submit" title="Delete Todo" class="hoverable waves-effect waves-light btn red">Delete</button>
-                                        </form>
+                                        <span data-id='<%=el._id%>' class="<%= el.completed === true ? 'completed' : 'not' %>">
+                                            <% if ((el.vehicleYear !== null) && (el.vehicleMake.length > 0) && (el.vehicleModel.length > 0)) { %>
+                                                <%= `${el.vehicleYear} ${el.vehicleMake} ${el.vehicleModel} ${el.vehicleColor}` %>
+                                            <% } else if ((el.vehicleYear == null) && (el.vehicleMake.length > 0) && (el.vehicleModel.length > 0)) { %>
+                                                <%= `${el.vehicleMake} ${el.vehicleModel} ${el.vehicleColor}` %>
+                                            <% } else { %>
+                                                <%= `${el.vehicleDoor}-Door ${el.vehicleType} ${el.vehicleColor}` %>
+                                            <% } %>
+                                        </span>
+                                        <p <%= el.completed === true ? 'completed' : 'not' %> '><%= moment(el.createdAt).format('LLLL') %></p>
+                                        <!-- <form class="col-1" action="/todos/deleteTodo/<%=el._id%>?_method=DELETE" data-id="<%=el._id%>" method="POST"> 
+                                            <button type="submit" title="Delete Todo" class="hoverable waves-effect waves-light btn red accent-3">Delete</button>
+                                        </form> -->
                                     </div class="margin border-bottom">
                                     <div class="collapsible-body">
                                         <div class="margin border-bottom">
-                                            <span class="bold">Title:</span>
-                                            <span class='marginH <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todo %></span>
+                                            <span class="bold">Contact:</span>
+                                            <span class='marginH <%= el.completed === true ? 'completed' : 'not' %> '><%= el.contactNumber %></span>
                                         </div>
                                         <div class="margin border-bottom">
-                                            <span class="bold">Priority:</span>
-                                            <span class='marginH priority <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoLevel %></span>
+                                            <span class="bold">Ride with driver:</span>
+                                            <span class='marginH <%= el.completed === true ? 'completed' : 'not' %> '><%= el.contactRideAlong %></span>
                                         </div>
                                         <div class="margin border-bottom">
-                                            <span class="bold">Due date:</span>
-                                            <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= moment(el.todoDate).format('LL') %></p>
+                                            <span class="bold">Pickup:</span>
+                                            <span class='marginH priority <%= el.completed === true ? 'completed' : 'not' %> '><%= el.vehicleAddressPick %></span>
+                                        </div>
+                                        <div class="margin border-bottom">
+                                            <span class="bold">Dropoff:</span>
+                                            <span class='marginH priority <%= el.completed === true ? 'completed' : 'not' %> '><%= el.vehicleAddressDrop %></span>
                                         </div>
                                 <div class="margin border-bottom">
-                                    <span class="bold">Description:</span>
-                                    <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.todoInfo %></p>
+                                    <span class="bold">Notes:</span>
+                                    <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.vehicleLocation %></p>
                                 </div>
                                 <div class="margin">
                                     <a href="/todos/edit/<%=el._id%>" class="hoverable waves-effect waves-light btn blue-grey" title="Edit Todo"><i class="fas fa-edit"></i></a>
@@ -88,8 +101,8 @@
                         <label for="contactRideAlong">Ride with driver?:*</label>
                         <select name="contactRideAlong" required>
                             <option value="" selected>Please select an option</option>
-                            <option value="yes">Yes I will be with the vehicle</option>
-                            <option value="no">No the vehicle is unattended, key in car</option>
+                            <option value="Yes">Yes I will be with the vehicle</option>
+                            <option value="No">No the vehicle is unattended, key in car</option>
                         </select>
                     </div>
                     <h5 class="center-align">Vehicle</h5>
@@ -97,11 +110,11 @@
                         <label for="vehicleType">Describe your vehicle:*</label>
                         <select name="vehicleType" required>
                             <option value="" selected>Please select an option</option>
-                            <option value="sedan">Sedan / Car</option>
-                            <option value="suv">SUV / Van</option>
-                            <option value="truck">Truck</option>
-                            <option value="motorcycle">Motorcycle</option>
-                            <option value="other">Box-truck / Heavy-duty / RV</option>
+                            <option value="Sedan">Sedan / Car</option>
+                            <option value="SUV">SUV / Van</option>
+                            <option value="Truck">Truck</option>
+                            <option value="Motorcycle">Motorcycle</option>
+                            <option value="Other">Box-truck / Heavy-duty / RV</option>
                         </select>
                         <select name="vehicleDoor" required>
                             <option value="" selected>Please select an option</option>
