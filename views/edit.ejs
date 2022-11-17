@@ -33,19 +33,39 @@
         <div class="container">
             <div class="card">
                 <section class="card-content">
-                    <h2>Edit your task</h2>
+                    <h2 class="center-align">Edit your details</h2>
                     <% todos.forEach( el => { %>
                     <form class="col-1" action="/todos/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST">
                     <!-- <form action="/todos/<%=el._id%>" data-id="<%=el._id%>" method="POST"> -->
-                        <label for="title">Title:</label>
-                        <input type="text" placeholder="(e.g.) Schedule, Chores, Exercise," name="todoItem" class="margin" value="<%=el.todo%>" autofocus>
-                        <label for="description">Description:</label>
-                        <textarea name="todoInfo" cols="30" rows="6" placeholder="(e.g) Wish dad happy birthday this weekend... Water grass before 7pm..." class="margin"><%=el.todoInfo%></textarea>
-                        <label for="status">Status:</label>
-                        <select name="completed" class="margin">
-                            <option value="true">Complete</option>
-                            <option value="false">Incomplete</option>
+                        <label for="title">Phone Number:</label>
+                        <input type="tel" placeholder="(800)-939-8252" name="contactNumber" class="margin" value="<%=el.contactNumber%>" autofocus>
+                        <label for="vehicleAddressPick">Pickup address:</label>
+                        <input type="text" placeholder="2300 California Ave / i-5 Northbound after exit 4 far right shoulder" name="vehicleAddressPick" class="margin" value="<%=el.vehicleAddressPick%>">
+                        <label for="vehicleAddressDrop">Dropoff address:</label>
+                        <input type="text" placeholder="Store at tow yard / Bob's Autobody" name="vehicleAddressDrop" class="margin" value="<%=el.vehicleAddressDrop%>">
+                        <label for="contactRideAlong">Ride with driver?:</label>
+                        <select name="contactRideAlong" required class="margin">
+                            <option value="" selected>Please select an option</option>
+                            <option value="true">Yes I will be with the vehicle.</option>
+                            <option value="false">No the vehicle is unattended.</option>
                         </select>
+                        <% users.forEach( user => { %>
+                            <% if (user.role !== 'customer') { %>
+                                <label for="status">Status:</label>
+                                <select name="completed" required class="margin">
+                                    <option value="false" selected>Incomplete</option>
+                                    <option value="true">Complete</option>
+                                </select>
+                            <% } %>
+                        <% }) %>
+                        <label for="vehicleYear">Year:</label>
+                        <input type="text" placeholder="2001" name="vehicleYear" class="margin" value="<%=el.vehicleYear%>">
+                        <label for="vehicleMake">Make:</label>
+                        <input type="text" placeholder="Toyota" name="vehicleMake" class="margin" value="<%=el.vehicleMake%>">
+                        <label for="vehicleModel">Model:</label>
+                        <input type="text" placeholder="Corolla" name="vehicleModel" class="margin" value="<%=el.vehicleModel%>">
+                        <label for="vehicleLocation">Pickup/Dropoff Information</label>
+                        <textarea name="vehicleLocation" cols="30" rows="6" placeholder="Key under passenger-side floormat...Unload in driveway, call after dropoff" class="margin"><%=el.vehicleLocation%></textarea>
                         <button type="submit" class="hoverable waves-effect waves-light btn blue-grey">Submit</button>
                     </form>
                     <% }) %>
