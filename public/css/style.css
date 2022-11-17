@@ -53,6 +53,11 @@ main {
     background-color: #f8d7da;
     border: 1px solid #f5c2c7;
 }
+.alert-success {
+    color: #0f5132;
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+}
 .margin {
     margin: 1rem 0;
 }
@@ -105,7 +110,7 @@ a {
     transform: translateY(-4.5px);
 }
 /**************************************************************
-*Header
+* Header
 ***************************************************************/
 /* partials - header.ejs */
 .partial-header nav .nav-wrapper .brand-logo {
@@ -118,6 +123,34 @@ nav {
 }
 nav ul {
     margin-right: 1rem;
+}
+/**************************************************************
+* Flash
+***************************************************************/
+/* partials - flash.ejs */
+#scale-demo .card-content span {
+    display: inline-block;
+    width: 80%;
+}
+#scale-demo .card-content .dismissBtn {
+    border:0; 
+    background-color: #f8d7da;
+    border-radius: .25rem;
+    opacity: 0.5;
+    color: #000;
+}
+#scale-demo .card-content .dismissBtn:hover {
+    color: #842029;
+}
+#scale-demo .card-content .successDismissBtn {
+    border:0; 
+    background-color: #d1e7dd;
+    border-radius: .25rem;
+    opacity: 0.5;
+    color: #000;
+}
+#scale-demo .card-content .successDismissBtn:hover {
+    color: #0f5132;
 }
 /**************************************************************
 * Main
@@ -156,8 +189,7 @@ nav ul {
 .forgot-main .secondArea .container .card .card-content form input {
     margin-bottom: 2rem;
 }
-.signup-main .secondArea .container .card .card-content form select,
-.login-main .secondArea .container .card .card-content form select {
+.signup-main .secondArea .container .card .card-content form select {
     margin: 1rem 0;  
 }
 .signup-main .secondArea .container .card .card-content form .btn,
@@ -165,26 +197,6 @@ nav ul {
 .forgot-main .secondArea .container .card .card-content form .btn {
     width: 100%;
     margin-bottom: 2rem;    
-}
-.signup-main .secondArea .container .card #scale-demo .card-content span,
-.login-main .secondArea .container .card #scale-demo .card-content span,
-.forgot-main .secondArea .container .card #scale-demo .card-content span {
-    display: inline-block;
-    width: 80%;
-}
-.signup-main .secondArea .container .card #scale-demo .card-content button,
-.login-main .secondArea .container .card #scale-demo .card-content button,
-.forgot-main .secondArea .container .card #scale-demo .card-content button{
-    border:0; 
-    background-color: #f8d7da;
-    border-radius: .25rem;
-    opacity: 0.5;
-    color: #000;
-}
-.signup-main .secondArea .container .card #scale-demo .card-content button:hover,
-.login-main .secondArea .container .card #scale-demo .card-content button:hover,
-.forgot-main .secondArea .container .card #scale-demo .card-content button:hover {
-    color: #842029;
 }
 .login-main .secondArea .container .card .card-content .forgot {
     display: block;
