@@ -35,20 +35,11 @@
                             </div>
                         <% }) %>    
                     <% } %>
-                    <% if (locals.messages.info) { %>
-                        <% messages.info.forEach( el => { %>
-                            <div id='scale-demo' class="card alert-danger scale-transition">
-                                <div class="card-content">
-                                    <span class="center-align"><%= el.msg %></span>
-                                    <button id="scale-demo-trigger" class="scale-transition float-right dismissBtn">X</button>
-                                </div>
-                            </div>
-                        <% }) %>    
-                    <% } %>
                     <div class="card-content">
-                        <h4 class="center-align">Reset your password</h4>
-                        <form action="/forgot" method="POST">
-                            <input type="email" name="email" placeholder="Email*" autofocus required autocomplete='email'>
+                        <h4 class="center-align">Change your password</h4>
+                        <form action="/reset/<%=token%>" method="POST">
+                            <input type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required>
+                            <input type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required>
                             <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
                             <a class='center-align' href='/login'>Return to Log In</a>
                         </form>
