@@ -147,11 +147,13 @@ nav ul {
     color: #999;
 }
 .signup-main .secondArea .container h4,
-.login-main .secondArea .container h4 {
+.login-main .secondArea .container h4,
+.forgot-main .secondArea .container h4 {
     margin: 0 0 2rem 0;
 }
 .signup-main .secondArea .container .card .card-content form input,
-.login-main .secondArea .container .card .card-content form input {
+.login-main .secondArea .container .card .card-content form input,
+.forgot-main .secondArea .container .card .card-content form input {
     margin-bottom: 2rem;
 }
 .signup-main .secondArea .container .card .card-content form select,
@@ -159,7 +161,8 @@ nav ul {
     margin: 1rem 0;  
 }
 .signup-main .secondArea .container .card .card-content form .btn,
-.login-main .secondArea .container .card .card-content form .btn {
+.login-main .secondArea .container .card .card-content form .btn,
+.forgot-main .secondArea .container .card .card-content form .btn {
     width: 100%;
     margin-bottom: 2rem;    
 }
@@ -180,6 +183,15 @@ nav ul {
 .login-main .secondArea .container .card #scale-demo .card-content button:hover {
     color: #842029;
 }
+.login-main .secondArea .container .card .card-content .forgot {
+    display: block;
+}
+
+/* Forgot.ejs */
+.forgot-main .container .container .card .card-content form a {
+    display: block; 
+}
+
 
 /* Edit.ejs */
 .edit-main .container .card .card-content form select {
