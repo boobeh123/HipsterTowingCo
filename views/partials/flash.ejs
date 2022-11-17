@@ -1,0 +1,32 @@
+<% if (locals.messages.errors) { %>
+    <% messages.errors.forEach( el => { %>
+        <div id='scale-demo' class="card alert-danger scale-transition d-none">
+            <div class="card-content">
+                <span class="center-align"><%= el.msg %></span>
+                <button id="scale-demo-trigger" class="scale-transition float-right dismissBtn">X</button>
+            </div>
+        </div>
+    <% }) %>    
+<% } %>
+<% if (locals.messages.info) { %>
+    <% messages.info.forEach( el => { %>
+        <div id='scale-demo' class="card alert-success scale-transition">
+            <div class="card-content">
+                <span class="center-align"><%= el.msg %></span>
+                <button id="scale-demo-trigger" class="scale-transition float-right successDismissBtn">X</button>
+            </div>
+        </div>
+    <% }) %>    
+<% } %>
+<% if (locals.messages.success) { %>
+    <% messages.success.forEach( el => { %>
+        <div class="container">
+            <div id='scale-demo' class="card alert-success scale-transition">
+                <div class="card-content">
+                    <span class="center-align"><%= el.msg %></span>
+                    <button id="scale-demo-trigger" class="scale-transition float-right successDismissBtn">X</button>
+                </div>
+            </div>
+        </div>
+    <% }) %>    
+<% } %>
