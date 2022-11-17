@@ -67,13 +67,19 @@ module.exports = {
                               'If you did not request this, please ignore this email and your password will remain unchanged.\n'
                             };
                     transporter.sendMail(mailOptions, function (err) {
-                        req.flash('info', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+                        let info = [];
+                        if (info.length) {
+                            req.flash('info', info);
+                            return res.redirect('/forgot');
+                        }
+                        info.push({ msg: 'An e-mail has been sent to ' + user.email + ' with further instructions.' })
+                        req.flash('info', info);
                         done(err, 'done');
                     });
                 }
             ], function (err) {
                 if (err) console.error(err);
-                res.redirect('/');
+                res.redirect('/forgot');
             })
         }
     },
