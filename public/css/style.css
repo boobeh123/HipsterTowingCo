@@ -167,12 +167,14 @@ nav ul {
     margin-bottom: 2rem;    
 }
 .signup-main .secondArea .container .card #scale-demo .card-content span,
-.login-main .secondArea .container .card #scale-demo .card-content span {
+.login-main .secondArea .container .card #scale-demo .card-content span,
+.forgot-main .secondArea .container .card #scale-demo .card-content span {
     display: inline-block;
     width: 80%;
 }
 .signup-main .secondArea .container .card #scale-demo .card-content button,
-.login-main .secondArea .container .card #scale-demo .card-content button {
+.login-main .secondArea .container .card #scale-demo .card-content button,
+.forgot-main .secondArea .container .card #scale-demo .card-content button{
     border:0; 
     background-color: #f8d7da;
     border-radius: .25rem;
@@ -180,7 +182,8 @@ nav ul {
     color: #000;
 }
 .signup-main .secondArea .container .card #scale-demo .card-content button:hover,
-.login-main .secondArea .container .card #scale-demo .card-content button:hover {
+.login-main .secondArea .container .card #scale-demo .card-content button:hover,
+.forgot-main .secondArea .container .card #scale-demo .card-content button:hover {
     color: #842029;
 }
 .login-main .secondArea .container .card .card-content .forgot {
