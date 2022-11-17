@@ -25,16 +25,7 @@
         <div class="container secondArea">
             <div class="container">
                 <div class="card col hoverable">
-                    <% if (locals.messages.errors) { %>
-                        <% messages.errors.forEach( el => { %>
-                            <div id='scale-demo' class="card alert-danger scale-transition d-none">
-                                <div class="card-content">
-                                    <span class="center-align"><%= el.msg %></span>
-                                    <button id="scale-demo-trigger" class="scale-transition float-right dismissBtn">X</button>
-                                </div>
-                            </div>
-                        <% }) %>    
-                    <% } %>
+                    <%- include('./partials/flash.ejs') %>
                     <div class="card-content">
                         <h4 class="center-align">Change your password</h4>
                         <form action="/reset/<%=token%>" method="POST">
