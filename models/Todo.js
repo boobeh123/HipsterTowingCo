@@ -13,7 +13,7 @@ const TodoSchema = new mongoose.Schema({
     type: String,
   },
   contactRideAlong: {
-    type: String,
+    type: Boolean,
     required: true,
   },
   vehicleType: {
