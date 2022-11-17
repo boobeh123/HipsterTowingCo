@@ -127,9 +127,15 @@ module.exports = {
                 res.redirect('/')
             } else {
                 await Todo.findByIdAndUpdate(req.params.id, {
-                todo: req.body.todoItem, 
-                todoInfo: req.body.todoInfo,
-                completed: req.body.completed
+                completed: req.body.completed,
+                contactNumber: req.body.contactNumber,
+                vehicleAddressPick: req.body.vehicleAddressPick,
+                vehicleAddressDrop: req.body.vehicleAddressDrop,
+                contactRideAlong: req.body.contactRideAlong,
+                vehicleYear: req.body.vehicleYear,
+                vehicleMake: req.body.vehicleMake,
+                vehicleModel: req.body.vehicleModel,
+                vehicleLocation: req.body.vehicleLocation,
             })
                 console.log('Edited Todo')
                 res.redirect('/todos')
