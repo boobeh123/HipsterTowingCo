@@ -21,6 +21,7 @@
 <body>
     <%- include('./partials/header.ejs') %>
     <main class="todos-main">
+        <%- include('./partials/flash.ejs') %>
         <h1 class="center-align" id="inDev">Welcome <%=user.email%> In development</h1>
             <div class="container">
                 <section class="container task-container">
@@ -101,8 +102,8 @@
                         <label for="contactRideAlong">Ride with driver?:*</label>
                         <select name="contactRideAlong" required>
                             <option value="" selected>Please select an option</option>
-                            <option value="Yes">Yes I will be with the vehicle</option>
-                            <option value="No">No the vehicle is unattended, key in car</option>
+                            <option value="true">Yes I will be with the vehicle</option>
+                            <option value="false">No the vehicle is unattended, key in car</option>
                         </select>
                     </div>
                     <h5 class="center-align">Vehicle</h5>
