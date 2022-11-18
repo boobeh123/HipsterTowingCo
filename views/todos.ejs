@@ -25,24 +25,24 @@
         <h1 class="center-align" id="inDev">Welcome <%=user.email%> In development</h1>
             <div class="container">
                 <section class="container task-container">
-                    <h1>History</h1>
-                    <div class="clearfix icon-container">
+                    <h1>Dashboard</h1>
+                    <!-- <div class="clearfix icon-container">
                         <a href="/todos/" class="sort"><i class="fas fa-redo" title="Reset to Default"></i></a>
                         <a href="/todos/sorted" class="sort"><i class="fas fa-sort marginH" title="Sort by priority"></i></a>
                         <a href="/todos/dueDate" class="sort"><i class="far fa-calendar" title="Sort by date"></i></a>
-                    </div>
+                    </div> -->
                 </section>
                 <div class="container">
                     <ul class="collapsible">
                         <% todos.forEach( el => { %>
                             <li class='todoItem' data-id='<%=el._id%>'>
                                 <div class="collapsible-header container">
-                                        <form class="col-1" action="/todos/markComplete/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST">
+                                        <!-- <form class="col-1" action="/todos/markComplete/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST">
                                             <label>
                                                 <input type="checkbox" class="checkbox" onChange="this.form.submit()"/>
                                                 <span title="Mark as complete"></span>
                                             </label>
-                                        </form>
+                                        </form> -->
                                         <span data-id='<%=el._id%>' class="<%= el.completed === true ? 'completed' : 'not' %>">
                                             <% if ((el.vehicleYear !== null) && (el.vehicleMake.length > 0) && (el.vehicleModel.length > 0)) { %>
                                                 <%= `${el.vehicleYear} ${el.vehicleMake} ${el.vehicleModel} ${el.vehicleColor}` %>
@@ -79,7 +79,13 @@
                                     <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.vehicleLocation %></p>
                                 </div>
                                 <div class="margin">
-                                    <a href="/todos/edit/<%=el._id%>" class="hoverable waves-effect waves-light btn blue-grey" title="Edit Todo"><i class="fas fa-edit"></i></a>
+                                    <% if (user.role === 'customer') { %>
+                                        <a href="/todos/edit/<%=el._id%>" class="hoverable waves-effect waves-light btn blue-grey" title="Edit Details"><i class="fas fa-edit"></i></a>
+                                    <% } else if (user.role === 'driver') { %>
+                                        <p>This should be a dropdown with 3 statuses (en route, loading, en tow). This status will be visible to the driver & customer, but edited by the driver or dispatch</p>
+                                    <% } else { %>
+                                        <p>This will be 3 or more buttons (mark complete, deleted, assign). The assign action will assign a customer ticket to a driver</h1>
+                                    <% } %>
                                 </div>
                             </div>
                         </li>
@@ -115,7 +121,7 @@
                             <option value="SUV">SUV / Van</option>
                             <option value="Truck">Truck</option>
                             <option value="Motorcycle">Motorcycle</option>
-                            <option value="Other">Box-truck / Heavy-duty / RV</option>
+                            <option value="Other">Box-truck / Heavy-duty (specify in notes below)</option>
                         </select>
                         <select name="vehicleDoor" required>
                             <option value="" selected>Please select an option</option>
