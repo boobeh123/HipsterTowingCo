@@ -19,16 +19,7 @@
     <title>Edit Todo</title>
 </head>
 <body>
-    <header class="index-header">
-        <a href="/todos"><h1 class="brand-logo clearfix">// All Pau</h1></a>
-        <div>
-            <a class='dropdown-trigger btn right' href='#' data-target='dropdown1'>&#9776;</a>
-            <a href="/logout" class="hoverable waves-effect waves-light btn blue-grey lighten-4 todoBtns right">Logout</a>
-        </div>
-        <ul id='dropdown1' class='dropdown-content'>
-            <a href="/logout"><li class="tabs">Logout</a></li>
-        </ul>
-    </header>
+    <%- include('./partials/header.ejs') %>
     <main class="edit-main">
         <div class="container">
             <div class="card">
