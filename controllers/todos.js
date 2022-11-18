@@ -3,17 +3,29 @@ const User = require('../models/User')
 
 module.exports = {
     getTodos: async (req,res)=>{
-        console.log(req.user)
         try{
-            const todoItems = await Todo.find({userId:req.user.id}).lean()
-            const itemsLeft = await Todo.countDocuments({userId:req.user.id,completed: false}).lean()
-            res.render('todos.ejs', {
-                todos: todoItems,
-                left: itemsLeft,
-                user: req.user,
-                todoInfo: todoItems,
-                todoDate: todoItems,
-                todoLevel: todoItems})
+            const user = await User.findById(req.user._id)
+            if (user.role === 'customer') {
+                const todoItems = await Todo.find({userId:req.user.id}).lean()
+                const itemsLeft = await Todo.countDocuments({userId:req.user.id,completed: false}).lean()
+                res.render('todos.ejs', {
+                    todos: todoItems,
+                    left: itemsLeft,
+                    user: req.user,
+                    todoInfo: todoItems,
+                    todoDate: todoItems,
+                    todoLevel: todoItems})
+            } else {
+                const todoItems = await Todo.find().lean()
+                const itemsLeft = await Todo.countDocuments({userId:req.user.id,completed: false}).lean()
+                res.render('todos.ejs', {
+                    todos: todoItems,
+                    left: itemsLeft,
+                    user: req.user,
+                    todoInfo: todoItems,
+                    todoDate: todoItems,
+                    todoLevel: todoItems})
+            }
         }catch(err){
             console.log(err)
         }
