@@ -22,41 +22,36 @@
     <%- include('./partials/header.ejs') %>
     <main class="todos-main">
         <%- include('./partials/flash.ejs') %>
-        <h1 class="center-align" id="inDev">Welcome <%=user.email%> In development</h1>
-            <div class="container">
-                <section class="container task-container">
+        <div class="container">
+                <section class="container">
                     <h1>Dashboard</h1>
-                    <!-- <div class="clearfix icon-container">
-                        <a href="/todos/" class="sort"><i class="fas fa-redo" title="Reset to Default"></i></a>
-                        <a href="/todos/sorted" class="sort"><i class="fas fa-sort marginH" title="Sort by priority"></i></a>
-                        <a href="/todos/dueDate" class="sort"><i class="far fa-calendar" title="Sort by date"></i></a>
-                    </div> -->
+                    <p class="margin">Welcome <%=user.email%></p>
                 </section>
                 <div class="container">
                     <ul class="collapsible">
                         <% todos.forEach( el => { %>
                             <li class='todoItem' data-id='<%=el._id%>'>
                                 <div class="collapsible-header container">
-                                        <!-- <form class="col-1" action="/todos/markComplete/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST">
-                                            <label>
-                                                <input type="checkbox" class="checkbox" onChange="this.form.submit()"/>
-                                                <span title="Mark as complete"></span>
-                                            </label>
-                                        </form> -->
+                                    <span class="new badge marginB <%= el.completed === true ? 'red' : 'green' %>" data-badge-caption="<%= el.completed === true ? 'Closed' : 'Open' %>"></span>
+                                    <div class="border-bottom marginB">
+                                        <span class='bold margin <%= el.completed === true ? 'completed' : 'not' %> '><%= moment(el.createdAt).format('LLL') %></span>
+                                    </div>
+                                    <div class="center-align">
                                         <span data-id='<%=el._id%>' class="<%= el.completed === true ? 'completed' : 'not' %>">
                                             <% if ((el.vehicleYear !== null) && (el.vehicleMake.length > 0) && (el.vehicleModel.length > 0)) { %>
-                                                <%= `${el.vehicleYear} ${el.vehicleMake} ${el.vehicleModel} ${el.vehicleColor}` %>
+                                                <span class="bold">Pickup: </span><%= `${el.vehicleYear} ${el.vehicleMake} ${el.vehicleModel} ${el.vehicleColor}` %>
                                             <% } else if ((el.vehicleYear == null) && (el.vehicleMake.length > 0) && (el.vehicleModel.length > 0)) { %>
-                                                <%= `${el.vehicleMake} ${el.vehicleModel} ${el.vehicleColor}` %>
+                                                <span class="bold">Pickup: </span><%= `${el.vehicleMake} ${el.vehicleModel} ${el.vehicleColor}` %>
                                             <% } else { %>
-                                                <%= `${el.vehicleDoor}-Door ${el.vehicleType} ${el.vehicleColor}` %>
+                                                <span class="bold">Pickup: </span><%= `${el.vehicleDoor}-Door ${el.vehicleType} ${el.vehicleColor}` %>
                                             <% } %>
                                         </span>
-                                        <p <%= el.completed === true ? 'completed' : 'not' %> '><%= moment(el.createdAt).format('LLLL') %></p>
-                                        <!-- <form class="col-1" action="/todos/deleteTodo/<%=el._id%>?_method=DELETE" data-id="<%=el._id%>" method="POST"> 
-                                            <button type="submit" title="Delete Todo" class="hoverable waves-effect waves-light btn red accent-3">Delete</button>
-                                        </form> -->
-                                    </div class="margin border-bottom">
+                                    </div>
+                                    <div class="center-align">
+                                        <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver: </span><%=el.assignedTo%></p>
+                                        <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver Status: </span>En-route</p>
+                                    </div>
+                                    </div>
                                     <div class="collapsible-body">
                                         <div class="margin border-bottom">
                                             <span class="bold">Contact:</span>
@@ -82,9 +77,51 @@
                                     <% if (user.role === 'customer') { %>
                                         <a href="/todos/edit/<%=el._id%>" class="hoverable waves-effect waves-light btn blue-grey" title="Edit Details"><i class="fas fa-edit"></i></a>
                                     <% } else if (user.role === 'driver') { %>
-                                        <p>This should be a dropdown with 3 statuses (en route, loading, en tow). This status will be visible to the driver & customer, but edited by the driver or dispatch</p>
+                                        <!-- TO-DO BELOW -->
+                                        <% if (el.assigned === false) { %>
+                                        <form disabled>
+                                            <button type="submit" title="Assign call to driver" class="margin hoverable waves-effect waves-light btn green" disabled>Accept (in development)</button>
+                                        </form>
+                                        <% } %>
+                                        <form class="col-1 margin" action="/todos/assignTo/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST" disabled> 
+                                            <label for="assignedTo" class="bold">Update your status</label>
+                                            <select name="assignedTo" class="margin">
+                                            <option value="" selected>Please select a status</option>
+                                            <option value="Enroute">En-route</option>
+                                            <option value="Loading">Loading</option>
+                                            <option value="Entow">En-tow</option>
+                                        </select>
+                                        <button type="submit" title="Assign call to driver" class="margin hoverable waves-effect waves-light btn blue-grey" disabled>Update (in developement)</button>
+                                        </form>
+                                        <!-- TO-DO ABOVE -->
                                     <% } else { %>
-                                        <p>This will be 3 or more buttons (mark complete, deleted, assign). The assign action will assign a customer ticket to a driver</h1>
+                                        <div class="btnContainer">
+                                            <form class="col-1" action="/todos/markComplete/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST"> 
+                                                <button type="submit" title="Mark as complete" class="hoverable waves-effect waves-light btn green">Mark as complete</button>
+                                            </form>
+                                            <form class="col-1" action="/todos/markIncomplete/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST"> 
+                                                <button type="submit" title="Mark as incomplete" class="hoverable waves-effect waves-light btn orange">Mark as incomplete</button>
+                                            </form>
+                                            <form class="col-1" action="/todos/deleteTodo/<%=el._id%>?_method=DELETE" data-id="<%=el._id%>" method="POST"> 
+                                                <button type="submit" title="Delete Todo" class="hoverable waves-effect waves-light btn red accent-3">Delete</button>
+                                            </form>
+                                        </div>
+                                        <% if (el.assigned === false) { %>
+                                        <form class="col-1 margin" action="/todos/assignTo/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST"> 
+                                                <label for="assignedTo" class="bold">Assign call to a driver:</label>
+                                                <select name="assignedTo" class="margin">
+                                                <option value="" selected>Please select a driver</option>
+                                                <% drivers.forEach( driver => { %>
+                                                <option value="<%=driver.email%>"><%=driver.email%></option>
+                                                <% }) %>
+                                            </select>
+                                            <button type="submit" title="Assign call to driver" class="margin hoverable waves-effect waves-light btn blue-grey">Assign</button>
+                                        </form>
+                                        <% } else { %>
+                                        <form class="col-1 margin" action="/todos/unassign/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST"> 
+                                            <button type="submit" title="Unssign call to driver" class="margin hoverable waves-effect waves-light btn blue-grey">Unassign</button>
+                                        </form>
+                                        <% } %>
                                     <% } %>
                                 </div>
                             </div>
