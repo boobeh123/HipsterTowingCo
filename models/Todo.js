@@ -44,6 +44,13 @@ const TodoSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
+  assigned: {
+    type: Boolean,
+    required: true,
+  },
+  assignedTo: {
+    type: String,
+  },
   userId: {
     type: String,
     required: true
