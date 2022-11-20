@@ -282,6 +282,20 @@ nav ul {
 }
 
 /* todos.ejs */
+.todos-main .container .container .collapsible .todoItem .collapsible-header {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 0;
+}
+.todos-main .container .container .collapsible .todoItem .collapsible-body div .btnContainer {
+    display: flex;
+    flex-direction: column;
+}
+.todos-main .container .container .collapsible .todoItem .collapsible-body div form button {
+    width: 100%;
+    margin: 0.25rem
+}
+
 .todos-main #modal1 .modal-content form select {
     margin: 0.5rem 0 1rem 0;
 }
@@ -313,8 +327,17 @@ nav ul {
 .page-footer .footer-copyright * {
     color: black;
 }
-.page-footer .footer-copyright .fa-github:hover {
-    color: #fefefe;
+.page-footer .footer-copyright .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.page-footer .footer-copyright .container a {
+    border-radius: 6px;
+    opacity: 0.75;
+}
+.page-footer .footer-copyright .container a:hover {
+    opacity: 1;
 }
 /**************************************************************
 * Media queries
@@ -384,79 +407,4 @@ nav ul {
         justify-content: center;
         align-items: center;
     }
-}
-/**************************************************************
-* Todos.ejs Previous code
-***************************************************************/
-.dropdown-content li {
-    background-color: #999;
-}
-.dropdown-content li>a {
-    color: #fefefe;
-}
-.dropdown-content .tabs {
-    background-color: #333;
-}
-.sidenav {
-    background-color: #fefefe;
-}
-.sidenav h2 {
-    font-size: 2rem;
-    text-align: center;
-    color: #fefefe;
-    border: 2px solid #999;
-    border-radius: 6px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-}
-.sidenav input,
-.sidenav textarea {
-    color: #fefefe;
-}
-.sidenav select {
-    display: block;
-    background-color: #202225;
-    color: #fefefe;
-}
-.todoBtns {
-    display: none;
-    margin: 0 .25rem;
-}
-.task-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.icon-container {
-    display: flex;
-    flex-direction: row;
-}
-.icon-container * {
-    color: black;
-}
-.collapsible {
-    border: 0;
-}
-.todoItem {
-    border-bottom: 1px solid #202225;
-}
-.collapsible-header {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 0;
-}
-.collapsible-body {
-    border-bottom: 0;
-    overflow: auto;
-}
-.collapsible-body * {
-    color: black;
-    width: 100%;
-}
-#inDev {
-    border: 2px solid red;
-    border-radius: 6px;
-    width: 50%;
-    margin: 0 auto;
-    padding: 5rem;
 }
