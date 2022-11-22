@@ -51,6 +51,13 @@ const TodoSchema = new mongoose.Schema({
   assignedTo: {
     type: String,
   },
+  accepted: {
+    type: Boolean,
+    required: true,
+  },
+  driverStatus: {
+    type: String,
+  },
   userId: {
     type: String,
     required: true
