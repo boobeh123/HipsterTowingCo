@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/imgs/favicon-32x32.png"/>
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100&family=Roboto:wght@100;400;700&display=swap" rel="stylesheet">
+    <!-- MaterializeCSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- External css -->
+    <link rel="stylesheet" href="/css/reset.css" type="text/css">
+    <link rel="stylesheet" href="/css/normalize.css" type="text/css">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <title>Profile</title>
+</head>
+<body>
+    <%- include('./partials/header.ejs') %>
+    <main class="profile-main">
+        <div class="container card">
+            <section class="card-content clearfix">
+                <h1 class="border-bottom">Profile Information</h1>
+                <div>
+                    <% if (user.name === '') { %>
+                    <p><span class="bold">Name</span>: </p>
+                    <% } else { %>
+                    <p><span class="bold">Name</span>: <span><%=user.name%></span></p>
+                    <% } %>
+                    <p><span class="bold">Email</span>: <span><%=user.email%></span></p>
+                    <p><span class="bold">Account Type</span>: <span><%=user.role%></span></p>
+                    <form class="col-1" action="/profile/edit/<%=user._id%>" method="GET"> 
+                        <button type="submit" title="Edit Profile" class="hoverable waves-effect waves-light btn blue-grey"><i class="fas fa-edit"></i></button>
+                    </form>
+                </div>
+                <div>
+                    <img src="https://placekitten.com/200/300" />
+                </div>
+            </section>
+        </div>
+    </main>
+    <%- include('./partials/footer.ejs') %>
+    <script type="module" src="/js/main.js"></script>
+    <!-- <script type="text/javascript" src="js/main.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://kit.fontawesome.com/9f91d488b5.js" crossorigin="anonymous"></script>
+    <script>
+        M.Dropdown.init(document.querySelector('.dropdown-trigger'))
+    </script>
+</body>
+</html>
