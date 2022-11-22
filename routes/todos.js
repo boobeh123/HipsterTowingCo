@@ -11,8 +11,10 @@ router.put('/markComplete/:id', todosController.markComplete)
 router.put('/markIncomplete/:id', todosController.markIncomplete)
 router.get('/edit/:id', todosController.editTodos)
 router.put('/:id', todosController.updateTodos)
-router.put('/assignTo/:id', todosController.assignDriver)
-router.put('/unassign/:id', todosController.unassignDriver)
+router.put('/assignTo/:id', todosController.dispatchAssignDriver)
+router.put('/unassign/:id', todosController.dispatchUnassignDriver)
+router.put('/assignSelf/:id', todosController.driverAssignDriver)
+router.put('/accepted/:id', todosController.driverAccept)
 
 router.delete('/deleteTodo/:id', todosController.deleteTodo)
 
