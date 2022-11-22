@@ -4,6 +4,7 @@ const authController = require('../controllers/auth')
 const homeController = require('../controllers/home')
 const { ensureAuth, ensureGuest } = require('../middleware/auth')
 const passwordResetController = require('../controllers/reset')
+const todosController = require('../controllers/todos')
 
 router.get('/', homeController.getIndex)
 router.get('/login', authController.getLogin)
@@ -15,5 +16,9 @@ router.get('/forgot', passwordResetController.getPasswordReset)
 router.post('/forgot', passwordResetController.postPasswordReset)
 router.get('/reset/:token', passwordResetController.getRecoverPassword)
 router.post('/reset/:token', passwordResetController.postRecoverPassword)
+
+router.get("/profile", ensureAuth, todosController.getProfile);
+router.get("/profile/edit/:id", ensureAuth, todosController.editProfile);
+router.put("/profile/edit/:id", ensureAuth, todosController.updateProfile);
 
 module.exports = router
