@@ -128,9 +128,8 @@ nav ul {
 * Flash
 ***************************************************************/
 /* partials - flash.ejs */
-#scale-demo .card-content span {
-    display: inline-block;
-    width: 80%;
+#scale-demo .card-content {
+    text-align: center;
 }
 #scale-demo .card-content .dismissBtn {
     border:0; 
@@ -212,6 +211,9 @@ nav ul {
 .edit-main .container .card .card-content form select {
     display: block;
 }
+.edit-main .container .card .card-content form button {
+    width: 100%;
+}
 
 /* Index.ejs */
 .green-text {
@@ -285,15 +287,15 @@ nav ul {
 .todos-main .container .container .collapsible .todoItem .collapsible-header {
     display: flex;
     flex-direction: column;
-    border-bottom: 0;
 }
+
 .todos-main .container .container .collapsible .todoItem .collapsible-body div .btnContainer {
     display: flex;
     flex-direction: column;
 }
 .todos-main .container .container .collapsible .todoItem .collapsible-body div form button {
     width: 100%;
-    margin: 0.25rem
+    margin: 0.25rem 0;
 }
 
 .todos-main #modal1 .modal-content form select {
@@ -310,6 +312,17 @@ nav ul {
 }
 .todos-main #modal1 .modal-content form button {
     margin-top: 0.5rem;
+    width: 100%;
+}
+
+/* profile.ejs */
+.profile-main .card {
+    margin: 1rem auto 0 auto;
+}
+.profile-main .card .card-content p {
+    margin: 1rem;
+}
+.profile-main .card .card-content div form button {
     width: 100%;
 }
 /**************************************************************
@@ -365,6 +378,14 @@ nav ul {
         width: 100%;
     }
 
+    .profile-main .card .card-content div:nth-child(2) {
+        float: left;
+        width: 50%;
+    }
+    .profile-main .card .card-content div:nth-child(3) {
+        float: right;
+    }
+
 }
 
 @media screen and (min-device-width: 1024px) {
@@ -406,5 +427,10 @@ nav ul {
         flex-direction: column;
         justify-content: center;
         align-items: center;
+    }
+
+    .todos-main .container .container .collapsible .todoItem .collapsible-body div .btnContainer {
+        flex-direction: row;
+        justify-content: space-evenly;
     }
 }
