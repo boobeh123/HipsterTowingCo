@@ -7,16 +7,11 @@ module.exports = {
             const user = await User.findById(req.user._id)
             if (user.role === 'customer') {
                 const todoItems = await Todo.find({userId:req.user.id}).lean()
-                const itemsLeft = await Todo.countDocuments({userId:req.user.id,completed: false}).lean()
                 res.render('todos.ejs', {
                     todos: todoItems,
-                    left: itemsLeft,
-                    user: req.user,
-                    todoInfo: todoItems,
-                    todoDate: todoItems,
-                    todoLevel: todoItems})
+                    user: req.user})
             } else if (user.role === 'driver') {
-                const todoItems = await Todo.find().lean()
+                const todoItems = await Todo.find().sort({createdAt:-1}).lean()
                 const drivers = await User.findById(req.user._id).lean();
                 console.log(drivers)
                 res.render('todos.ejs', {
@@ -24,7 +19,7 @@ module.exports = {
                     user: req.user,
                     drivers: drivers})
             } else {
-                const todoItems = await Todo.find().lean()
+                const todoItems = await Todo.find().sort({createdAt:-1}).lean()
                 const drivers = await User.find({role: 'driver'}).lean();
                 res.render('todos.ejs', {
                     todos: todoItems,
@@ -41,6 +36,8 @@ module.exports = {
                 completed: false,
                 assigned: false,
                 assignedTo: '',
+                accepted: false,
+                driverStatus: '',
                 userId: req.user.id,
                 contactNumber: req.body.contactNumber,
                 vehicleAddressPick: req.body.vehicleAddressPick,
@@ -76,7 +73,7 @@ module.exports = {
             await Todo.findOneAndUpdate({_id:req.params.id},{
                 completed: false
             }).lean()
-            console.log('Marked Complete')
+            console.log('Marked Incomplete')
             res.redirect('/todos')
         } catch(err) {
             console.log(err)
@@ -124,7 +121,7 @@ module.exports = {
                 vehicleModel: req.body.vehicleModel,
                 vehicleLocation: req.body.vehicleLocation,
             })
-                console.log('Edited Todo')
+                console.log('Edited Details')
                 res.redirect('/todos')
             }
         } catch(err) {
@@ -134,13 +131,13 @@ module.exports = {
     deleteTodo: async (req, res) => {
         try {
             await Todo.findOneAndDelete({_id:req.params.id})
-            console.log('Deleted Todo')
+            console.log('Deleted call')
             res.redirect('/todos')
         } catch(err) {
             console.log(err)
         }
     },
-    assignDriver: async (req, res) => {
+    dispatchAssignDriver: async (req, res) => {
         try {
             await Todo.findOneAndUpdate({_id:req.params.id},{
                 assigned: true,
@@ -152,7 +149,7 @@ module.exports = {
             console.log(err)
         }
     },
-    unassignDriver: async (req, res) => {
+    dispatchUnassignDriver: async (req, res) => {
         console.log(req)
         try {
             await Todo.findOneAndUpdate({_id:req.params.id},{
@@ -163,6 +160,84 @@ module.exports = {
             res.redirect('/todos')
         } catch(err) {
             console.log(err)
+        }
+    },
+    driverAccept: async (req, res) => {
+        try {
+            if (req.body.driverStatus !== 'Clear') {
+                await Todo.findOneAndUpdate({_id:req.params.id},{
+                    accepted: true,
+                    driverStatus: req.body.driverStatus
+                }).lean()
+                console.log('Driver updated status')
+                res.redirect('/todos')
+            } else {
+                await Todo.findOneAndUpdate({_id:req.params.id},{
+                    completed: true,
+                    driverStatus: req.body.driverStatus
+                }).lean()
+                console.log('Driver updated status')
+                res.redirect('/todos')
+            }
+        } catch(err) {
+            console.log(err)
+        }
+    },
+    driverAssignDriver: async (req, res) => {
+        console.log(req.user.email)
+        console.log(req.params.id)
+        try {
+            await Todo.findOneAndUpdate({_id:req.params.id},{
+                assigned: true,
+                assignedTo: req.user.email
+            }).lean()
+            console.log('Assigned call to driver')
+            res.redirect('/todos')
+        } catch(err) {
+            console.log(err)
+        }
+    },
+    getProfile: async (req, res) => {
+        try {
+            const user = await User.findById(req.user._id)
+            console.log(req.user)
+            res.render("profile.ejs", {
+                user: req.user
+            });
+        } catch (err) {
+          console.log(err);
+        }
+      },
+    editProfile: async (req, res) => {
+        let user = await User.findById(req.user._id).lean()
+        if (!user) {
+            res.redirect('/')
+        }
+        if (user.email !== req.user.email) {
+            res.redirect('/')
+        } else {
+            res.render('editProfile', {
+            user:req.user})
+        }
+    },
+    updateProfile: async (req, res) => {
+        try {
+            let user = await User.findById(req.user._id)
+            if (!user) {
+                res.redirect('/')
+            }
+            if (user.email !== req.user.email) {
+                res.redirect('/')
+            } else {
+                await User.findByIdAndUpdate(req.user._id, {
+                    name: req.body.userName,
+                    email: req.body.userEmail,
+            })
+                console.log('Edited Profile Information')
+                res.redirect('/todos')
+            }
+        } catch(err) {
+          console.error(err)
         }
     }
 }    
