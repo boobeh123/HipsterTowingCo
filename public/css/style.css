@@ -357,10 +357,6 @@ nav ul {
 ***************************************************************/
 @media screen and (min-device-width: 565px) {
 
-    .dropdown-trigger {
-        display: none;
-    }
-
     .todoBtns {
         display: inline-block;
     }
