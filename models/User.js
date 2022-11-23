@@ -2,13 +2,15 @@ const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
 
 const UserSchema = new mongoose.Schema({
-  role: { type: String},
+  role: { type: String },
   email: { type: String, unique: true },
-  name: { type: String},
+  name: { type: String },
   password: String,
-  isAdmin:{type: Boolean, default: false},
+  isAdmin:{type: Boolean, default: false },
+  image: { type: String },
+  cloudinaryId: { type: String },
   resetPasswordToken: String,
-  resetPasswordExpires: Date
+  resetPasswordExpires: Date,
 })
 
 
