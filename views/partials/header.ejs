@@ -17,7 +17,7 @@
     <!-- External css -->
     <link rel="stylesheet" href="/css/normalize.css" type="text/css">
     <link rel="stylesheet" href="/css/style.css" type="text/css">
-    <title>Get started with your list</title>
+    <title>Bo-TOW</title>
 </head>
 <body>
     <header class="partial-header">
@@ -29,6 +29,8 @@
                     <% if (typeof user !== 'undefined') { %>
                         <% if (user.role === 'customer') { %>
                         <li><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger">Request Tow</a></li>
+                        <% } else { %>
+                        <li><a href="/profile" class="hoverable waves-effect waves-light btn blue darken-1">Profile</a></li>
                         <% } %>
                         <li><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text">Sign out</a></li>
                     <% } else { %>
@@ -41,7 +43,9 @@
         <ul class="sidenav" id="mobile-demo">
             <% if (typeof user !== 'undefined'){ %>
                 <% if (user.role === 'customer') { %>
-                <li><a href="#modal1" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger">Request Tow</a></li>
+                <li><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger">Request Tow</a></li>
+                <% } else { %>
+                <li><a href="/profile" class="hoverable waves-effect waves-light btn blue darken-1">Profile</a></li>
                 <% } %>
                 <li><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text">Sign out</a></li>
             <% } else { %>
@@ -50,10 +54,5 @@
             <% } %>
         </ul>
     </header>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script src="https://kit.fontawesome.com/9f91d488b5.js" crossorigin="anonymous"></script>
-    <script>
-        M.Sidenav.init(document.querySelector('.sidenav'))
-    </script>
 </body>
 </html>
