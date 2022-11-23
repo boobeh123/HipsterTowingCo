@@ -5,6 +5,7 @@ const homeController = require('../controllers/home')
 const { ensureAuth, ensureGuest } = require('../middleware/auth')
 const passwordResetController = require('../controllers/reset')
 const todosController = require('../controllers/todos')
+const upload = require("../middleware/multer");
 
 router.get('/', homeController.getIndex)
 router.get('/login', authController.getLogin)
@@ -20,5 +21,6 @@ router.post('/reset/:token', passwordResetController.postRecoverPassword)
 router.get("/profile", ensureAuth, todosController.getProfile);
 router.get("/profile/edit/:id", ensureAuth, todosController.editProfile);
 router.put("/profile/edit/:id", ensureAuth, todosController.updateProfile);
+router.post("/profile", ensureAuth, upload.single("file"), todosController.updatePhoto);
 
 module.exports = router
