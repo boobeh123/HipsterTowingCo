@@ -1,10 +1,11 @@
 const Todo = require('../models/Todo')
 const User = require('../models/User')
+const cloudinary = require("../middleware/cloudinary");
 
 module.exports = {
     getTodos: async (req,res) => {
         try {
-            const user = await User.findById(req.user._id)
+            const user = await User.findById(req.user._id).lean()
             if (user.role === 'customer') {
                 const todoItems = await Todo.find({userId:req.user.id}).lean()
                 res.render('todos.ejs', {
@@ -50,8 +51,8 @@ module.exports = {
                 vehicleMake: req.body.vehicleMake,
                 vehicleModel: req.body.vehicleModel,
                 vehicleLocation: req.body.vehicleLocation,
-            })
-            console.log('Todo has been added!')
+            }).lean()
+            console.log('Tow has been added!')
             res.redirect('/todos')
         } catch(err) {
             console.log(err)
@@ -120,7 +121,7 @@ module.exports = {
                 vehicleMake: req.body.vehicleMake,
                 vehicleModel: req.body.vehicleModel,
                 vehicleLocation: req.body.vehicleLocation,
-            })
+            }).lean()
                 console.log('Edited Details')
                 res.redirect('/todos')
             }
@@ -130,7 +131,7 @@ module.exports = {
     },
     deleteTodo: async (req, res) => {
         try {
-            await Todo.findOneAndDelete({_id:req.params.id})
+            await Todo.findOneAndDelete({_id:req.params.id}).lean()
             console.log('Deleted call')
             res.redirect('/todos')
         } catch(err) {
@@ -199,7 +200,7 @@ module.exports = {
     },
     getProfile: async (req, res) => {
         try {
-            const user = await User.findById(req.user._id)
+            const user = await User.findById(req.user._id).lean()
             console.log(req.user)
             res.render("profile.ejs", {
                 user: req.user
@@ -222,7 +223,7 @@ module.exports = {
     },
     updateProfile: async (req, res) => {
         try {
-            let user = await User.findById(req.user._id)
+            let user = await User.findById(req.user._id).lean()
             if (!user) {
                 res.redirect('/')
             }
@@ -238,6 +239,38 @@ module.exports = {
             }
         } catch(err) {
           console.error(err)
+        }
+    },
+    updatePhoto: async (req, res) => {
+        try {
+            if (req.user.image === '') {
+                const result = await cloudinary.uploader.upload(req.file.path, {
+                    width: 100, 
+                    height: 100, 
+                    gravity: "faces", 
+                    crop: "thumb"
+                });
+                await User.findByIdAndUpdate(req.user.id, {
+                    image: result.secure_url,
+                    cloudinaryId: result.public_id
+                })
+            } else {
+                await cloudinary.uploader.destroy(req.user.cloudinaryId)
+                const result = await cloudinary.uploader.upload(req.file.path, {
+                    width: 100, 
+                    height: 100, 
+                    gravity: "faces", 
+                    crop: "thumb"
+                });
+                await User.findByIdAndUpdate(req.user.id, {
+                    image: result.secure_url,
+                    cloudinaryId: result.public_id
+            })
+        }
+            console.log('Profile picture added')
+            res.redirect('/profile')
+        } catch(err) {
+            console.error(err);
         }
     }
 }    
