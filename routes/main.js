@@ -22,5 +22,6 @@ router.get("/profile", ensureAuth, todosController.getProfile);
 router.get("/profile/edit/:id", ensureAuth, todosController.editProfile);
 router.put("/profile/edit/:id", ensureAuth, todosController.updateProfile);
 router.post("/profile", ensureAuth, upload.single("file"), todosController.updatePhoto);
+router.post("/profile/setRole", ensureAuth, todosController.setRole);
 
 module.exports = router
