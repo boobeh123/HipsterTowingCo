@@ -27,8 +27,9 @@
                 <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                 <ul class="right hide-on-med-and-down">
                     <% if (typeof user !== 'undefined') { %>
-                        <% if (user.role === 'customer') { %>
+                        <% if (user.role === 'Customer') { %>
                         <li><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger">Request Tow</a></li>
+                        <li><a href="/profile" class="hoverable waves-effect waves-light btn blue-grey lighten-2">Profile</a></li>
                         <% } else { %>
                         <li><a href="/profile" class="hoverable waves-effect waves-light btn blue darken-1">Profile</a></li>
                         <% } %>
@@ -42,8 +43,9 @@
         </nav>    
         <ul class="sidenav" id="mobile-demo">
             <% if (typeof user !== 'undefined'){ %>
-                <% if (user.role === 'customer') { %>
+                <% if (user.role === 'Customer') { %>
                 <li><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger">Request Tow</a></li>
+                <li><a href="/profile" class="hoverable waves-effect waves-light btn blue-grey lighten-2">Profile</a></li>
                 <% } else { %>
                 <li><a href="/profile" class="hoverable waves-effect waves-light btn blue darken-1">Profile</a></li>
                 <% } %>
