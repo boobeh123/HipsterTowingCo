@@ -37,7 +37,7 @@ const TodoSchema = new mongoose.Schema({
   vehicleModel: {
     type: String,
   },
-  vehicleLocation: {
+  customerNotes: {
     type: String,
   },
   completed: {
@@ -51,6 +51,9 @@ const TodoSchema = new mongoose.Schema({
   assignedTo: {
     type: String,
   },
+  driverName: {
+    type: String,
+  },
   accepted: {
     type: Boolean,
     required: true,
@@ -61,6 +64,10 @@ const TodoSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: true
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   createdAt: {
     type: Date,
