@@ -193,8 +193,10 @@ module.exports = {
     },
     getProfile: async (req, res) => {
         try {
+            let allUsers = await User.find().lean();
             res.render("profile.ejs", {
-                user: req.user
+                user: req.user,
+                users: allUsers
             });
         } catch (err) {
           console.log(err);
@@ -262,6 +264,25 @@ module.exports = {
             res.redirect('/profile')
         } catch(err) {
             console.error(err);
+        }
+    },
+    setRole: async (req, res) => {
+        try {
+            let loggedInUser = await User.findById(req.user._id).lean()
+            if (!loggedInUser) {
+                res.redirect('/')
+            }
+            if (loggedInUser.email !== req.user.email) {
+                res.redirect('/')
+            } else {
+                await User.findByIdAndUpdate(req.body.userId, {
+                    role: req.body.role
+            })
+                console.log('Set account privilege')
+                res.redirect('/profile')
+            }
+        } catch(err) {
+          console.error(err)
         }
     }
 }    
