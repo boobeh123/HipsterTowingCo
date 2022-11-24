@@ -19,23 +19,14 @@
                             <option value="true">Yes I will be with the vehicle.</option>
                             <option value="false">No the vehicle is unattended.</option>
                         </select>
-                        <% users.forEach( user => { %>
-                            <% if (user.role !== 'customer') { %>
-                                <label for="status">Status:</label>
-                                <select name="completed" required class="margin">
-                                    <option value="false" selected>Incomplete</option>
-                                    <option value="true">Complete</option>
-                                </select>
-                            <% } %>
-                        <% }) %>
                         <label for="vehicleYear">Year:</label>
                         <input type="text" placeholder="2001" name="vehicleYear" class="margin" value="<%=el.vehicleYear%>">
                         <label for="vehicleMake">Make:</label>
                         <input type="text" placeholder="Toyota" name="vehicleMake" class="margin" value="<%=el.vehicleMake%>">
                         <label for="vehicleModel">Model:</label>
                         <input type="text" placeholder="Corolla" name="vehicleModel" class="margin" value="<%=el.vehicleModel%>">
-                        <label for="vehicleLocation">Pickup/Dropoff Information</label>
-                        <textarea name="vehicleLocation" cols="30" rows="6" placeholder="Key under passenger-side floormat...Unload in driveway, call after dropoff" class="margin"><%=el.vehicleLocation%></textarea>
+                        <label for="customerNotes">Pickup/Dropoff Information</label>
+                        <textarea name="customerNotes" cols="30" rows="6" placeholder="Key under passenger-side floormat...Unload in driveway, call after dropoff" class="margin"><%=el.customerNotes%></textarea>
                         <button type="submit" class="hoverable waves-effect waves-light btn blue-grey">Submit</button>
                     </form>
                     <% }) %>
