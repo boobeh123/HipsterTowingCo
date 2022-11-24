@@ -51,6 +51,8 @@ module.exports = {
                 function (token, user, done) {
                     const transporter = nodemailer.createTransport({
                         service: 'gmail',
+                        port: 465,
+                        secure: true,
                         auth: {
                             user: process.env.EMAILNAME,
                             pass: process.env.EMAILPASSWORD
