@@ -2,8 +2,8 @@
     <main class="profile-main">
         <div class="container card">
             <section class="card-content clearfix">
-                <h1 class="border-bottom">Profile Information</h1>
-                <div>
+                <h1 class="border-bottom"><a href="/todos"><i class="fas fa-chevron-left"></i></a>Profile Information</h1>
+                <div class="margin">
                     <% if (user.name === '') { %>
                     <p><span class="bold">Name</span>: </p>
                     <% } else { %>
@@ -15,9 +15,9 @@
                         <button type="submit" title="Edit Profile" class="hoverable waves-effect waves-light btn blue-grey"><i class="fas fa-edit"></i></button>
                     </form>
                 </div>
-                <div>
+                <div class="margin">
                     <% if (user.image === '') { %>
-                    <img src="https://placeholder.pics/svg/300x300" class='responsive-img' />
+                    <img src="https://placeholder.pics/svg/100x100" class='responsive-img circle' />
                     <% } else { %>
                     <img src="<%=user.image%>" class='responsive-img circle' />
                     <% } %>
