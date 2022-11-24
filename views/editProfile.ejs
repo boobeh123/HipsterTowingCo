@@ -1,8 +1,8 @@
 <%- include('./partials/header.ejs') %>
-    <main class="profile-main">
+    <main class="editprofile-main">
         <div class="container card">
             <section class="card-content clearfix">
-                <h1 class="border-bottom">Edit your profile</h1>
+                <h1 class="border-bottom"><a href="/profile"><i class="fas fa-chevron-left"></i></a>Edit your profile</h1>
                 <div>
                     <% if (user.name === '') { %>
                     <form class="col-1 margin" action="/profile/edit/<%=user._id%>?_method=PUT" data-id="<%=user._id%>" method="POST">
@@ -23,7 +23,11 @@
                     <% } %>
                 </div>
                 <div>
-                    <img src="https://placeholder.pics/svg/300x300" />
+                    <% if (user.image === '') { %>
+                    <img src="https://placeholder.pics/svg/100x100" class='responsive-img circle' />
+                    <% } else { %>
+                    <img src="<%=user.image%>" class='responsive-img circle' />
+                    <% } %>
                 </div>
             </section>
         </div>
