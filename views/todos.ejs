@@ -2,46 +2,55 @@
     <main class="todos-main">
         <%- include('./partials/flash.ejs') %>
         <div class="container">
-                <section class="container">
-                    <% if (user.name !== '') { %>
-                    <h1>Dashboard</h1>
+            <section class="container">
+                <% if (user.name !== '') { %>
+                    <h1><%=user.role%> Dashboard</h1>
                     <p class="margin">Welcome <%=user.name%></p>
                     <% } else { %>
-                    <h1>Dashboard</h1>
-                    <p class="margin">Welcome <%=user.email%></p>
-                    <% } %>
-                </section>
-                <div class="container">
-                    <ul class="collapsible">
-                        <% todos.forEach( el => { %>
-                            <li class='todoItem' data-id='<%=el._id%>'>
-                                <div class="collapsible-header">
-                                    <span class="new badge marginB <%= el.completed === true ? 'red' : 'green' %>" data-badge-caption="<%= el.completed === true ? 'Closed' : 'Open' %>"></span>
-                                    <div class="marginB">
+                        <h1><%=user.role%> Dashboard</h1>
+                        <p class="margin">Welcome <%=user.email%></p>
+                        <% } %>
+                    </section>
+                    <div class="container">
+                        <ul class="collapsible">
+                            <% todos.forEach( el => { %>
+                                <li class='todoItem' data-id='<%=el._id%>'>
+                                    <div class="collapsible-header">
+                                        <span class="new badge marginB <%= el.completed === true ? 'red' : 'green' %>" data-badge-caption="<%= el.completed === true ? 'Closed' : 'Open' %>"></span>
+                                        <div class="marginB">
+                                        <% drivers.forEach( driver => { %>
+                                            <% if ((driver._id == el.assignedTo) && (el.assigned)) { %>
+                                            <img src='<%=driver.image%>' class="center-align responsive-img circle" />
+                                                <% } %>
+                                            <% }) %>
                                         <p class='bold center-align <%= el.completed === true ? 'completed' : 'not' %> '><span class='border-bottom'><%= moment(el.createdAt).format('LLL') %></span></p>
                                     </div>
                                     <div class="center-align">
                                         <span data-id='<%=el._id%>' class="<%= el.completed === true ? 'completed' : 'not' %>">
                                             <% if ((el.vehicleYear !== null) && (el.vehicleMake.length > 0) && (el.vehicleModel.length > 0)) { %>
                                                 <span class="bold">Pickup: </span><%= `${el.vehicleYear} ${el.vehicleMake} ${el.vehicleModel} ${el.vehicleColor}` %>
-                                            <% } else if ((el.vehicleYear == null) && (el.vehicleMake.length > 0) && (el.vehicleModel.length > 0)) { %>
-                                                <span class="bold">Pickup: </span><%= `${el.vehicleMake} ${el.vehicleModel} ${el.vehicleColor}` %>
-                                            <% } else { %>
-                                                <span class="bold">Pickup: </span><%= `${el.vehicleDoor}-Door ${el.vehicleType} ${el.vehicleColor}` %>
-                                            <% } %>
-                                        </span>
-                                    </div>
+                                                <% } else if ((el.vehicleYear == null) && (el.vehicleMake.length > 0) && (el.vehicleModel.length > 0)) { %>
+                                                    <span class="bold">Pickup: </span><%= `${el.vehicleMake} ${el.vehicleModel} ${el.vehicleColor}` %>
+                                                    <% } else { %>
+                                                        <span class="bold">Pickup: </span><%= `${el.vehicleDoor}-Door ${el.vehicleType} ${el.vehicleColor}` %>
+                                                        <% } %>
+                                                    </span>
+                                                </div>
                                     <div class="center-align">
                                         <% if (el.assigned) { %>
-                                        <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver: </span><%=el.assignedTo%></p>
-                                            <% if (el.accepted) { %>
-                                            <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver Status: </span><%= el.driverStatus %></p>
+                                            <% drivers.forEach(driver => { %>
+                                                <% if (driver._id == el.assignedTo) { %>
+                                                <p style="margin: 0;" class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver</span>: <%=driver.name%></p>
+                                                <% } %>
+                                            <% }) %> 
+                                            <% if ((el.accepted) && el.driverStatus !== '') { %>
+                                            <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver Status</span>: <%= el.driverStatus %></span>
                                             <% } else { %>
-                                            <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver Status: </span>Requesting for ETA...</p>
+                                            <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver Status</span>: Requesting for ETA...</span>
                                             <% } %>
                                         <% } else { %>
-                                        <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver: </span>Waiting for available driver...</p>
-                                        <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver Status: </span>Searching for driver...</p>
+                                        <p style="margin: 0;" class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver</span>: Waiting for available driver...</p>
+                                        <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver Status</span>: Searching for driver...</span>
                                         <% } %>
                                     </div>
                                     </div>
@@ -64,34 +73,35 @@
                                         </div>
                                 <div class="margin border-bottom">
                                     <span class="bold">Notes:</span>
-                                    <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.vehicleLocation %></p>
+                                    <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.customerNotes %></p>
                                 </div>
                                 <div class="margin">
-                                    <% if (user.role === 'customer') { %>
+                                    <% if (user.role === 'Customer') { %>
+                                        <% if (el.completed === false) { %>
                                         <form class="col-1 margin" action="/todos/edit/<%=el._id%>" data-id="<%=el._id%>" method="GET"> 
                                             <button type="submit" title="Edit Details" class="margin hoverable waves-effect waves-light btn blue-grey"><i class="fas fa-edit"></i></button>
                                         </form>
-                                    <% } else if (user.role === 'driver') { %>
+                                        <% } else { %>
+                                        <form class="col-1 margin" action="/todos/edit/<%=el._id%>" data-id="<%=el._id%>" method="GET"> 
+                                            <button type="submit" title="Edit Details" class="margin hoverable waves-effect waves-light btn blue-grey" disabled><i class="fas fa-edit"></i></button>
+                                        </form>
+                                        <% } %>
+                                    <% } else if (user.role === 'Driver') { %>
                                         <% if (el.assigned === false) { %>
                                         <form class="col-1 margin" action="/todos/assignSelf/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST"> 
                                             <button type="submit" title="Assign call to driver" class="margin hoverable waves-effect waves-light btn green">Take call</button>
                                         </form>
                                         <% } %>
-                                        <% if ((el.completed) && (user.email === el.assignedTo)) { %>
+                                        <% if ((el.completed) && (user._id == el.assignedTo)) { %>
                                         <form class="col-1 margin" action="/todos/accepted/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST" disabled> 
                                             <label for="driverStatus" class="bold">Update your status</label>
                                             <select name="driverStatus" class="margin" disabled>
                                             <option value="" selected>Clear</option>
-                                            <option value="Enroute">En-route</option>
-                                            <option value="Loading">Loading</option>
-                                            <option value="Entow">En-tow</option>
-                                            <option value="Unloading">Unloading</option>
-                                            <option value="Clear">Clear</option>
                                         </select>
                                         <button type="submit" class="margin hoverable waves-effect waves-light btn blue-grey" disabled>Completed</button>
                                         </form>
                                     <% } else { %>
-                                        <h5><% if (user.email === el.assignedTo) { %></h5>
+                                        <% if (user._id == el.assignedTo) { %>
                                         <form class="col-1 margin" action="/todos/accepted/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST"> 
                                             <label for="driverStatus" class="bold">Update your status</label>
                                             <select name="driverStatus" class="margin">
@@ -115,7 +125,7 @@
                                                 <button type="submit" title="Mark as incomplete" class="hoverable waves-effect waves-light btn orange">Mark as incomplete</button>
                                             </form>
                                             <form class="col-1" action="/todos/deleteTodo/<%=el._id%>?_method=DELETE" data-id="<%=el._id%>" method="POST"> 
-                                                <button type="submit" title="Delete Todo" class="hoverable waves-effect waves-light btn red accent-3">Delete</button>
+                                                <button type="submit" title="Delete permanently" class="hoverable waves-effect waves-light btn red accent-3">Delete records</button>
                                             </form>
                                         </div>
                                         <% if (el.assigned === false) { %>
@@ -124,7 +134,11 @@
                                                 <select name="assignedTo" class="margin">
                                                 <option value="" selected>Please select a driver</option>
                                                 <% drivers.forEach( driver => { %>
-                                                <option value="<%=driver.email%>"><%=driver.email%></option>
+                                                    <% if (driver.name !== '') { %>
+                                                    <option value='<%=driver._id%>'><%=driver.name%></option>
+                                                    <% } else { %>
+                                                    <option value="<%=driver._id%>"><%=driver.email%></option>
+                                                    <% } %>
                                                 <% }) %>
                                             </select>
                                             <button type="submit" title="Assign call to driver" class="margin hoverable waves-effect waves-light btn blue-grey">Assign</button>
@@ -190,8 +204,8 @@
                         <input type="text" placeholder="Toyota" name="vehicleMake" class="margin">
                         <label for="vehicleModel">Model:</label>
                         <input type="text" placeholder="Corolla" name="vehicleModel" class="margin">
-                        <label for="vehicleLocation">Pickup/Dropoff Information</label>
-                        <textarea name="vehicleLocation" cols="30" rows="6" placeholder="Key under passenger-side floormat...Unload in driveway, call after dropoff" class="margin"></textarea>
+                        <label for="customerNotes">Pickup/Dropoff Information</label>
+                        <textarea name="customerNotes" cols="30" rows="6" placeholder="Key under passenger-side floormat...Unload in driveway, call after dropoff" class="margin"></textarea>
                     </div>
                 </form>
             </section>
