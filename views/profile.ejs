@@ -23,11 +23,37 @@
                     <% } %>
                     <form class="col-1 margin" action="/profile" method="POST" enctype="multipart/form-data">
                         <label for="file">Image:</label>
-                        <input type="file" class="margin" name="file">
+                        <input type="file" class="margin" name="file" required>
                         <button type="submit" title="Update Picture" class="hoverable waves-effect waves-light btn blue-grey">Submit</button>
                     </form>
                 </div>
             </section>
         </div>
+        <% if ((user.isAdmin) && (user.role === 'Admin')) { %>
+        <div class="container card">
+            <div class="card-content">
+                <h1 class="border-bottom">Admin Console</h1>
+                <form action="/profile/setRole" method="POST">
+                    <label for="userId">Please choose an account:</label>
+                    <select class="margin" name="userId" required>
+                        <option value="" selected>Please select one</option>
+                        <% users.forEach(element => { %> 
+                            <% if ((!element.isAdmin) && user.role === 'Admin') { %> 
+                                <option value="<%=element._id%>"><%=element.email%></option>
+                            <% } %>
+                        <% }) %>
+                    </select>
+                    <label for="role">Please choose a privilege level:</label>
+                    <select class="margin" name="role" required>
+                        <option value="" selected>Please select one</option>
+                        <option value="Dispatcher">Dispatcher</option>
+                        <option value="Driver">Driver</option>
+                        <option value="Customer">Customer</option>
+                    </select>
+                    <button type="submit" class="hoverable waves-effect waves-light btn blue-grey">Submit</button>
+                </form>
+            </div>
+        </div>
+        <% } %>
     </main>
 <%- include('./partials/footer.ejs') %>
