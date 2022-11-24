@@ -289,6 +289,11 @@ nav ul {
     flex-direction: column;
 }
 
+.todos-main .container .container .collapsible .todoItem .collapsible-header div img {
+    display: block;
+    margin: 0 auto;
+}
+
 .todos-main .container .container .collapsible .todoItem .collapsible-body div .btnContainer {
     display: flex;
     flex-direction: column;
@@ -315,15 +320,26 @@ nav ul {
     width: 100%;
 }
 
-/* profile.ejs */
-.profile-main .card {
+/* profile.ejs  */
+.profile-main .card,
+.editprofile-main .card {
     margin: 1rem auto 0 auto;
+}
+.profile-main .card .card-content {
+    display: flex;
+    flex-direction: column;
 }
 .profile-main .card .card-content p {
     margin: 1rem;
 }
-.profile-main .card .card-content div form button {
+.profile-main .card .card-content div form button,
+.editprofile-main .card .card-content div form button {
     width: 100%;
+}
+.profile-main .card .card-content div + div img,
+.editprofile-main .card .card-content div + div img {
+    display: block;
+    margin: 0 auto;
 }
 /**************************************************************
 * Footer
@@ -374,12 +390,16 @@ nav ul {
         width: 100%;
     }
 
-    .profile-main .card .card-content div:nth-child(2) {
-        float: left;
-        width: 50%;
+    .profile-main .card .card-content {
+        display: block;
     }
-    .profile-main .card .card-content div:nth-child(3) {
+    .profile-main .card .card-content div {
+        float: left;
+        width: 45%;
+    }
+    .profile-main .card .card-content div + div {
         float: right;
+        width: 45%;
     }
 
 }
