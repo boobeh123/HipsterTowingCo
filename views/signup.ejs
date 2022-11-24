@@ -14,12 +14,6 @@
                     <div class="card-content">
                         <h4 class="center-align">Create an account</h4>
                         <form action="/signup" method="POST">
-                            <label for="role">Which category best describes you?:*</label>
-                            <select name="role" required>
-                                <option value="Customer" selected>Customer</option>
-                                <option value="Driver">Driver</option>
-                                <option value="Dispatcher">Dispatcher</option>
-                            </select>
                             <input type="email" name="email" placeholder="Email*" autofocus autocomplete="email" required>
                             <input type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required>
                             <input type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required>
