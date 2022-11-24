@@ -71,7 +71,10 @@ const User = require('../models/User')
     const user = new User({
       role: req.body.role,
       email: req.body.email,
-      password: req.body.password
+      password: req.body.password,
+      name: '',
+      image: '',
+      cloudinaryId: '',
     })
   
     User.findOne({$or: [
