@@ -14,7 +14,7 @@ router.put('/:id', todosController.updateTodos)
 router.put('/assignTo/:id', todosController.dispatchAssignDriver)
 router.put('/unassign/:id', todosController.dispatchUnassignDriver)
 router.put('/assignSelf/:id', todosController.driverAssignDriver)
-router.put('/accepted/:id', todosController.driverAccept)
+router.put('/accepted/:id', todosController.driverUpdateETA)
 
 router.delete('/deleteTodo/:id', todosController.deleteTodo)
 
