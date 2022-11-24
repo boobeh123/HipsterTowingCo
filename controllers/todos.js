@@ -5,28 +5,21 @@ const cloudinary = require("../middleware/cloudinary");
 module.exports = {
     getTodos: async (req,res) => {
         try {
-            const user = await User.findById(req.user._id).lean()
-            if (user.role === 'customer') {
-                const todoItems = await Todo.find({userId:req.user.id}).lean()
+            const loggedInUser = await User.findById(req.user.id).lean()
+            const allDrivers = await User.find({role: 'Driver'}).lean();
+            if (loggedInUser.role === 'Customer') {
+                const customerRequests = await Todo.find({userId:req.user.id}).lean()
                 res.render('todos.ejs', {
-                    todos: todoItems,
-                    user: req.user})
-            } else if (user.role === 'driver') {
-                const todoItems = await Todo.find().sort({createdAt:-1}).lean()
-                const drivers = await User.findById(req.user._id).lean();
-                console.log(drivers)
-                res.render('todos.ejs', {
-                    todos: todoItems,
-                    user: req.user,
-                    drivers: drivers})
+                    todos: customerRequests,
+                    user: loggedInUser,
+                    drivers: allDrivers})
             } else {
-                const todoItems = await Todo.find().sort({createdAt:-1}).lean()
-                const drivers = await User.find({role: 'driver'}).lean();
+                const allRequests = await Todo.find().sort({createdAt:-1}).lean()
                 res.render('todos.ejs', {
-                    todos: todoItems,
-                    user: req.user,
-                    drivers: drivers})
-            }
+                    todos: allRequests,
+                    user: loggedInUser,
+                    drivers: allDrivers})
+                }
         } catch(err) {
             console.log(err)
         }
@@ -50,9 +43,9 @@ module.exports = {
                 vehicleYear: req.body.vehicleYear,
                 vehicleMake: req.body.vehicleMake,
                 vehicleModel: req.body.vehicleModel,
-                vehicleLocation: req.body.vehicleLocation,
-            }).lean()
-            console.log('Tow has been added!')
+                customerNotes: req.body.customerNotes,
+            })
+            console.log('Call has been added!')
             res.redirect('/todos')
         } catch(err) {
             console.log(err)
@@ -61,7 +54,8 @@ module.exports = {
     markComplete: async (req, res) => {
         try {
             await Todo.findOneAndUpdate({_id:req.params.id},{
-                completed: true
+                completed: true,
+                driverStatus: 'Clear'
             }).lean()
             console.log('Marked Complete')
             res.redirect('/todos')
@@ -72,7 +66,8 @@ module.exports = {
     markIncomplete: async (req, res) => {
         try {
             await Todo.findOneAndUpdate({_id:req.params.id},{
-                completed: false
+                completed: false,
+                driverStatus: ''
             }).lean()
             console.log('Marked Incomplete')
             res.redirect('/todos')
@@ -82,37 +77,36 @@ module.exports = {
     },
     editTodos: async (req, res) => {
         try {
-            let todos = await Todo.find({_id:req.params.id}).lean()
-            let users = await User.find({_id:todos[0].userId}).lean()
-            if (!users) {
+            let currentCall = await Todo.find({_id:req.params.id}).lean()
+            let loggedInUser = await User.findById(req.user.id).lean()
+
+            if (!loggedInUser) {
               res.redirect('/')
             }
             
-            if (users[0].email != req.user.email) {
+            if (loggedInUser.email !== req.user.email) {
               res.redirect('/')
             } else {
                 res.render('edit', {
-                users,
-                todos,
-                user:req.user})
+                    todos: currentCall,
+                    user: req.user})
             }
         } catch(error) {
             console.error(error)
         }
     },
     updateTodos: async (req, res) => {
-        const currentUser = await User.find({_id:req.user._id}).lean()
-        const currentTodo = await Todo.find({userId:req.user._id}).lean()
         try {
-            if (!currentUser) {
+            let loggedInUser = await User.findById(req.user.id).lean()
+
+            if (!loggedInUser) {
                 res.redirect('/')
             }
           
-            if (currentUser[0].email != req.user.email) {
+            if (loggedInUser.email !== req.user.email) {
                 res.redirect('/')
             } else {
                 await Todo.findByIdAndUpdate(req.params.id, {
-                completed: req.body.completed,
                 contactNumber: req.body.contactNumber,
                 vehicleAddressPick: req.body.vehicleAddressPick,
                 vehicleAddressDrop: req.body.vehicleAddressDrop,
@@ -120,7 +114,7 @@ module.exports = {
                 vehicleYear: req.body.vehicleYear,
                 vehicleMake: req.body.vehicleMake,
                 vehicleModel: req.body.vehicleModel,
-                vehicleLocation: req.body.vehicleLocation,
+                customerNotes: req.body.customerNotes,
             }).lean()
                 console.log('Edited Details')
                 res.redirect('/todos')
@@ -151,11 +145,11 @@ module.exports = {
         }
     },
     dispatchUnassignDriver: async (req, res) => {
-        console.log(req)
         try {
             await Todo.findOneAndUpdate({_id:req.params.id},{
                 assigned: false,
-                assignedTo: ''
+                assignedTo: '',
+                driverStatus: ''
             }).lean()
             console.log('Unassigned call to driver')
             res.redirect('/todos')
@@ -163,7 +157,7 @@ module.exports = {
             console.log(err)
         }
     },
-    driverAccept: async (req, res) => {
+    driverUpdateETA: async (req, res) => {
         try {
             if (req.body.driverStatus !== 'Clear') {
                 await Todo.findOneAndUpdate({_id:req.params.id},{
@@ -174,6 +168,7 @@ module.exports = {
                 res.redirect('/todos')
             } else {
                 await Todo.findOneAndUpdate({_id:req.params.id},{
+                    accepted: true,
                     completed: true,
                     driverStatus: req.body.driverStatus
                 }).lean()
@@ -185,12 +180,10 @@ module.exports = {
         }
     },
     driverAssignDriver: async (req, res) => {
-        console.log(req.user.email)
-        console.log(req.params.id)
         try {
             await Todo.findOneAndUpdate({_id:req.params.id},{
                 assigned: true,
-                assignedTo: req.user.email
+                assignedTo: req.user._id
             }).lean()
             console.log('Assigned call to driver')
             res.redirect('/todos')
@@ -200,8 +193,6 @@ module.exports = {
     },
     getProfile: async (req, res) => {
         try {
-            const user = await User.findById(req.user._id).lean()
-            console.log(req.user)
             res.render("profile.ejs", {
                 user: req.user
             });
@@ -210,11 +201,11 @@ module.exports = {
         }
       },
     editProfile: async (req, res) => {
-        let user = await User.findById(req.user._id).lean()
-        if (!user) {
+        let loggedInUser = await User.findById(req.user._id).lean()
+        if (!loggedInUser) {
             res.redirect('/')
         }
-        if (user.email !== req.user.email) {
+        if (loggedInUser.email !== req.user.email) {
             res.redirect('/')
         } else {
             res.render('editProfile', {
@@ -223,11 +214,11 @@ module.exports = {
     },
     updateProfile: async (req, res) => {
         try {
-            let user = await User.findById(req.user._id).lean()
-            if (!user) {
+            let loggedInUser = await User.findById(req.user._id).lean()
+            if (!loggedInUser) {
                 res.redirect('/')
             }
-            if (user.email !== req.user.email) {
+            if (loggedInUser.email !== req.user.email) {
                 res.redirect('/')
             } else {
                 await User.findByIdAndUpdate(req.user._id, {
@@ -235,7 +226,7 @@ module.exports = {
                     email: req.body.userEmail,
             })
                 console.log('Edited Profile Information')
-                res.redirect('/todos')
+                res.redirect('/profile')
             }
         } catch(err) {
           console.error(err)
