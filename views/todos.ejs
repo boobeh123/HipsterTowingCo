@@ -1,16 +1,14 @@
-<%- include('./partials/header.ejs') %>
+<%- include('./partials/sidenavheader.ejs') %>
     <main class="todos-main">
         <%- include('./partials/flash.ejs') %>
         <div class="container">
             <section class="container">
                 <% if (user.name !== '') { %>
-                    <h1><%=user.role%> Dashboard</h1>
-                    <p class="margin">Welcome <%=user.name%></p>
-                    <% } else { %>
-                        <h1><%=user.role%> Dashboard</h1>
-                        <p class="margin">Welcome <%=user.email%></p>
-                        <% } %>
-                    </section>
+                <h1>Welcome <%=user.name%></h1>
+                <% } else { %>
+                <h1>Welcome <%=user.email%></h1>
+                <% } %>
+            </section>
                     <div class="container">
                         <ul class="collapsible">
                             <% todos.forEach( el => { %>
@@ -211,4 +209,4 @@
             </section>
         </div>
     </main>
-<%- include('./partials/footer.ejs') %>
+<%- include('./partials/sidenavfooter.ejs') %>
