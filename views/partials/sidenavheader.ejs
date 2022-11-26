@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/imgs/favicon-32x32.png"/>
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100&family=Roboto:wght@100;400;700&display=swap" rel="stylesheet">
+    <!-- MaterializeCSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Font-awesome -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- External css -->
+    <link rel="stylesheet" href="/css/normalize.css" type="text/css">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <title>Bo-TOW</title>
+</head>
+<body>
+    <header class="partial-sidenavheader">
+        <nav>
+            <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <div class="nav-wrapper">
+                <% if (page === 'Dashboard') { %>
+                <span class="brand-logo">Dashboard</span>
+                <% } else { %>
+                <span class="brand-logo">Profile</span>
+                <% } %>
+            </div>
+            <ul id="slide-out" class="sidenav sidenav-fixed">
+                <div class="border-bottom margin">
+                    <li><a class="sidenav-brand-logo" href="/todos">Bo-TOW</a></li>
+                </div>
+                <% if (user.role === 'Customer') { %>
+                    <% if (page === 'Dashboard') { %>
+                    <li><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger">Request Tow</a></li>
+                    <li class="active"><a href="/todos" class="hoverable waves-effect waves-light transparent">Dashboard</a></li>
+                    <li><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
+                    <% } else { %>
+                    <li><a href="/todos" class="hoverable waves-effect waves-light btn blue darken-1">Request Tow</a></li>
+                    <li><a href="/todos" class="hoverable waves-effect waves-light transparent">Dashboard</a></li>
+                    <li class="active"><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
+                    <% } %>
+                <% } else { %>
+                    <% if (page === 'Dashboard') { %>
+                        <li class="active"><a href="/todos" class="hoverable waves-effect waves-light transparent">Dashboard</a></li>
+                        <li><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
+                        <% } else { %>
+                        <li><a href="/todos" class="hoverable waves-effect waves-light transparent">Dashboard</a></li>
+                        <li class="active"><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
+                        <% } %>
+                <% } %>
+                <div class="center-align logout-container">
+                    <img src='<%=user.image%>' class="center-align responsive-img" />
+                    <p>
+                    <% if (user.name === '') { %> 
+                    <span><%=user.email%></span>
+                    <% } else { %>
+                    <span><%=user.name%></span>
+                    <% } %>
+                    <span><%=user.role%></span>
+                    </p>
+                    <li><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text"><i class="fas fa-sign-out-alt"></i>Sign out</a></li>
+                </div>
+              </ul>
+        </nav>
+    </header>
+</body>
+</html>
