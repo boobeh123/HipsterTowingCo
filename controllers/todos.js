@@ -5,6 +5,7 @@ const cloudinary = require("../middleware/cloudinary");
 module.exports = {
     getTodos: async (req,res) => {
         try {
+            const pageName = 'Dashboard'
             const loggedInUser = await User.findById(req.user.id).lean()
             const allDrivers = await User.find({role: 'Driver'}).lean();
             if (loggedInUser.role === 'Customer') {
@@ -12,13 +13,16 @@ module.exports = {
                 res.render('todos.ejs', {
                     todos: customerRequests,
                     user: loggedInUser,
-                    drivers: allDrivers})
+                    drivers: allDrivers,
+                    page: pageName})
             } else {
+                const pageName = 'Dashboard'
                 const allRequests = await Todo.find().sort({createdAt:-1}).lean()
                 res.render('todos.ejs', {
                     todos: allRequests,
                     user: loggedInUser,
-                    drivers: allDrivers})
+                    drivers: allDrivers,
+                    page: pageName})
                 }
         } catch(err) {
             console.log(err)
@@ -193,16 +197,19 @@ module.exports = {
     },
     getProfile: async (req, res) => {
         try {
+            let pageName = 'Profile'
             let allUsers = await User.find().lean();
             res.render("profile.ejs", {
                 user: req.user,
-                users: allUsers
+                users: allUsers,
+                page: pageName
             });
         } catch (err) {
           console.log(err);
         }
       },
     editProfile: async (req, res) => {
+        let pageName = 'Profile'
         let loggedInUser = await User.findById(req.user._id).lean()
         if (!loggedInUser) {
             res.redirect('/')
@@ -211,7 +218,8 @@ module.exports = {
             res.redirect('/')
         } else {
             res.render('editProfile', {
-            user:req.user})
+            user:req.user,
+            page: pageName})
         }
     },
     updateProfile: async (req, res) => {
