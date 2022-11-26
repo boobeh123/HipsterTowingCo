@@ -113,16 +113,51 @@ a {
 * Header
 ***************************************************************/
 /* partials - header.ejs */
-.partial-header nav .nav-wrapper .brand-logo {
+.partial-header nav .nav-wrapper .brand-logo,
+.partial-sidenavheader nav .nav-wrapper .brand-logo {
     color: black;
     font-family: Lato;
     font-weight: 700;
 }
-nav {
+.partial-header nav,
+.partial-sidenavheader nav {
     background-color: transparent;
 }
-nav ul {
+.partial-header nav ul,
+.partial-sidenavheader nav ul {
     margin-right: 1rem;
+}
+
+/* partials - sidenavheader.ejs */
+.partial-sidenavheader, .todos-main, .sidenav-footer, .profile-main, .editprofile-main {
+    padding-left: 300px;
+}
+.partial-sidenavheader nav ul div .sidenav-brand-logo {
+    text-align: center;
+    font-size: 2rem;
+    font-family: Lato;
+    font-weight: 700;
+}
+.partial-sidenavheader nav ul .logout-container {
+    padding: 1rem;
+    background-color: rgba(197, 202, 208, 0.25);
+    position: absolute;
+    bottom: 50px;
+    width: 100%;
+}
+.partial-sidenavheader nav ul .logout-container img {
+    display: inline-block;
+}
+.partial-sidenavheader nav ul .logout-container p {
+    display: inline-block;
+    vertical-align: text-bottom;
+    color: black;
+    text-align: left;
+    padding-left: 0.25rem;
+}
+.partial-sidenavheader nav ul .logout-container span:nth-child(1) {
+    display: block;
+    line-height: 0;
 }
 /**************************************************************
 * Flash
@@ -284,6 +319,9 @@ nav ul {
 }
 
 /* todos.ejs */
+.todos-main {
+    background-color: rgba(197, 202, 208, 0.15);
+}
 .todos-main .container .container .collapsible .todoItem .collapsible-header {
     display: flex;
     flex-direction: column;
@@ -404,6 +442,13 @@ nav ul {
 
 }
 
+@media only screen and (max-width : 992px) {
+    .partial-sidenavheader, .todos-main, .sidenav-footer, .profile-main, .editprofile-main {
+      padding-left: 0;
+    }
+
+  }
+
 @media screen and (min-device-width: 1024px) {
 
     .partial-header .nav-wrapper .brand-logo {
@@ -448,5 +493,9 @@ nav ul {
     .todos-main .container .container .collapsible .todoItem .collapsible-body div .btnContainer {
         flex-direction: row;
         justify-content: space-evenly;
+    }
+
+    .partial-sidenavheader nav .brand-logo {
+        margin-left: 1rem;
     }
 }
