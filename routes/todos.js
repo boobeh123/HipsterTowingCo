@@ -4,6 +4,7 @@ const todosController = require('../controllers/todos')
 const { ensureAuth } = require('../middleware/auth')
 
 router.get('/', ensureAuth, todosController.getTodos)
+router.get('/filtered', todosController.getFilteredTodos)
 
 router.post('/createTodo', todosController.createTodo)
 
