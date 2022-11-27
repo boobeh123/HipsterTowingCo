@@ -6,8 +6,12 @@
                 <% if (user.name !== '') { %>
                 <h1>Welcome <%=user.name%></h1>
                 <% } else { %>
-                <h1>Welcome <%=user.email%></h1>
+                <h1 class="truncate">Welcome <%=user.email%></h1>
                 <% } %>
+                <div>
+                    <a href="/todos/filtered" title="Filter closed calls"><i class="fas fa-filter"></i></a>
+                    <a href="/todos/" title="Reset to default"><i class="fas fa-redo "></i></a>
+                </div>
             </section>
                     <div class="container">
                         <ul class="collapsible">
@@ -155,58 +159,81 @@
             </div>
         </div>
         <div id="modal1" class="modal">
-            <section class="modal-content">
-                <h4 class="center-align marginB border-bottom">Provide details that will help us find you</h4>
+            <div class="modal-content">
+                <h4 class="center-align marginB border-bottom flow-text">Provide details that will help us find you</h4>
                 <form action="/todos/createTodo" method='POST'>
-                    <h5 class="center-align">Customer</h5>
                     <div class="locationContainer margin">
-                        <label for="contactNumber">Phone number:*</label>
-                        <input type="tel" placeholder="(800)-939-8252" name="contactNumber" class="margin">
-                        <label for="vehicleAddressPick">Pickup address:*</label>
-                        <input type="text" placeholder="2300 California Ave / i-5 Northbound after exit 4 far right shoulder" name="vehicleAddressPick" class="margin" required>
-                        <label for="vehicleAddressDrop">Dropoff address:</label>
-                        <input type="text" placeholder="Store at tow yard / Bob's Autobody" name="vehicleAddressDrop" class="margin">
-                        <label for="contactRideAlong">Ride with driver?:*</label>
-                        <select name="contactRideAlong" required>
-                            <option value="" selected>Please select an option</option>
-                            <option value="true">Yes I will be with the vehicle</option>
-                            <option value="false">No the vehicle is unattended, key in car</option>
-                        </select>
+                        <div class="halfWidth">
+                            <label for="contactName">Customer name:</label>
+                            <input type="text" placeholder="Jane Doe*" name="contactName" class="margin">
+                        </div>
+                        <div class="halfWidth">
+                            <label for="contactNumber">Phone number:</label>
+                            <input type="tel" placeholder="(800)-939-8252*" name="contactNumber" class="margin">
+                        </div>
+                        <div class="hybridHalfWidth">
+                            <label for="vehicleAddressPick">Pickup address:</label>
+                            <input type="text" placeholder="2300 California Ave SW*" name="vehicleAddressPick" class="margin" required>
+                        </div>
+                        <div class="hybridHalfWidth">
+                            <label for="vehicleAddressDrop">Dropoff address:</label>
+                            <input type="text" placeholder="9600 California Ave SW*" name="vehicleAddressDrop" class="margin">
+                        </div>
                     </div>
-                    <h5 class="center-align">Vehicle</h5>
                     <div class="vehicleContainer margin">
-                        <label for="vehicleType">Describe your vehicle:*</label>
-                        <select name="vehicleType" required>
-                            <option value="" selected>Please select an option</option>
-                            <option value="Sedan">Sedan / Car</option>
-                            <option value="SUV">SUV / Van</option>
-                            <option value="Truck">Truck</option>
-                            <option value="Motorcycle">Motorcycle</option>
-                            <option value="Other">Box-truck / Heavy-duty (specify in notes below)</option>
-                        </select>
-                        <select name="vehicleDoor" required>
-                            <option value="" selected>Please select an option</option>
-                            <option value="4">4-Door</option>
-                            <option value="2">2-Door</option>
-                            <option value="0">Motorcycle</option>
-                        </select>
-                        <label for="vehicleColor">Color*:</label>
-                        <input type="text" placeholder="Silver*" name="vehicleColor" class="margin" required>
+                        <div class="hybridHalfWidth">
+                            <label for="vehicleType">Describe your vehicle:</label>
+                            <select name="vehicleType" required>
+                                <option value="" selected>Please select an option</option>
+                                <option value="Sedan">Sedan / Car</option>
+                                <option value="SUV">SUV / Van</option>
+                                <option value="Truck">Truck</option>
+                                <option value="Motorcycle">Motorcycle</option>
+                                <option value="Other">Box-truck / Heavy-duty (specify in notes below)</option>
+                            </select>
+                        </div>
+                        <div class="hybridHalfWidth">
+                            <select name="vehicleDoor" required>
+                                <option value="" selected>Please select an option</option>
+                                <option value="4">4-Door</option>
+                                <option value="2">2-Door</option>
+                                <option value="0">Motorcycle</option>
+                            </select>
+                        </div>
+                        <div>
+                            <input type="text" placeholder="Vehicle Color*" name="vehicleColor" class="margin" required>
+                        </div>
+                        <div>
+                            <label for="contactRideAlong">Ride with driver?:</label>
+                            <select name="contactRideAlong" required>
+                                <option value="" selected>Please select an option</option>
+                                <option value="true">Yes I will be with the vehicle</option>
+                                <option value="false">No the vehicle is unattended (leave key in car)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="customerNotes">Notes to driver/dispatch</label>
+                            <textarea name="customerNotes" cols="30" rows="6" placeholder="Call on arrival...Key under driver-side floormat" class="margin"></textarea>
+                        </div>
                     </div>
-                    <button type="submit" class="hoverable waves-effect waves-light btn blue lighten-3">Submit</button>
+                    <button type="submit" class="hoverable waves-effect waves-light btn blue darken-1">Submit</button>
                     <h5 class="center-align">Additional Details (optional)</h5>
                     <div class="optionalContainer margin">
-                        <label for="vehicleYear">Year:</label>
-                        <input type="text" placeholder="2001" name="vehicleYear" class="margin">
-                        <label for="vehicleMake">Make:</label>
-                        <input type="text" placeholder="Toyota" name="vehicleMake" class="margin">
-                        <label for="vehicleModel">Model:</label>
-                        <input type="text" placeholder="Corolla" name="vehicleModel" class="margin">
-                        <label for="customerNotes">Pickup/Dropoff Information</label>
-                        <textarea name="customerNotes" cols="30" rows="6" placeholder="Key under passenger-side floormat...Unload in driveway, call after dropoff" class="margin"></textarea>
+                        <div class="hybridThirdWidth">
+                            <label for="vehicleYear">Year:</label>
+                            <input type="text" placeholder="2001" name="vehicleYear" class="margin">
+                        </div>
+                        <div class="hybridThirdWidth">
+                            <label for="vehicleMake">Make:</label>
+                            <input type="text" placeholder="Toyota" name="vehicleMake" class="margin">
+                        </div>
+                        <div class="hybridThirdWidth">
+                            <label for="vehicleModel">Model:</label>
+                            <input type="text" placeholder="Corolla" name="vehicleModel" class="margin">
+                        </div>
                     </div>
                 </form>
-            </section>
+            </div>
         </div>
     </main>
 <%- include('./partials/sidenavfooter.ejs') %>
