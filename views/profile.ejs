@@ -22,8 +22,7 @@
                     <img src="<%=user.image%>" class='responsive-img circle' />
                     <% } %>
                     <form class="col-1 margin" action="/profile" method="POST" enctype="multipart/form-data">
-                        <label for="file">Image:</label>
-                        <input type="file" class="margin" name="file" required>
+                        <input type="file" class="" name="file" required>
                         <button type="submit" title="Update Picture" class="hoverable waves-effect waves-light btn blue-grey">Submit</button>
                     </form>
                 </div>
@@ -34,6 +33,7 @@
             <div class="card-content">
                 <h1 class="border-bottom">Admin Console</h1>
                 <form action="/profile/setRole" method="POST">
+                    <div class="halfWidth">
                     <label for="userId">Please choose an account:</label>
                     <select class="margin" name="userId" required>
                         <option value="" selected>Please select one</option>
@@ -43,6 +43,8 @@
                             <% } %>
                         <% }) %>
                     </select>
+                </div>
+                <div class="halfWidth">
                     <label for="role">Please choose a privilege level:</label>
                     <select class="margin" name="role" required>
                         <option value="" selected>Please select one</option>
@@ -50,7 +52,8 @@
                         <option value="Driver">Driver</option>
                         <option value="Customer">Customer</option>
                     </select>
-                    <button type="submit" class="hoverable waves-effect waves-light btn blue-grey">Submit</button>
+                </div>
+                    <button type="submit" class="hoverable waves-effect waves-light btn blue-grey maxWidth">Submit</button>
                 </form>
             </div>
         </div>
