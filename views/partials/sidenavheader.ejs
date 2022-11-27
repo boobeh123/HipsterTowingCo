@@ -54,7 +54,11 @@
                         <% } %>
                 <% } %>
                 <div class="center-align logout-container">
-                    <img src='<%=user.image%>' class="center-align responsive-img" />
+                    <% if (user.image === '') { %>
+                    <img src="https://placeholder.pics/svg/100x100" class='responsive-img center-align' />
+                    <% } else { %>
+                    <img src="<%=user.image%>" class='responsive-img center-align' />
+                    <% } %>
                     <p>
                     <% if (user.name === '') { %> 
                     <span><%=user.email%></span>
