@@ -28,8 +28,36 @@ module.exports = {
             console.log(err)
         }
     },
+    getFilteredTodos: async (req,res)=>{
+        console.log(req.user)
+        try{
+            const pageName = 'Dashboard'
+            const loggedInUser = await User.findById(req.user.id).lean()
+            const allDrivers = await User.find({role: 'Driver'}).lean();
+            if (loggedInUser.role === 'Customer') {
+                const customerRequests = await Todo.find({userId:req.user.id}).lean()
+                res.render('todos.ejs', {
+                    todos: customerRequests,
+                    user: loggedInUser,
+                    drivers: allDrivers,
+                    page: pageName})
+            } else {
+                const pageName = 'Dashboard'
+                const allRequests = await Todo.find({completed:false}).sort({createdAt:-1}).lean()
+                res.render('todos.ejs', {
+                    todos: allRequests,
+                    user: loggedInUser,
+                    drivers: allDrivers,
+                    page: pageName})
+                }
+        }catch(err){
+            console.log(err)
+        }
+    },
     createTodo: async (req, res) => {
         try {
+            const loggedInUser = await User.findById(req.user.id).lean()
+
             await Todo.create({
                 completed: false,
                 assigned: false,
@@ -37,6 +65,7 @@ module.exports = {
                 accepted: false,
                 driverStatus: '',
                 userId: req.user.id,
+                contactName: req.body.contactName,
                 contactNumber: req.body.contactNumber,
                 vehicleAddressPick: req.body.vehicleAddressPick,
                 vehicleAddressDrop: req.body.vehicleAddressDrop,
@@ -49,6 +78,11 @@ module.exports = {
                 vehicleModel: req.body.vehicleModel,
                 customerNotes: req.body.customerNotes,
             })
+            if (loggedInUser.name === '') {
+                await User.findOneAndUpdate({_id:req.user.id},{
+                    name: req.body.contactName
+                }).lean()
+            }
             console.log('Call has been added!')
             res.redirect('/todos')
         } catch(err) {
