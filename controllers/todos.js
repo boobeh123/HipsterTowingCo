@@ -35,7 +35,7 @@ module.exports = {
             const loggedInUser = await User.findById(req.user.id).lean()
             const allDrivers = await User.find({role: 'Driver'}).lean();
             if (loggedInUser.role === 'Customer') {
-                const customerRequests = await Todo.find({userId:req.user.id}).lean()
+                const customerRequests = await Todo.find({userId:req.user.id, completed:false}).lean()
                 res.render('todos.ejs', {
                     todos: customerRequests,
                     user: loggedInUser,
