@@ -82,6 +82,24 @@ select {
     display: none;
     position: absolute;
 }
+.halfWidth {
+    width: 45%;
+    display: inline-block;
+    margin: 0 0.25rem;
+}
+.hybridHalfWidth {
+    width: 45%;
+    display: inline-block;
+    margin: 0 0.25rem;
+}
+.hybridThirdWidth {
+    width: 30%;
+    display: inline-block;
+    margin: 0 0.25rem;
+}
+.maxWidth {
+    width: 100%;
+}
 /**************************************************************
 * Typography
 ***************************************************************/
@@ -322,6 +340,16 @@ a {
 .todos-main {
     background-color: rgba(197, 202, 208, 0.15);
 }
+.todos-main div section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.todos-main div section div a {
+    color: black;
+    margin: 0 0.25rem;
+}
+
 .todos-main .container .container .collapsible .todoItem .collapsible-header {
     display: flex;
     flex-direction: column;
@@ -344,11 +372,6 @@ a {
 .todos-main #modal1 .modal-content form select {
     margin: 0.5rem 0 1rem 0;
 }
-.todos-main #modal1 .modal-content form .locationContainer,
-.todos-main #modal1 .modal-content form .vehicleContainer,
-.todos-main #modal1 .modal-content form .optionalContainer {
-    padding: 0 2rem;
-}
 .todos-main #modal1 .modal-content form label {
     border-left: 1px solid rgba(230, 0, 0, 0.5); 
     padding-left: .25rem;   
@@ -357,8 +380,16 @@ a {
     margin-top: 0.5rem;
     width: 100%;
 }
+.todos-main #modal1 .modal-content form .halfWidth {
+    width: 45%;
+    display: inline-block;
+    margin: 0 0.25rem;
+}
 
 /* profile.ejs  */
+.profile-main {
+    background-color: rgba(197, 202, 208, 0.15);
+}
 .profile-main .card,
 .editprofile-main .card {
     margin: 1rem auto 0 auto;
@@ -378,6 +409,10 @@ a {
 .editprofile-main .card .card-content div + div img {
     display: block;
     margin: 0 auto;
+}
+.profile-main .card .card-content form label {
+    border-left: 1px solid rgba(230, 0, 0, 0.5); 
+    padding-left: .25rem;   
 }
 /**************************************************************
 * Footer
@@ -497,5 +532,23 @@ a {
 
     .partial-sidenavheader nav .brand-logo {
         margin-left: 1rem;
+    }
+
+    .todos-main #modal1 .modal-content form .locationContainer,
+    .todos-main #modal1 .modal-content form .vehicleContainer,
+    .todos-main #modal1 .modal-content form .optionalContainer {
+        padding: 0 2rem;
+    }
+
+    .todos-main #modal1 .modal-content form .hybridHalfWidth {
+        width: 45%;
+        display: inline-block;
+        margin: 0 0.25rem;
+    }
+
+    .todos-main #modal1 .modal-content form .hybridThirdWidth {
+        width: 30%;
+        display: inline-block;
+        margin: 0 0.25rem;
     }
 }
