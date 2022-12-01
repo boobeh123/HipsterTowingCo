@@ -87,6 +87,7 @@ module.exports = {
             res.redirect('/todos')
         } catch(err) {
             console.log(err)
+            res.render('./errors/500.ejs')
         }
     },
     markComplete: async (req, res) => {
@@ -131,6 +132,7 @@ module.exports = {
             }
         } catch(error) {
             console.error(error)
+            res.render('./errors/500.ejs')
         }
     },
     updateTodos: async (req, res) => {
@@ -159,6 +161,7 @@ module.exports = {
             }
         } catch(err) {
           console.error(err)
+          res.render('./errors/500.ejs')
         }
     },
     deleteTodo: async (req, res) => {
@@ -240,20 +243,26 @@ module.exports = {
             });
         } catch (err) {
           console.log(err);
+          res.render('./errors/500.ejs')
         }
       },
     editProfile: async (req, res) => {
-        let pageName = 'Profile'
-        let loggedInUser = await User.findById(req.user._id).lean()
-        if (!loggedInUser) {
-            res.redirect('/')
-        }
-        if (loggedInUser.email !== req.user.email) {
-            res.redirect('/')
-        } else {
-            res.render('editProfile', {
-            user:req.user,
-            page: pageName})
+        try {
+            let pageName = 'Profile'
+            let loggedInUser = await User.findById(req.user._id).lean()
+            if (!loggedInUser) {
+                res.redirect('/')
+            }
+            if (loggedInUser.email !== req.user.email) {
+                res.redirect('/')
+            } else {
+                res.render('editProfile', {
+                user:req.user,
+                page: pageName})
+            }
+        } catch(err) {
+            console.log(err);
+          res.render('./errors/500.ejs')
         }
     },
     updateProfile: async (req, res) => {
@@ -274,6 +283,7 @@ module.exports = {
             }
         } catch(err) {
           console.error(err)
+          res.render('./errors/404.ejs')
         }
     },
     updatePhoto: async (req, res) => {
@@ -306,6 +316,7 @@ module.exports = {
             res.redirect('/profile')
         } catch(err) {
             console.error(err);
+            res.render('./errors/500.ejs')
         }
     },
     setRole: async (req, res) => {
@@ -325,6 +336,7 @@ module.exports = {
             }
         } catch(err) {
           console.error(err)
+          res.render('./errors/404.ejs')
         }
     }
 }    
