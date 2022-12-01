@@ -1,36 +1,52 @@
 ## Description
-A full stack web application that supports local account creation. Each registered user may post & store their own individual to-do tasks that describe the task, due date, & priority. Tasks may be marked as uncomplete, completed or deleted entirely. This web application is completely responsive across all device viewports.
+HipsterTowingCo is a full stack web application that allows businesses to expand their reach. 
+The landing page provides company details, information, and hours of operation which can increase search engine results that display your business. 
+Viewing your buisness on a mobile device is essential. Our design is responsive and is viewable across phones, tablets, laptops, and desktops.
 
-The project is deployed here: https://salty-castle-61426.herokuapp.com/
+Customers & employees can create an account with your website using their email. This email is saved into a database & may be used to send opt-in subscriber emails.
+
+Registered customers can create orders by providing their vehicle information, location, and destination.
+Registered employees login to the app to view & interact with customer requests:
+Dispatchers can assign or unassign calls to a driver and change the status of the call.
+Drivers can accept assigned calls, independently accept calls, and update their ETA. This ETA is visible to the customer & dispatcher.
+Completed calls note which driver provided roadside assistance.
 
 ## Demo
-![demo](todomvcauthdemo.gif)
+https://www.youtube.com/embed/rqB_YZ-yiWA
 
-## Features
-* MVC Architecture
-* Local account creation using passport-local strategies
-* Individual posts with additional fields describing the task.
-* Accounts & Posts are stored into a database (long-term memory).
-* Completely responsive across all viewports.
+## How It's Made 
 
-## Lessons learned
-I have built many iterations of the to-do list. This project is my most advanced form of the to-do list.
+### Frontend: 
+Frontend: HTML5, CSS3, MaterializeCSS, EJS
+The frontend is built in HTML and uses EJS to render dynamic variable data from the database. 
+I used the MaterializeCSS framework to style the webpage and used components for the carousel, fixed sidenav/mobile sidenav, modal, cards, and collapsibles.
+I used CSS to style the smaller details.
 
-I had FUN building this project because I took two different approaches:
-I have always built responsive web pages-- this time I tried the `mobile-first` approach AND IT IS SO MUCH EASIER & I SHOULD HAVE BEEN BUILDING THIS WAY FROM THE BEGINNING. THIS WOULD HAVE SAVED ME SO MUCH TIME. WHY DID I WAIT SO LONG?!?
-I used the `Materialize-CSS` framework to style my pages, and just going through the documentation & trying EVERYTHING made me eager to build. I wanted to use everything and I can't wait until my next project to test even more components!!
+### Backend:
+Backend: Node.js, Express.js, MongoDB & Mongoose.
+The API is built on an Express server and follows the Model-View-Controller (MVC) design pattern.
+There are two routes which contain a variety of GET, POST, PUT, and DELETE requests. 
+There is a schema (model) for the data stored in the database, which is MongoDB for this project.
+Finally, the project is deployed on cyclic which can be viewed here: https://jittery-ray-outerwear.cyclic.app/
 
-## Technologies
+### Tech used:
 <img src="https://profilinator.rishav.dev/skills-assets/html5-original-wordmark.svg" alt="HTML5" height="50" /><img src="https://profilinator.rishav.dev/skills-assets/css3-original-wordmark.svg" alt="CSS3" height="50" /><img src="https://profilinator.rishav.dev/skills-assets/javascript-original.svg" alt="JavaScript" height="40" /><img src="https://profilinator.rishav.dev/skills-assets/nodejs-original-wordmark.svg" alt="NodeJS" height="50" /><img src="https://profilinator.rishav.dev/skills-assets/mongodb-original-wordmark.svg" alt="MongoDB" height="50" /><img src="https://profilinator.rishav.dev/skills-assets/express-original-wordmark.svg" alt="ExpressJS" height="50" />
 <img src="https://img.shields.io/badge/Materialize--CSS-ee6e73?style=for-the-badge&logoColor=white" alt="MaterializeCSS"/>
 <img src="https://img.shields.io/badge/Mongoose.js-8A0403?style=for-the-badge&logoColor=white" alt="MongooseJS"/>
 <img src="https://profilinator.rishav.dev/skills-assets/git-scm-icon.svg" alt="Git" height="50" />
 
-## Optimizations (Strikethrough = completed/added)
-* ~~Multiple `.completed` classes invoke both `markComplete` & `markIncomplete` functions. Both functions send PUT requests.~~
-* ~~Edit button.~~
-* ~~Sorting (by priority) functionality.~~
-* Add Passport-Google-OAuth-20 to support gmail/google account creation/login.
-* ~~Add "dismiss message" button onto login/account creation error messages~~
-* ~~Format date~~
-* Allow edits on date & priority levels
+## Optimizations 
+* Viewable profiles
+* Comments/reviews on profiles
+* Add Passport-Google-OAuth-20 to support gmail login as a a registered user.
+* Configure NodeMailer to support subscriber list emails
+* Configure NodeMailer to support real-time updates for all involved parties
+* Dynamic news/updates from State-Patrol twitter feed
+* Geospatial data
+
+## Lessons learned
+This project has shown me that learning & understanding is displayed through building. 
+There are several features I have seen for the first time. I had to learn more about it and implement in a way that fits the codebase in this project.
+I experienced an undescribable feeling where I have watched this project grow from a blank page to where its at now. 
+It came a long way and there is still so much more that can be added and improved on. 
+I envision that this application has potential to become something with a global reach.
