@@ -312,6 +312,7 @@ a {
 }
 .index-main .secondArea {
     padding: 0 0 1rem 0;
+    margin-bottom: 0;
 }
 .index-main .secondArea .col .card {
     border-radius: 1rem;
@@ -331,9 +332,16 @@ a {
     font-weight: 700;
 }
 .index-main .thirdArea {
-    display: flex;
-    justify-content: center;
-    padding: 2rem 0;
+    padding: 1rem 0;
+}
+.index-main .thirdArea .container .container form div input {
+    border: 1px solid gray;
+    border-radius: 6px;
+    background-color: rgba(197, 202, 208, 0.25);
+}
+.index-main .thirdArea .container .container form div button {
+    border-radius: 6px;
+    width: 100%;
 }
 
 /* todos.ejs */
@@ -461,6 +469,36 @@ a {
 
     .index-main .secondArea .col {
         width: 100%;
+    }
+
+    .index-main .bgOne {
+        background-color: #F8F0EA;
+    }
+    .index-main .thirdArea .bgTwo {
+        background-image: url('/imgs/pexels-mitchell-luo-3694711.jpg');
+        background-repeat: no-repeat;
+        background-position: bottom;
+        width: 100%;
+        padding: 0;
+    }
+    .index-main .thirdArea .container .bgThree {
+        background-color: #fefefe;
+        border-radius: 6px;
+        padding: 0.75rem 0;
+    }
+    .index-main .thirdArea .container .container section {
+        text-align: center;
+    }
+    .index-main .thirdArea .container .container form div {
+        text-align: center;
+    }
+    .index-main .thirdArea .container .container form div input {
+        display: inline-block;
+        width: 60%;
+    }
+    .index-main .thirdArea .container .container form div button {
+        display: inline-block;
+        width: 20%;
     }
 
     .profile-main .card .card-content {
