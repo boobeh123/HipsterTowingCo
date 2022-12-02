@@ -431,23 +431,23 @@ a {
     background-color: transparent;
     border-top: 1px solid rgba(0,0,0, .25);
 }
-.footer-copyright {
-    background-color: transparent !important;
-}
-.page-footer .footer-copyright * {
-    color: black;
-}
-.page-footer .footer-copyright .container {
+.page-footer .container .row {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
 }
-.page-footer .footer-copyright .container a {
-    border-radius: 6px;
-    opacity: 0.75;
+.page-footer .container .row h5 {
+    color: #616A79;
+    text-align: center;
 }
-.page-footer .footer-copyright .container a:hover {
-    opacity: 1;
+.page-footer .container .row ul li {
+    margin: 0.25rem 0;
+    text-align: center;
+}
+.page-footer .container .row ul li a {
+    color: #98A7B9;
+}
+.page-footer .container .row ul li a:hover {
+    color: rgba(97,106,121, 0.25)
 }
 /**************************************************************
 * Media queries
@@ -511,6 +511,19 @@ a {
     .profile-main .card .card-content div + div {
         float: right;
         width: 45%;
+    }
+
+    .page-footer .container .row {
+        display: flex;
+        flex-direction: row;
+    }
+    .page-footer .container .row h5 {
+        color: #616A79;
+        text-align: left;
+    }
+    .page-footer .container .row ul li {
+        margin: 0.25rem 0;
+        text-align: left;
     }
 
 }
