@@ -24,9 +24,4 @@ router.put("/profile/edit/:id", ensureAuth, todosController.updateProfile);
 router.post("/profile", ensureAuth, upload.single("file"), todosController.updatePhoto);
 router.post("/profile/setRole", ensureAuth, todosController.setRole);
 
-// Scanner routes - TODO MVC architecture, testing feature
-router.get('/scanner', ensureAuth, (req, res) => {
-  res.render('scanner.ejs')
-})
-
 module.exports = router
