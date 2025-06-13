@@ -28,10 +28,20 @@
     </div>
 </div>
 
-<!-- Quagga2 Script -->
-<script src="https://unpkg.com/@ericblade/quagga2@1.6.2/dist/quagga.min.js"></script>
+<!-- Load Quagga2 from node_modules -->
+<script src="/node_modules/@ericblade/quagga2/dist/quagga.min.js"></script>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    // Wait for Quagga to be available
+    window.addEventListener('load', function() {
+        if (typeof Quagga === 'undefined') {
+            console.error('Quagga failed to load');
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').textContent = 'Error: Scanner failed to load. Please refresh the page.';
+            document.getElementById('result').className = 'alert alert-danger';
+            return;
+        }
+
         const startButton = document.getElementById('startButton');
         const stopButton = document.getElementById('stopButton');
         const resultDiv = document.getElementById('result');
@@ -52,6 +62,9 @@
             }, function(err) {
                 if (err) {
                     console.error(err);
+                    resultDiv.style.display = 'block';
+                    resultDiv.textContent = 'Error initializing scanner: ' + err;
+                    resultDiv.className = 'alert alert-danger';
                     return;
                 }
                 console.log("Quagga initialization succeeded");
@@ -64,6 +77,7 @@
                 const code = result.codeResult.code;
                 resultDiv.style.display = 'block';
                 resultDiv.textContent = `Barcode detected: ${code}`;
+                resultDiv.className = 'alert alert-success';
                 console.log("Barcode detected and processed : [" + code + "]");
             });
         });
