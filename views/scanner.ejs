@@ -1,0 +1,97 @@
+<%- include('partials/header') %>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Window Scanner</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Scanner View -->
+                    <div id="interactive" class="viewport"></div>
+                    
+                    <!-- Scanner Controls -->
+                    <div class="controls mt-3 text-center">
+                        <button id="startButton" class="btn btn-primary">Start Scanner</button>
+                        <button id="stopButton" class="btn btn-danger" disabled>Stop Scanner</button>
+                    </div>
+
+                    <!-- Results Display -->
+                    <div class="results mt-3">
+                        <h4>Scan Results:</h4>
+                        <div id="result" class="alert alert-info" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quagga2 Script -->
+<script src="https://unpkg.com/@ericblade/quagga2@1.6.2/dist/quagga.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const resultDiv = document.getElementById('result');
+
+        startButton.addEventListener('click', function() {
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector("#interactive"),
+                    constraints: {
+                        facingMode: "environment"
+                    },
+                },
+                decoder: {
+                    readers: ["code_128_reader"]
+                }
+            }, function(err) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                console.log("Quagga initialization succeeded");
+                Quagga.start();
+                startButton.disabled = true;
+                stopButton.disabled = false;
+            });
+
+            Quagga.onDetected(function(result) {
+                const code = result.codeResult.code;
+                resultDiv.style.display = 'block';
+                resultDiv.textContent = `Barcode detected: ${code}`;
+                console.log("Barcode detected and processed : [" + code + "]");
+            });
+        });
+
+        stopButton.addEventListener('click', function() {
+            Quagga.stop();
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            resultDiv.style.display = 'none';
+        });
+    });
+</script>
+
+<style>
+    #interactive.viewport {
+        position: relative;
+        width: 100%;
+        height: 300px;
+    }
+    #interactive.viewport > canvas, #interactive.viewport > video {
+        max-width: 100%;
+        width: 100%;
+    }
+    canvas.drawing, canvas.drawingBuffer {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+</style>
+
+<%- include('partials/footer') %> 
