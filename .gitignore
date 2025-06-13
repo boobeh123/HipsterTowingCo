@@ -7,3 +7,4 @@ config/.env
 config/env
 ./config/env
 ../config/env
+/middleware/.env
