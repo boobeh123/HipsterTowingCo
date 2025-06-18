@@ -66,7 +66,8 @@ main {
 }
 .marginT {
     margin-top: 1rem;
-}.marginB {
+}
+.marginB {
     margin-bottom: 1rem;
 }
 select {
@@ -342,6 +343,53 @@ a {
 .index-main .thirdArea .container .container form div button {
     border-radius: 6px;
     width: 100%;
+}
+
+.animated-button-container {
+    position: relative;
+    display: inline-block;
+    padding: 2px;
+    background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe, #667eea);
+    background-size: 400% 400%;
+    animation: gradientRotate 3s ease infinite;
+}
+
+.animated-button-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe, #667eea);
+    background-size: 400% 400%;
+    z-index: -1;
+    animation: gradientRotate 3s ease infinite;
+    filter: blur(12px);
+    opacity: 0.6;
+}
+
+.animated-button {
+    position: relative;
+    z-index: 1;
+    background: #4CAF50 !important;
+    border: none !important;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.animated-button:hover {
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    background: #45a049 !important;
+}
+
+@keyframes gradientRotate {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* todos.ejs */
