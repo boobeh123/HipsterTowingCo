@@ -8,8 +8,12 @@
     <meta name="title" content="Pretriq - Submit DoT Pre-Trip Inspection Checklists Digitally">
     <meta name="description" content="Streamline your DoT pre-trip inspections with our digital checklist system. Create, submit, and send inspection reports with ease. Stay compliant and organized.">
     <meta name="author" content="Bobby Asakawa">
+    <meta name="keywords" content="DOT, online pre-trip inspection checklist, digitally, compliance, trucking, transportation">
+    <meta name="robots" content="index, follow">
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/imgs/favicon-32x32.png"/>
+    <!-- <link rel="apple-touch-icon" sizes="180x180" href="/imgs/apple-touch-icon.png"> -->
+    <link rel="manifest" href="/site.webmanifest">
     <!-- Security Headers -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -18,6 +22,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="/css/style.css" as="style">
     <!-- Google fonts with display swap -->
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100&family=Roboto:wght@100;400;700&display=swap" rel="stylesheet">
     <!-- MaterializeCSS -->
@@ -25,9 +31,8 @@
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- External css -->
-    <link rel="stylesheet" href="/css/normalize.css" type="text/css">
+    <link rel="stylesheet" href="/css/normalize.css" type="text/css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="/css/style.css" type="text/css">
-    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://pretriq.up.railway.app/">
@@ -43,39 +48,41 @@
     <!-- <meta property="twitter:image" content="/imgs/og-image.jpg"> TO-DO -->
 </head>
 <body>
-    <header class="partial-header">
-        <nav>
+    <header class="partial-header" role="banner">
+        <nav role="navigation" aria-label="Main navigation">
             <div class="nav-wrapper">
-                <a href="/todos" class="brand-logo">pretriq</a>
-                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-                <ul class="right hide-on-med-and-down">
+                <a href="/todos" class="brand-logo" aria-label="Pretriq Home">pretriq</a>
+                <a href="#" data-target="mobile-demo" class="sidenav-trigger" aria-label="Open mobile menu" aria-expanded="false" aria-controls="mobile-demo">
+                    <i class="material-icons" aria-hidden="true">menu</i>
+                </a>
+                <ul class="right hide-on-med-and-down" role="menubar">
                     <% if (typeof user !== 'undefined') { %>
                         <% if (user.role === 'Customer') { %>
-                        <li><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger">Request Tow</a></li>
-                        <li><a href="/profile" class="hoverable waves-effect waves-light btn blue-grey lighten-2">Profile</a></li>
+                        <li role="none"><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger" role="menuitem" aria-label="Request a tow service">Request Tow</a></li>
+                        <li role="none"><a href="/profile" class="hoverable waves-effect waves-light btn blue-grey lighten-2" role="menuitem" aria-label="View your profile">Profile</a></li>
                         <% } else { %>
-                        <li><a href="/profile" class="hoverable waves-effect waves-light btn blue darken-1">Profile</a></li>
+                        <li role="none"><a href="/profile" class="hoverable waves-effect waves-light btn blue darken-1" role="menuitem" aria-label="View your profile">Profile</a></li>
                         <% } %>
-                        <li><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text">Sign out</a></li>
+                        <li role="none"><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text" role="menuitem" aria-label="Sign out of your account">Sign out</a></li>
                     <% } else { %>
-                        <li><a href="/login" class="hoverable waves-effect waves-light btn transparent black-text">Login</a></li>
-                        <li><a href="/signup" class="hoverable waves-effect waves-light btn green lighten-1">Create Account</a></li>
+                        <li role="none"><a href="/login" class="hoverable waves-effect waves-light btn transparent black-text" role="menuitem" aria-label="Sign in to your account">Login</a></li>
+                        <li role="none"><a href="/signup" class="hoverable waves-effect waves-light btn green lighten-1" role="menuitem" aria-label="Create a new account">Create Account</a></li>
                     <% } %>
                 </ul>
             </div>
         </nav>    
-        <ul class="sidenav" id="mobile-demo">
+        <ul class="sidenav" id="mobile-demo" role="menu" aria-label="Mobile navigation menu" aria-hidden="true">
             <% if (typeof user !== 'undefined'){ %>
                 <% if (user.role === 'Customer') { %>
-                <li><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger">Request Tow</a></li>
-                <li><a href="/profile" class="hoverable waves-effect waves-light btn blue-grey lighten-2">Profile</a></li>
+                <li role="none"><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger" role="menuitem" aria-label="Request a tow service">Request Tow</a></li>
+                <li role="none"><a href="/profile" class="hoverable waves-effect waves-light btn blue-grey lighten-2" role="menuitem" aria-label="View your profile">Profile</a></li>
                 <% } else { %>
-                <li><a href="/profile" class="hoverable waves-effect waves-light btn blue darken-1">Profile</a></li>
+                <li role="none"><a href="/profile" class="hoverable waves-effect waves-light btn blue darken-1" role="menuitem" aria-label="View your profile">Profile</a></li>
                 <% } %>
-                <li><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text">Sign out</a></li>
+                <li role="none"><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text" role="menuitem" aria-label="Sign out of your account">Sign out</a></li>
             <% } else { %>
-                <li><a href="/login" class="hoverable waves-effect waves-light btn transparent black-text">Login</a></li>
-                <li><a href="/signup" class="hoverable waves-effect waves-light btn green lighten-1">Create Account</a></li>
+                <li role="none"><a href="/login" class="hoverable waves-effect waves-light btn transparent black-text" role="menuitem" aria-label="Sign in to your account">Login</a></li>
+                <li role="none"><a href="/signup" class="hoverable waves-effect waves-light btn green lighten-1" role="menuitem" aria-label="Create a new account">Create Account</a></li>
             <% } %>
         </ul>
     </header>
