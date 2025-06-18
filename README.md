@@ -1,7 +1,7 @@
 ## Description
 A full-stack web application that is deployed with Railway. Under development
 
-Deployed on Railway: https://whwh.up.railway.app/
+Deployed on Railway: https://pretriq.up.railway.app/
 
 ## Optimizations 
 * Style landing page
