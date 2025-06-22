@@ -463,17 +463,11 @@ a {
 .newsletter-section:hover {
     transform: translateY(-5px);
     box-shadow: 0 25px 50px rgba(102, 126, 234, 0.4);
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
 }
 
 .newsletter-section:hover .newsletter-content h3 {
     transform: scale(1.02);
     transition: transform 0.3s ease;
-}
-
-.newsletter-section:hover .newsletter-btn {
-    transform: scale(1.05);
-    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
 }
 
 .newsletter-content h3 {
