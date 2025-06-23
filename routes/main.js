@@ -6,7 +6,6 @@ const { ensureAuth, ensureGuest } = require('../middleware/auth')
 const passwordResetController = require('../controllers/reset')
 const todosController = require('../controllers/todos')
 const upload = require("../middleware/multer");
-const pretripController = require('../controllers/pretrip')
 
 router.get('/', homeController.getIndex)
 router.get('/login', authController.getLogin)
@@ -25,5 +24,4 @@ router.put("/profile/edit/:id", ensureAuth, todosController.updateProfile);
 router.post("/profile", ensureAuth, upload.single("file"), todosController.updatePhoto);
 router.post("/profile/setRole", ensureAuth, todosController.setRole);
 
-router.get('/new', pretripController.getIndex)
 module.exports = router
