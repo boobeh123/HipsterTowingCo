@@ -1,0 +1,181 @@
+<!-- Pre-trip Inspection Modal -->
+<div id="inspectionModal" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h4>Driver's Vehicle Inspection Report</h4>
+        <p>Check ANY defective item and give details under "Remarks."</p>
+        <form id="inspectionForm" novalidate>
+            <!-- Vehicle Information -->
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="date" name="date" type="text" disabled>
+                    <label for="date" class="active">Date</label>
+                </div>
+            </div>
+            <div class="row" style="margin-top: -1rem; margin-bottom: 2rem;">
+                <div class="input-field col s12">
+                    <input id="truckTractorNo" name="truckTractorNo" type="text" required>
+                    <label for="truckTractorNo">Truck/Tractor No.</label>
+                </div>
+            </div>
+
+            <!-- Truck/Tractor Defects -->
+            <div class="row"><div class="col s12"><h5>Truck/Tractor</h5></div></div>
+            <div class="checklist-container">
+                <p><label><input type="checkbox" name="defects[truckTractor][airCompressor]" value="true" /><span>Air Compressor</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][airLines]" value="true" /><span>Air Lines</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][battery]" value="true" /><span>Battery</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][brakeAccessories]" value="true" /><span>Brake Accessories</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][brakes]" value="true" /><span>Brakes</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][carburetor]" value="true" /><span>Carburetor</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][clutch]" value="true" /><span>Clutch</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][defroster]" value="true" /><span>Defroster</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][driveLine]" value="true" /><span>Drive Line</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][engine]" value="true" /><span>Engine</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][fifthWheel]" value="true" /><span>Fifth Wheel</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][frontAxle]" value="true" /><span>Front Axle</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][fuelTanks]" value="true" /><span>Fuel Tanks</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][heater]" value="true" /><span>Heater</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][horn]" value="true" /><span>Horn</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][lights]" value="true" /><span>Lights</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][mirrors]" value="true" /><span>Mirrors</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][muffler]" value="true" /><span>Muffler</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][oilPressure]" value="true" /><span>Oil Pressure</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][onBoardRecorder]" value="true" /><span>On-Board Recorder</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][radiator]" value="true" /><span>Radiator</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][rearEnd]" value="true" /><span>Rear End</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][reflectors]" value="true" /><span>Reflectors</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][safetyEquipment]" value="true" /><span>Safety Equipment</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][springs]" value="true" /><span>Springs</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][starter]" value="true" /><span>Starter</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][steering]" value="true" /><span>Steering</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][tachograph]" value="true" /><span>Tachograph</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][tires]" value="true" /><span>Tires</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][transmission]" value="true" /><span>Transmission</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][wheels]" value="true" /><span>Wheels</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][windows]" value="true" /><span>Windows</span></label></p>
+                <p><label><input type="checkbox" name="defects[truckTractor][windshieldWipers]" value="true" /><span>Windshield Wipers</span></label></p>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="truckOther" name="defects[truckTractor][other]" type="text">
+                    <label for="truckOther">Other</label>
+                </div>
+            </div>
+            
+            <!-- Trailer Defects -->
+            <div class="row">
+                <div class="col s12 m8"><h5>Trailer(s)</h5></div>
+                <div class="input-field col s12 m4">
+                    <input id="trailerNo" name="trailerNo" type="text">
+                    <label for="trailerNo">Trailer(s) No(s).</label>
+                </div>
+            </div>
+            <div class="checklist-container">
+                <p><label><input type="checkbox" name="defects[trailer][brakeConnections]" value="true" /><span>Brake Connections</span></label></p>
+                <p><label><input type="checkbox" name="defects[trailer][brakes]" value="true" /><span>Brakes</span></label></p>
+                <p><label><input type="checkbox" name="defects[trailer][couplingChains]" value="true" /><span>Coupling Chains</span></label></p>
+                <p><label><input type="checkbox" name="defects[trailer][couplingPin]" value="true" /><span>Coupling (King) Pin</span></label></p>
+                <p><label><input type="checkbox" name="defects[trailer][doors]" value="true" /><span>Doors</span></label></p>
+                <p><label><input type="checkbox" name="defects[trailer][hitch]" value="true" /><span>Hitch</span></label></p>
+                <p><label><input type="checkbox" name="defects[trailer][landingGear]" value="true" /><span>Landing Gear</span></label></p>
+                <p><label><input type="checkbox" name="defects[trailer][lightsAll]" value="true" /><span>Lights - All</span></label></p>
+                <p><label><input type="checkbox" name="defects[trailer][roof]" value="true" /><span>Roof</span></label></p>
+                <p><label><input type="checkbox" name="defects[trailer][springs]" value="true" /><span>Springs</span></label></p>
+                <p><label><input type="checkbox" name="defects[trailer][tarpaulin]" value="true" /><span>Tarpaulin</span></label></p>
+                <p><label><input type="checkbox" name="defects[trailer][tires]" value="true" /><span>Tires</span></label></p>
+                <p><label><input type="checkbox" name="defects[trailer][wheels]" value="true" /><span>Wheels</span></label></p>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="trailerOther" name="defects[trailer][other]" type="text">
+                    <label for="trailerOther">Other</label>
+                </div>
+            </div>
+
+            <!-- Remarks -->
+            <div class="row">
+                <div class="input-field col s12">
+                    <textarea id="remarks" name="remarks" class="materialize-textarea"></textarea>
+                    <label for="remarks">Remarks</label>
+                </div>
+            </div>
+
+            <!-- Condition Status -->
+            <div class="row">
+                <div class="col s12">
+                    <p>
+                        <label>
+                            <input type="checkbox" name="conditionSatisfactory" value="true" />
+                            <span>Condition of the above vehicle is satisfactory</span>
+                        </label>
+                    </p>
+                    <div class="input-field">
+                        <input type="text" disabled>
+                        <label>Driver's Signature</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Defects Corrected -->
+            <div class="row" style="margin-bottom: 0;">
+                <div class="col s12">
+                     <p>
+                        <label>
+                            <input type="checkbox" name="defectsCorrected" value="true" />
+                            <span>Above Defects Corrected</span>
+                        </label>
+                    </p>
+                </div>
+            </div>
+            <!-- Defects Need NOT Be Corrected -->
+             <div class="row" style="margin-bottom: 0;">
+                <div class="col s12">
+                     <p>
+                        <label>
+                            <input type="checkbox" name="defectsNotCorrected" value="true" />
+                            <span>Above Defects Need NOT Be Corrected For Safe Operation Of Vehicle</span>
+                        </label>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m8">
+                    <input type="text" disabled>
+                    <label>Mechanic's Signature</label>
+                </div>
+                <div class="input-field col s12 m4">
+                    <input id="mechanicDate" name="mechanicDate" type="text">
+                    <label for="mechanicDate">Date</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m8">
+                    <input type="text" disabled>
+                    <label>Driver's Signature</label>
+                </div>
+                <div class="input-field col s12 m4">
+                    <input id="driverDate" name="driverDate" type="text">
+                    <label for="driverDate">Date</label>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="modal-close waves-effect waves-light btn-flat">Cancel</button>
+        <button class="waves-effect waves-light btn green" id="submitInspection">Submit Inspection</button>
+    </div>
+</div>
+
+<!-- Sign Up Prompt Modal -->
+<div id="signupPromptModal" class="modal">
+    <div class="modal-content">
+        <h4>Save Your Inspection</h4>
+        <p>Your inspection has been submitted successfully! Create a free account to save your inspection history and access it anytime.</p>
+        <div class="row">
+            <div class="col s12">
+                <a href="/signup" class="btn waves-effect waves-light green">Create Account</a>
+                <button class="modal-close waves-effect waves-light btn-flat">Continue as Guest</button>
+            </div>
+        </div>
+    </div>
+</div> 
