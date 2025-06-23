@@ -32,6 +32,18 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
+# 🛠️ pretriq Patch 1.1 — Google Analytics, Logo & Semantic HTML
+📅 **Release Date:** June 23, 2025
+
+---
+
+## 📢 Developer's Notes - **will do this later=tired af**
+
+- The code I pushed on this day was gr8
+![logos](logoimage.png)
+
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.0 — MVP & newsletter - live & launched
 📅 **Release Date:** June 22, 2025
 

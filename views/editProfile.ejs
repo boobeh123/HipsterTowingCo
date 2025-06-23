@@ -1,32 +1,32 @@
 <%- include('./partials/sidenavheader.ejs') %>
-    <main class="editprofile-main">
+    <main class="editprofile-main" aria-labelledby="edit-profile-heading">
         <div class="container card">
-            <section class="card-content clearfix">
-                <h1 class="border-bottom"><a href="/profile"><i class="fas fa-chevron-left"></i></a>Edit your profile</h1>
+            <section class="card-content clearfix" aria-labelledby="edit-profile-heading">
+                <h1 class="border-bottom" id="edit-profile-heading"><a href="/profile" aria-label="Back to profile"><i class="fas fa-chevron-left"></i></a>Edit your profile</h1>
                 <div>
                     <% if (user.name === '') { %>
-                    <form class="col-1 margin" action="/profile/edit/<%=user._id%>?_method=PUT" data-id="<%=user._id%>" method="POST">
-                        <label for="userName">Name:</label>
-                        <input type="text" placeholder="Name" name="userName" class="margin">
-                        <label for="userEmail">Email:</label>
-                        <input type="text" placeholder="Email" name="userEmail" class="margin" value="<%=user.email%>">
+                    <form class="col-1 margin" action="/profile/edit/<%=user._id%>?_method=PUT" data-id="<%=user._id%>" method="POST" aria-labelledby="edit-profile-heading">
+                        <label for="editprofile-name" class="sr-only">Name</label>
+                        <input id="editprofile-name" type="text" placeholder="Name" name="userName" class="margin">
+                        <label for="editprofile-email" class="sr-only">Email</label>
+                        <input id="editprofile-email" type="text" placeholder="Email" name="userEmail" class="margin" value="<%=user.email%>">
                         <button type="submit" title="Update Profile" class="margin hoverable waves-effect waves-light btn blue-grey">Submit</button>
                     </form>
                     <% } else { %>
-                    <form class="col-1 margin" action="/profile/edit/<%=user._id%>?_method=PUT" data-id="<%=user._id%>" method="POST">
-                        <label for="userName">Name:</label>
-                        <input type="text" placeholder="Name" name="userName" class="margin" value="<%=user.name%>">
-                        <label for="userEmail">Email:</label>
-                        <input type="text" placeholder="Email" name="userEmail" class="margin" value="<%=user.email%>">
+                    <form class="col-1 margin" action="/profile/edit/<%=user._id%>?_method=PUT" data-id="<%=user._id%>" method="POST" aria-labelledby="edit-profile-heading">
+                        <label for="editprofile-name" class="sr-only">Name</label>
+                        <input id="editprofile-name" type="text" placeholder="Name" name="userName" class="margin" value="<%=user.name%>">
+                        <label for="editprofile-email" class="sr-only">Email</label>
+                        <input id="editprofile-email" type="text" placeholder="Email" name="userEmail" class="margin" value="<%=user.email%>">
                         <button type="submit" title="Update Profile" class="margin hoverable waves-effect waves-light btn blue-grey">Submit</button>
                     </form>
                     <% } %>
                 </div>
                 <div>
                     <% if (user.image === '') { %>
-                    <img src="https://placeholder.pics/svg/100x100" class='responsive-img circle' />
+                    <img src="https://placeholder.pics/svg/100x100" class='responsive-img circle' alt="Profile placeholder image" />
                     <% } else { %>
-                    <img src="<%=user.image%>" class='responsive-img circle' />
+                    <img src="<%=user.image%>" class='responsive-img circle' alt="User profile image" />
                     <% } %>
                 </div>
             </section>

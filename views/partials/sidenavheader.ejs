@@ -1,27 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DHM2VXYJYE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-DHM2VXYJYE');
+    </script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Title Favicon -->
+    <title>Pretriq - Dashboard</title>
+    <meta name="title" content="Pretriq - Submit DoT Pre-Trip Inspection Checklists Digitally">
+    <meta name="description" content="Streamline your DoT pre-trip inspections with our digital checklist system. Create, submit, and send inspection reports with ease. Stay compliant and organized.">
+    <meta name="author" content="Bobby Asakawa">
+    <meta name="keywords" content="DOT, online pre-trip inspection checklist, digitally, compliance, trucking, transportation">
+    <meta name="robots" content="index, follow">
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/imgs/favicon-32x32.png"/>
-    <!-- Google fonts -->
+    <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="/css/style.css" as="style">
+    <!-- Google fonts with display swap -->
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100&family=Roboto:wght@100;400;700&display=swap" rel="stylesheet">
     <!-- MaterializeCSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <!-- Font-awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" media="print" onload="this.media='all'">
+    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- External css -->
-    <link rel="stylesheet" href="/css/normalize.css" type="text/css">
+    <link rel="stylesheet" href="/css/normalize.css" type="text/css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="/css/style.css" type="text/css">
-    <title>Bo-TOW</title>
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pretriq.up.railway.app/">
+    <meta property="og:title" content="Pretriq - Submit DoT Pre-Trip Inspection Checklists Digitally">
+    <meta property="og:description" content="Streamline your DoT pre-trip inspections with our digital checklist system. Create, submit, and send inspection reports with ease. Stay compliant and organized.">
+    <!-- <meta property="og:image" content="/imgs/og-image.jpg"> TO-DO -->
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://pretriq.up.railway.app/">
+    <meta property="twitter:title" content="Pretriq - Submit DoT Pre-Trip Inspection Checklists Digitally">
+    <meta property="twitter:description" content="Streamline your DoT pre-trip inspections with our digital checklist system. Create, submit, and send inspection reports with ease. Stay compliant and organized.">
 </head>
 <body>
     <header class="partial-sidenavheader">
-        <nav>
+        <nav role="navigation" aria-label="Sidebar navigation">
             <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <div class="nav-wrapper">
                 <% if (page === 'Dashboard') { %>
@@ -31,16 +65,19 @@
                 <% } %>
             </div>
             <ul id="slide-out" class="sidenav sidenav-fixed">
-                <div class="border-bottom margin">
-                    <li><a class="sidenav-brand-logo" href="/todos">Bo-TOW</a></li>
-                </div>
-                <% if (user.role === 'Customer') { %>
+                <li class="border-bottom margin">
+                    <a class="sidenav-brand-logo" href="/todos" aria-label="Go to dashboard">pretriq</a>
+                </li>
+                <% if (user.role === 'user') { %>
                     <% if (page === 'Dashboard') { %>
-                    <li><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger">Request Tow</a></li>
+                    <li>
+                        <a id="startInspectionBtn" href="#" class="hoverable waves-effect waves-light btn green darken-1" title="Start Driver's Vehicle Inspection Report" aria-label="Start a new pre-trip inspection" style="width:100%;margin-bottom:1rem;">
+                            <i class="fa-solid fa-plus" aria-hidden="true" style="margin-right: 0.5rem;"></i>Start pre-trip
+                        </a>
+                    </li>
                     <li class="active"><a href="/todos" class="hoverable waves-effect waves-light transparent">Dashboard</a></li>
                     <li><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
                     <% } else { %>
-                    <li><a href="/todos" class="hoverable waves-effect waves-light btn blue darken-1">Request Tow</a></li>
                     <li><a href="/todos" class="hoverable waves-effect waves-light transparent">Dashboard</a></li>
                     <li class="active"><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
                     <% } %>
@@ -53,22 +90,24 @@
                         <li class="active"><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
                         <% } %>
                 <% } %>
-                <div class="center-align logout-container">
-                    <% if (user.image === '') { %>
-                    <img src="https://placeholder.pics/svg/100x100" class='responsive-img center-align' />
-                    <% } else { %>
-                    <img src="<%=user.image%>" class='responsive-img center-align' />
-                    <% } %>
-                    <p>
-                    <% if (user.name === '') { %> 
-                    <span><%=user.email%></span>
-                    <% } else { %>
-                    <span><%=user.name%></span>
-                    <% } %>
-                    <span><%=user.role%></span>
-                    </p>
-                    <li><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text"><i class="fas fa-sign-out-alt"></i>Sign out</a></li>
-                </div>
+                <li class="center-align logout-container">
+                    <figure>
+                        <% if (user.image === '') { %>
+                        <img src="https://placeholder.pics/svg/100x100" class='responsive-img center-align' alt="Profile placeholder image" />
+                        <% } else { %>
+                        <img src="<%=user.image%>" class='responsive-img center-align' alt="User profile image" />
+                        <% } %>
+                        <figcaption>
+                            <% if (user.name === '') { %> 
+                            <span><%=user.email%></span>
+                            <% } else { %>
+                            <span><%=user.name%></span>
+                            <% } %>
+                            <span><%=user.role%></span>
+                        </figcaption>
+                    </figure>
+                    <a href="/logout" id="signOutBtn" class="hoverable waves-effect waves-light btn transparent black-text"><i class="fas fa-sign-out-alt"></i>Sign out</a>
+                </li>
               </ul>
         </nav>
     </header>

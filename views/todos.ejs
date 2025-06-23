@@ -1,209 +1,122 @@
 <%- include('./partials/sidenavheader.ejs') %>
-    <main class="todos-main">
+    <main class="todos-main" role="main" aria-labelledby="dashboard-heading">
         <%- include('./partials/flash.ejs') %>
         <div class="container">
-            <section class="container">
-                <% if (user.name !== '') { %>
-                <h1>Hello <%=user.name%></h1>
-                <% } else { %>
-                <h1 class="truncate">Welcome to pretriq</h1>
-                <% } %>
-                <div>
-                    <a href="/todos/filtered" title="Filter closed calls"><i class="fas fa-filter"></i></a>
-                    <a href="/todos/" title="Reset to default"><i class="fas fa-redo "></i></a>
-                    <!-- <a href="/createTodo/" title="Create inspection" method="POST"><i class="fas fa-edit "></i></a> -->
-                    <button id="startInspectionBtn" class="btn waves-effect waves-light green darken-1" title="Start Driver's Vehicle Inspection Report">
-                        <i class="fa-solid fa-plus"></i> Start pre-trip
-                    </button>
+            <section class="container" aria-labelledby="dashboard-heading">
+                <div class="action-bar" role="region" aria-label="Inspection actions">
                 </div>
             </section>
-                    <div class="container">
-                        <ul class="collapsible" id="inspection-list">
-                            <% todos.forEach( el => { %>
-                                <li class="todoItem" data-id="<%=el._id%>">
-                                    <div class="collapsible-header valign-wrapper" style="display: flex; justify-content: space-between;">
-                                        <div style="flex: 1;">
-                                            <% if (el.conditionSatisfactory) { %>
-                                                <span class="new badge green" data-badge-caption="Vehicle OK"></span>
-                                            <% } else { %>
-                                                <span class="new badge red" data-badge-caption="Defects Found"></span>
-                                            <% } %>
-                                        </div>
-                                        <div style="flex: 3;">
-                                            <span class="bold">USDOT# <%= el.truckTractorNo %></span>
-                                            <% if (el.trailerNo) { %>
-                                                <span class="grey-text"> / Trailer #<%= el.trailerNo %></span>
-                                            <% } %>
-                                        </div>
-                                        <div style="flex: 2;" class="right-align grey-text">
-                                            <%= moment(el.createdAt).format('MMMM Do YYYY, h:mm:ss a') %>
-                                        </div>
+            <section class="container" aria-labelledby="inspection-list-heading">
+                <h2 id="inspection-list-heading" class="sr-only">Inspection History</h2>
+                <ul class="collapsible" id="inspection-list" role="list" aria-label="Inspection history list">
+                    <% todos.forEach( el => { %>
+                        <li class="todoItem" data-id="<%=el._id%>" role="listitem">
+                            <div class="collapsible-header inspection-header-flex" id="inspection-header-<%=el._id%>" aria-labelledby="inspection-header-<%=el._id%>">
+                                <div class="inspection-header-flex1">
+                                    <% if (el.conditionSatisfactory) { %>
+                                        <span class="new badge green" data-badge-caption="Vehicle OK"><span class="sr-only">Vehicle OK</span></span>
+                                    <% } else { %>
+                                        <span class="new badge red" data-badge-caption="Defects Found"><span class="sr-only">Defects Found</span></span>
+                                    <% } %>
+                                </div>
+                                <div class="inspection-header-flex3">
+                                    <span class="bold">USDOT# <%= el.truckTractorNo %></span>
+                                    <% if (el.trailerNo) { %>
+                                        <span class="grey-text"> / Trailer #<%= el.trailerNo %></span>
+                                    <% } %>
+                                </div>
+                                <div class="inspection-header-flex2 right-align grey-text">
+                                    <%= moment(el.createdAt).format('MMMM Do YYYY, h:mm:ss a') %>
+                                </div>
+                            </div>
+                            <div class="collapsible-body inspection-body-padding">
+                                <section class="row marginB" aria-labelledby="remarks-heading-<%=el._id%>">
+                                    <div class="col s12">
+                                        <h3 class="border-bottom inspection-section-title" id="remarks-heading-<%=el._id%>">Remarks</h3>
+                                        <p><%= el.remarks || "No remarks provided." %></p>
                                     </div>
-                                    <div class="collapsible-body" style="padding: 2rem;">
-                                        <div class="row marginB">
-                                            <div class="col s12">
-                                                <h6 class="border-bottom">Remarks</h6>
-                                                <p><%= el.remarks || "No remarks provided." %></p>
-                                            </div>
-                                        </div>
-                                        
-                                        <% 
-                                            // Helper to find and format defect keys.
-                                            const findDefects = (defectsObject) => {
-                                                if (!defectsObject) return [];
-                                                return Object.entries(defectsObject)
-                                                    .filter(([key, value]) => value === true && key !== 'other')
-                                                    .map(([key, value]) => {
-                                                        // Convert camelCase to Title Case for display
-                                                        const result = key.replace(/([A-Z])/g, " $1");
-                                                        return result.charAt(0).toUpperCase() + result.slice(1);
-                                                    });
-                                            };
-                                            const truckDefects = findDefects(el.defects.truckTractor);
-                                            const trailerDefects = findDefects(el.defects.trailer);
-                                            const hasDefects = truckDefects.length > 0 || trailerDefects.length > 0 || (el.defects.truckTractor && el.defects.truckTractor.other) || (el.defects.trailer && el.defects.trailer.other);
-                                        %>
+                                </section>
+                                
+                                <% 
+                                    // Helper to find and format defect keys.
+                                    const findDefects = (defectsObject) => {
+                                        if (!defectsObject) return [];
+                                        return Object.entries(defectsObject)
+                                            .filter(([key, value]) => value === true && key !== 'other')
+                                            .map(([key, value]) => {
+                                                // Convert camelCase to Title Case for display
+                                                const result = key.replace(/([A-Z])/g, " $1");
+                                                return result.charAt(0).toUpperCase() + result.slice(1);
+                                            });
+                                    };
+                                    const truckDefects = findDefects(el.defects.truckTractor);
+                                    const trailerDefects = findDefects(el.defects.trailer);
+                                    const hasDefects = truckDefects.length > 0 || trailerDefects.length > 0 || (el.defects.truckTractor && el.defects.truckTractor.other) || (el.defects.trailer && el.defects.trailer.other);
+                                %>
 
-                                        <% if (hasDefects) { %>
-                                        <div class="row marginB">
-                                            <div class="col s12">
-                                                <h6 class="border-bottom red-text text-darken-2">Reported Defects</h6>
-                                                <div class="row">
-                                                    <% if (truckDefects.length > 0) { %>
-                                                    <div class="col s12 m6">
-                                                        <strong>Truck/Tractor:</strong>
-                                                        <ul style="padding-left: 20px;">
-                                                            <% truckDefects.forEach(defect => { %>
-                                                                <li style="list-style-type: disc;"><%= defect %></li>
-                                                            <% }); %>
-                                                        </ul>
-                                                    </div>
-                                                    <% } %>
-                                                    <% if (el.defects.truckTractor && el.defects.truckTractor.other) { %>
-                                                        <div class="col s12 m6">
-                                                            <strong>Other (Truck):</strong>
-                                                            <p><%= el.defects.truckTractor.other %></p>
-                                                        </div>
-                                                    <% } %>
-                                                    <% if (trailerDefects.length > 0) { %>
-                                                    <div class="col s12 m6">
-                                                        <strong>Trailer:</strong>
-                                                        <ul style="padding-left: 20px;">
-                                                            <% trailerDefects.forEach(defect => { %>
-                                                                <li style="list-style-type: disc;"><%= defect %></li>
-                                                            <% }); %>
-                                                        </ul>
-                                                    </div>
-                                                    <% } %>
-                                                     <% if (el.defects.trailer && el.defects.trailer.other) { %>
-                                                        <div class="col s12 m6">
-                                                            <strong>Other (Trailer):</strong>
-                                                            <p><%= el.defects.trailer.other %></p>
-                                                        </div>
-                                                    <% } %>
+                                <% if (hasDefects) { %>
+                                <section class="row marginB" aria-labelledby="defects-heading-<%=el._id%>">
+                                    <div class="col s12">
+                                        <h3 class="border-bottom red-text text-darken-2 inspection-section-title" id="defects-heading-<%=el._id%>">Reported Defects</h3>
+                                        <div class="row">
+                                            <% if (truckDefects.length > 0) { %>
+                                            <div class="col s12 m6">
+                                                <strong>Truck/Tractor:</strong>
+                                                <ul class="inspection-defect-list">
+                                                    <% truckDefects.forEach(defect => { %>
+                                                        <li class="inspection-defect-item"><%= defect %></li>
+                                                    <% }); %>
+                                                </ul>
+                                            </div>
+                                            <% } %>
+                                            <% if (el.defects.truckTractor && el.defects.truckTractor.other) { %>
+                                                <div class="col s12 m6">
+                                                    <strong>Other (Truck):</strong>
+                                                    <p><%= el.defects.truckTractor.other %></p>
                                                 </div>
+                                            <% } %>
+                                            <% if (trailerDefects.length > 0) { %>
+                                            <div class="col s12 m6">
+                                                <strong>Trailer:</strong>
+                                                <ul class="inspection-defect-list">
+                                                    <% trailerDefects.forEach(defect => { %>
+                                                        <li class="inspection-defect-item"><%= defect %></li>
+                                                    <% }); %>
+                                                </ul>
                                             </div>
-                                        </div>
-                                        <% } %>
-
-                                        <div class="right-align">
-                                            <a href="/todos/view/<%=el._id%>" class="btn-small waves-effect waves-light blue">View Full Report</a>
-                                            <form action="/todos/<%=el._id%>?_method=DELETE" method="POST" style="display: inline;">
-                                                <button type="submit" class="btn-small waves-effect waves-light red accent-3">Delete</button>
-                                            </form>
+                                            <% } %>
+                                             <% if (el.defects.trailer && el.defects.trailer.other) { %>
+                                                <div class="col s12 m6">
+                                                    <strong>Other (Trailer):</strong>
+                                                    <p><%= el.defects.trailer.other %></p>
+                                                </div>
+                                            <% } %>
                                         </div>
                                     </div>
-                                </li>
-                            <% }) %>    
-                        </ul>
+                                </section>
+                                <% } %>
 
-                        <% if (hasMore) { %>
-                        <div class="center-align" style="margin-top: 2rem;">
-                            <button id="load-more-btn" class="btn waves-effect waves-light blue darken-2" data-page="<%= currentPage %>">
-                                Load More
-                            </button>
-                        </div>
-                        <% } %>
-                    </div>
+                                <div class="right-align">
+                                    <a href="/todos/view/<%=el._id%>" class="btn-small waves-effect waves-light blue" aria-label="View full report for inspection <%=el.truckTractorNo%>">View Full Report</a>
+                                    <form action="/todos/<%=el._id%>?_method=DELETE" method="POST" class="form-inline">
+                                        <button type="submit" class="btn-small waves-effect waves-light red accent-3" aria-label="Delete inspection for <%=el.truckTractorNo%>">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    <% }) %>    
+                </ul>
+
+                <% if (hasMore) { %>
+                <div class="center-align load-more-container">
+                    <button id="load-more-btn" class="btn waves-effect waves-light blue darken-2" data-page="<%= currentPage %>" aria-label="Load more inspections">
+                        Load More
+                    </button>
+                </div>
+                <% } %>
+            </section>
         </div>
-        <div id="modal1" class="modal">
-            <div class="modal-content">
-                <h4 class="center-align marginB border-bottom flow-text">Provide details that will help us find you</h4>
-                <form action="/todos/createTodo" method='POST'>
-                    <div class="locationContainer margin">
-                        <div class="halfWidth">
-                            <label for="contactName">Customer name:</label>
-                            <input type="text" placeholder="Jane Doe*" name="contactName" class="margin">
-                        </div>
-                        <div class="halfWidth">
-                            <label for="contactNumber">Phone number:</label>
-                            <input type="tel" placeholder="(800)-939-8252*" name="contactNumber" class="margin">
-                        </div>
-                        <div class="hybridHalfWidth">
-                            <label for="vehicleAddressPick">Pickup address:</label>
-                            <input type="text" placeholder="2300 California Ave SW*" name="vehicleAddressPick" class="margin" required>
-                        </div>
-                        <div class="hybridHalfWidth">
-                            <label for="vehicleAddressDrop">Dropoff address:</label>
-                            <input type="text" placeholder="9600 California Ave SW*" name="vehicleAddressDrop" class="margin">
-                        </div>
-                    </div>
-                    <div class="vehicleContainer margin">
-                        <div class="hybridHalfWidth">
-                            <label for="vehicleType">Describe your vehicle:</label>
-                            <select name="vehicleType" required>
-                                <option value="" selected>Please select an option</option>
-                                <option value="Sedan">Sedan / Car</option>
-                                <option value="SUV">SUV / Van</option>
-                                <option value="Truck">Truck</option>
-                                <option value="Motorcycle">Motorcycle</option>
-                                <option value="Other">Box-truck / Heavy-duty (specify in notes below)</option>
-                            </select>
-                        </div>
-                        <div class="hybridHalfWidth">
-                            <select name="vehicleDoor" required>
-                                <option value="" selected>Please select an option</option>
-                                <option value="4">4-Door</option>
-                                <option value="2">2-Door</option>
-                                <option value="0">Motorcycle</option>
-                            </select>
-                        </div>
-                        <div>
-                            <input type="text" placeholder="Vehicle Color*" name="vehicleColor" class="margin" required>
-                        </div>
-                        <div>
-                            <label for="contactRideAlong">Ride with driver?:</label>
-                            <select name="contactRideAlong" required>
-                                <option value="" selected>Please select an option</option>
-                                <option value="true">Yes I will be with the vehicle</option>
-                                <option value="false">No the vehicle is unattended (leave key in car)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="customerNotes">Notes to driver/dispatch</label>
-                            <textarea name="customerNotes" cols="30" rows="6" placeholder="Call on arrival...Key under driver-side floormat" class="margin"></textarea>
-                        </div>
-                    </div>
-                    <button type="submit" class="hoverable waves-effect waves-light btn blue darken-1">Submit</button>
-                    <h5 class="center-align">Additional Details (optional)</h5>
-                    <div class="optionalContainer margin">
-                        <div class="hybridThirdWidth">
-                            <label for="vehicleYear">Year:</label>
-                            <input type="text" placeholder="2001" name="vehicleYear" class="margin">
-                        </div>
-                        <div class="hybridThirdWidth">
-                            <label for="vehicleMake">Make:</label>
-                            <input type="text" placeholder="Toyota" name="vehicleMake" class="margin">
-                        </div>
-                        <div class="hybridThirdWidth">
-                            <label for="vehicleModel">Model:</label>
-                            <input type="text" placeholder="Corolla" name="vehicleModel" class="margin">
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
+    
         <%- include('./partials/inspectionModal.ejs') %>
 
     </main>

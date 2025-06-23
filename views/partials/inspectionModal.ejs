@@ -1,9 +1,9 @@
 <!-- Pre-trip Inspection Modal -->
-<div id="inspectionModal" class="modal modal-fixed-footer">
+<div id="inspectionModal" class="modal modal-fixed-footer" role="dialog" aria-modal="true" aria-labelledby="inspection-modal-heading">
     <div class="modal-content">
-        <h4>Driver's Vehicle Inspection Report</h4>
+        <h4 id="inspection-modal-heading">Driver's Vehicle Inspection Report</h4>
         <p>Check ANY defective item and give details under "Remarks."</p>
-        <form id="inspectionForm" novalidate>
+        <form id="inspectionForm" novalidate aria-labelledby="inspection-modal-heading">
             <!-- Vehicle Information -->
             <div class="row">
                 <div class="input-field col s12">
@@ -110,7 +110,7 @@
                         </label>
                     </p>
                     <div class="input-field">
-                        <input type="text" disabled>
+                        <input type="text" disabled aria-label="Driver's Signature (disabled)">
                         <label>Driver's Signature</label>
                     </div>
                 </div>
@@ -140,7 +140,7 @@
             </div>
             <div class="row">
                 <div class="input-field col s12 m8">
-                    <input type="text" disabled>
+                    <input type="text" disabled aria-label="Mechanic's Signature (disabled)">
                     <label>Mechanic's Signature</label>
                 </div>
                 <div class="input-field col s12 m4">
@@ -150,7 +150,7 @@
             </div>
             <div class="row">
                 <div class="input-field col s12 m8">
-                    <input type="text" disabled>
+                    <input type="text" disabled aria-label="Driver's Signature (disabled)">
                     <label>Driver's Signature</label>
                 </div>
                 <div class="input-field col s12 m4">
@@ -161,20 +161,20 @@
         </form>
     </div>
     <div class="modal-footer">
-        <button class="modal-close waves-effect waves-light btn-flat">Cancel</button>
-        <button class="waves-effect waves-light btn green" id="submitInspection">Submit Inspection</button>
+        <button class="modal-close waves-effect waves-light btn-flat" aria-label="Cancel Inspection">Cancel</button>
+        <button class="waves-effect waves-light btn green" id="submitInspection" aria-label="Submit Inspection">Submit Inspection</button>
     </div>
 </div>
 
 <!-- Sign Up Prompt Modal -->
-<div id="signupPromptModal" class="modal">
+<div id="signupPromptModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="signup-modal-heading">
     <div class="modal-content">
-        <h4>Save Your Inspection</h4>
+        <h4 id="signup-modal-heading">Save Your Inspection</h4>
         <p>Your inspection has been submitted successfully! Create a free account to save your inspection history and access it anytime.</p>
         <div class="row">
             <div class="col s12">
-                <a href="/signup" class="btn waves-effect waves-light green">Create Account</a>
-                <button class="modal-close waves-effect waves-light btn-flat">Continue as Guest</button>
+                <a href="/signup" class="btn waves-effect waves-light green" aria-label="Create Account">Create Account</a>
+                <button class="modal-close waves-effect waves-light btn-flat" aria-label="Continue as Guest">Continue as Guest</button>
             </div>
         </div>
     </div>

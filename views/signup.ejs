@@ -1,22 +1,27 @@
 <%- include('./partials/header.ejs') %>
     <main class="signup-main">
         <div class="container firstArea">
-            <section class="container">
-                <h3>Inspections Reimagined</h3>
+            <section class="container" aria-labelledby="signup-welcome-heading">
+                <h3 id="signup-welcome-heading">Inspections Reimagined</h3>
                 <p>Welcome to pretriq</p>
-                <a href="/">Back to Home Page ></a>
+                <a href="/">Back to Home Page &gt;</a>
             </section>
         </div>
         <div class="container secondArea">
             <div class="container">
                 <div class="card col hoverable">
-                    <%- include('./partials/flash.ejs') %>
+                    <div aria-live="polite">
+                        <%- include('./partials/flash.ejs') %>
+                    </div>
                     <div class="card-content">
-                        <h4 class="center-align">Create an account</h4>
-                        <form action="/signup" method="POST">
-                            <input type="email" name="email" placeholder="Email*" autofocus autocomplete="email" required>
-                            <input type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required>
-                            <input type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required>
+                        <h4 class="center-align" id="signup-heading">Create an account</h4>
+                        <form action="/signup" method="POST" aria-labelledby="signup-heading">
+                            <label for="signup-email" class="sr-only">Email address</label>
+                            <input id="signup-email" type="email" name="email" placeholder="Email*" autofocus autocomplete="email" required>
+                            <label for="signup-password" class="sr-only">Password</label>
+                            <input id="signup-password" type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required>
+                            <label for="signup-confirmPassword" class="sr-only">Confirm Password</label>
+                            <input id="signup-confirmPassword" type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required>
                             <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
                             <p class="center-align">Already have an account? <a href='/login'>Sign In</a></p>
                         </form>

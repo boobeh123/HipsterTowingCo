@@ -192,6 +192,11 @@ a {
     display: block;
     line-height: 0;
 }
+
+#startInspectionBtn {
+    width: 90% !important;
+    /* border: 2px solid red; */
+}
 /**************************************************************
 * Flash
 ***************************************************************/
@@ -601,6 +606,50 @@ a {
     margin: 0 0.25rem;
 }
 
+
+/* todos.ejs - inspection header flex layout */
+.inspection-header-flex {
+    display: flex;
+    justify-content: space-between;
+}
+.inspection-header-flex1 {
+    flex: 1;
+}
+.inspection-header-flex3 {
+    flex: 3;
+}
+.inspection-header-flex2 {
+    flex: 2;
+}
+
+/* todos.ejs - collapsible body padding */
+.inspection-body-padding {
+    padding: 2rem;
+}
+
+/* todos.ejs - section title font size */
+.inspection-section-title {
+    font-size: 1.1rem;
+}
+
+/* todos.ejs - defect list and items */
+.inspection-defect-list {
+    padding-left: 20px;
+}
+.inspection-defect-item {
+    list-style-type: disc;
+}
+
+/* todos.ejs - form inline display */
+.form-inline {
+    display: inline;
+}
+
+/* todos.ejs - load more button container */
+.load-more-container {
+    margin-top: 2rem;
+}
+
 /* profile.ejs  */
 .profile-main {
     background-color: rgba(197, 202, 208, 0.15);
@@ -713,6 +762,28 @@ a {
 .page-footer .container .row ul li a:hover {
     color: rgba(76, 175, 80, 0.8);
 }
+
+.social-links {
+    margin-top: 1rem;
+    background-color: transparent;
+}
+
+.social-links ul {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+    justify-content: flex-start;
+  }
+  .social-links ul li a {
+    color: #222;
+    font-size: 1.5rem;
+    transition: color 0.2s;
+  }
+  .social-links ul li a:hover {
+    color: #4CAF50;
+  }
 /**************************************************************
 * Media queries
 ***************************************************************/

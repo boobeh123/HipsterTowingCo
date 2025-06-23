@@ -1,30 +1,30 @@
 <% if (locals.messages.errors) { %>
     <% messages.errors.forEach( el => { %>
-        <div id='scale-demo' class="card alert-danger scale-transition d-none">
+        <div id='scale-demo' class="card alert-danger scale-transition d-none" role="alert">
             <div class="card-content">
                 <span class="center-align"><%= el.msg %></span>
-                <button id="scale-demo-trigger" class="scale-transition float-right dismissBtn">X</button>
+                <button id="scale-demo-trigger" class="scale-transition float-right dismissBtn" aria-label="Dismiss error message">X</button>
             </div>
         </div>
     <% }) %>    
 <% } %>
 <% if (locals.messages.info) { %>
     <% messages.info.forEach( el => { %>
-        <div id='scale-demo' class="card alert-success scale-transition">
+        <div id='scale-demo' class="card alert-success scale-transition" role="alert">
             <div class="card-content">
                 <span class="center-align"><%= el.msg %></span>
-                <button id="scale-demo-trigger" class="scale-transition float-right successDismissBtn">X</button>
+                <button id="scale-demo-trigger" class="scale-transition float-right successDismissBtn" aria-label="Dismiss info message">X</button>
             </div>
         </div>
     <% }) %>    
 <% } %>
 <% if (locals.messages.success) { %>
     <% messages.success.forEach( el => { %>
-        <div class="container">
-            <div id='scale-demo' class="card alert-success scale-transition">
+        <div class="container" aria-live="assertive">
+            <div id='scale-demo' class="card alert-success scale-transition" role="alert">
                 <div class="card-content">
                     <span class="center-align"><%= el.msg %></span>
-                    <button id="scale-demo-trigger" class="scale-transition float-right successDismissBtn">X</button>
+                    <button id="scale-demo-trigger" class="scale-transition float-right successDismissBtn" aria-label="Dismiss success message">X</button>
                 </div>
             </div>
         </div>

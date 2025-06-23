@@ -1,26 +1,29 @@
 <%- include('./partials/header.ejs') %>
     <main class="login-main">
         <div class="container firstArea">
-            <section class="container">
-                <h3>Inspections Reimagined</h3>
+            <section class="container" aria-labelledby="login-welcome-heading">
+                <h3 id="login-welcome-heading">Inspections Reimagined</h3>
                 <p>Welcome to pretriq</p>
-                <a href="/">Back to Home Page ></a>
+                <a href="/">Back to Home Page &gt;</a>
             </section>
         </div>
         <div class="container secondArea">
             <div class="container">
                 <div class="card col hoverable">
-                    <%- include('./partials/flash.ejs') %>
+                    <div aria-live="polite">
+                        <%- include('./partials/flash.ejs') %>
+                    </div>
                     <div class="card-content">
-                        <h4 class="center-align">Log in to your account</h4>
-                        <form action="/login" method="POST">
-                            <input type="email" name="email" placeholder="Email*" autofocus required autocomplete='email'>
-                            <input type="password" name="password" placeholder="Password*" required autocomplete='current-password'>
+                        <h4 class="center-align" id="login-heading">Log in to your account</h4>
+                        <form action="/login" method="POST" aria-labelledby="login-heading">
+                            <label for="login-email" class="sr-only">Email address</label>
+                            <input id="login-email" type="email" name="email" placeholder="Email*" autofocus required autocomplete='email'>
+                            <label for="login-password" class="sr-only">Password</label>
+                            <input id="login-password" type="password" name="password" placeholder="Password*" required autocomplete='current-password'>
                             <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
                             <p class="center-align">Need an account? <a href='/signup'>Sign Up</a></p>
                             <a class="center-align forgot marginT" href='/forgot'>Forgot Password?</a>
                         </form>
-
                     </div>
                 </div>
             </div>
