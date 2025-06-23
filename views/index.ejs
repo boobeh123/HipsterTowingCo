@@ -66,16 +66,17 @@
                     <div class="newsletter-content">
                         <h3 id="newsletter-heading">Stay Updated with Pretriq</h3>
                         <p>Get notified about new features, DOT regulation updates, and safety tips for your fleet.</p>
-                        <form class="newsletter-form" role="form" aria-labelledby="newsletter-heading">
+                        <form id="newsletter-form" class="newsletter-form" action="/newsletter/subscribe" method="POST">
                             <div class="input-group">
-                                <input type="email" placeholder="Enter your email address" class="newsletter-input" aria-label="Email address for newsletter subscription" required>
-                                <button type="submit" class="newsletter-btn" aria-label="Subscribe to newsletter">
-                                    <span>Subscribe</span>
-                                    <i class="material-icons" aria-hidden="true">arrow_forward</i>
-                                </button>
+                              <input id="newsletter-email" type="email" name="email" placeholder="Enter your email address" class="newsletter-input" required>
+                              <button type="submit" class="newsletter-btn">
+                                <span>Subscribe</span>
+                                <i class="material-icons" aria-hidden="true">arrow_forward</i>
+                              </button>
                             </div>
                             <small class="newsletter-note">We respect your privacy. Unsubscribe at any time.</small>
-                        </form>
+                          </form>
+                        <div id="newsletter-message" class="center-align" style="margin-top:1rem;"></div>
                     </div>
                 </div>
             </div>
