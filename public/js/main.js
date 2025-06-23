@@ -106,4 +106,77 @@ document.addEventListener('DOMContentLoaded', function() {
     if (collapsibles.length > 0) {
         M.Collapsible.init(collapsibles);
     }
+
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', async function() {
+            let currentPage = parseInt(this.dataset.page, 10);
+            const nextPage = currentPage + 1;
+
+            this.textContent = 'Loading...';
+            this.disabled = true;
+
+            try {
+                const response = await fetch(`/todos/loadmore?page=${nextPage}`);
+                if (!response.ok) {
+                    throw new Error('Failed to load more inspections.');
+                }
+                const { inspections, hasMore } = await response.json();
+                
+                const inspectionList = document.getElementById('inspection-list');
+                
+                // --- Create a template for new inspection items ---
+                const itemsHtml = inspections.map(el => `
+                    <li class="todoItem" data-id="${el._id}">
+                        <div class="collapsible-header valign-wrapper" style="display: flex; justify-content: space-between;">
+                            <div style="flex: 1;">
+                                ${el.conditionSatisfactory 
+                                    ? '<span class="new badge green" data-badge-caption="Vehicle OK"></span>' 
+                                    : '<span class="new badge red" data-badge-caption="Defects Found"></span>'}
+                            </div>
+                            <div style="flex: 3;">
+                                <span class="bold">USDOT# ${el.truckTractorNo}</span>
+                                ${el.trailerNo ? `<span class="grey-text"> / Trailer # ${el.trailerNo}</span>` : ''}
+                            </div>
+                            <div style="flex: 2;" class="right-align grey-text">
+                                ${new Date(el.createdAt).toLocaleDateString()}
+                            </div>
+                        </div>
+                        <div class="collapsible-body" style="padding: 2rem;">
+                            <!-- Body content would be more complex to recreate fully without Moment.js, keeping it simple for now -->
+                            <p><b>Remarks:</b> ${el.remarks || 'No remarks provided.'}</p>
+                            <div class="right-align">
+                                <a href="/todos/view/${el._id}" class="btn-small waves-effect waves-light blue">View Full Report</a>
+                                <form action="/todos/${el._id}?_method=DELETE" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn-small waves-effect waves-light red accent-3">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                `).join('');
+
+                inspectionList.insertAdjacentHTML('beforeend', itemsHtml);
+                
+                // Re-initialize collapsibles for the new items
+                const newCollapsibles = inspectionList.querySelectorAll('.collapsible');
+                M.Collapsible.init(newCollapsibles);
+
+                // Update button state
+                this.dataset.page = nextPage;
+                if (hasMore) {
+                    this.textContent = 'Load More';
+                    this.disabled = false;
+                } else {
+                    this.textContent = 'No More Inspections';
+                    this.style.display = 'none'; // Hide the button
+                }
+
+            } catch (error) {
+                console.error('Error loading more inspections:', error);
+                M.toast({ html: 'Could not load more inspections.', classes: 'red' });
+                this.textContent = 'Load More';
+                this.disabled = false;
+            }
+        });
+    }
 });
