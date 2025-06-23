@@ -11,6 +11,7 @@ const methodOverride = require("method-override");
 const mainRoutes = require('./routes/main')
 const todoRoutes = require('./routes/todos')
 const profileRoutes = require('./routes/profile')
+const newsletterRoutes = require('./routes/newsletter');
 
 require('dotenv').config({path: './config/.env'})
 
@@ -46,7 +47,7 @@ app.use(flash())
 app.use('/', mainRoutes)
 app.use('/todos', todoRoutes)
 app.use('/profile', profileRoutes)
-
+app.use('/newsletter', newsletterRoutes);
  
 app.listen(process.env.PORT, ()=>{
     console.log('Server is running, you better catch it!')
