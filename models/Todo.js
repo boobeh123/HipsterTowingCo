@@ -1,78 +1,121 @@
 const mongoose = require('mongoose')
 
-const TodoSchema = new mongoose.Schema({
-  contactNumber: {
-    type: Number,
-    required: true,
-  },
-  vehicleAddressPick: {
+// Sub-schema for Truck/Tractor defects to be nested in the main InspectionSchema
+const TruckTractorDefectsSchema = new mongoose.Schema({
+    airCompressor: { type: Boolean, default: false },
+    airLines: { type: Boolean, default: false },
+    battery: { type: Boolean, default: false },
+    brakeAccessories: { type: Boolean, default: false },
+    brakes: { type: Boolean, default: false },
+    carburetor: { type: Boolean, default: false },
+    clutch: { type: Boolean, default: false },
+    defroster: { type: Boolean, default: false },
+    driveLine: { type: Boolean, default: false },
+    engine: { type: Boolean, default: false },
+    fifthWheel: { type: Boolean, default: false },
+    frontAxle: { type: Boolean, default: false },
+    fuelTanks: { type: Boolean, default: false },
+    heater: { type: Boolean, default: false },
+    horn: { type: Boolean, default: false },
+    lights: { type: Boolean, default: false },
+    mirrors: { type: Boolean, default: false },
+    muffler: { type: Boolean, default: false },
+    oilPressure: { type: Boolean, default: false },
+    onBoardRecorder: { type: Boolean, default: false },
+    radiator: { type: Boolean, default: false },
+    rearEnd: { type: Boolean, default: false },
+    reflectors: { type: Boolean, default: false },
+    safetyEquipment: { type: Boolean, default: false },
+    springs: { type: Boolean, default: false },
+    starter: { type: Boolean, default: false },
+    steering: { type: Boolean, default: false },
+    tachograph: { type: Boolean, default: false },
+    tires: { type: Boolean, default: false },
+    transmission: { type: Boolean, default: false },
+    wheels: { type: Boolean, default: false },
+    windows: { type: Boolean, default: false },
+    windshieldWipers: { type: Boolean, default: false },
+    other: { type: String, default: '' }
+}, { _id: false }); // No _id needed for sub-documents
+
+// Sub-schema for Trailer defects
+const TrailerDefectsSchema = new mongoose.Schema({
+    brakeConnections: { type: Boolean, default: false },
+    brakes: { type: Boolean, default: false },
+    couplingChains: { type: Boolean, default: false },
+    couplingPin: { type: Boolean, default: false },
+    doors: { type: Boolean, default: false },
+    hitch: { type: Boolean, default: false },
+    landingGear: { type: Boolean, default: false },
+    lightsAll: { type: Boolean, default: false },
+    roof: { type: Boolean, default: false },
+    springs: { type: Boolean, default: false },
+    tarpaulin: { type: Boolean, default: false },
+    tires: { type: Boolean, default: false },
+    wheels: { type: Boolean, default: false },
+    other: { type: String, default: '' }
+}, { _id: false });
+
+const InspectionSchema = new mongoose.Schema({
+  // Basic Info
+  truckTractorNo: {
     type: String,
-    required: true,
+    required: [true, 'USDOT/Truck number is required.'],
+    trim: true,
+    minLength: [3, 'Truck number must be at least 3 characters long.']
   },
-  vehicleAddressDrop: {
+  trailerNo: {
     type: String,
+    trim: true,
   },
-  contactRideAlong: {
+  
+  // Defect Checklists (nested objects)
+  defects: {
+    truckTractor: TruckTractorDefectsSchema,
+    trailer: TrailerDefectsSchema
+  },
+
+  remarks: {
+    type: String,
+    trim: true,
+  },
+
+  // Signatures & Status
+  conditionSatisfactory: {
     type: Boolean,
-    required: true,
+    default: false,
   },
-  vehicleType: {
+  driverSignature: { // Representing signature with a name or ID for now
     type: String,
-    required: true,
+    // required: true,
   },
-  vehicleDoor: {
-    type: Number,
-    required: true,
-  },
-  vehicleColor: {
-    type: String,
-    required: true,
-  },
-  vehicleYear: {
-    type: Number,
-  },
-  vehicleMake: {
-    type: String,
-  },
-  vehicleModel: {
-    type: String,
-  },
-  customerNotes: {
-    type: String,
-  },
-  completed: {
+  defectsCorrected: {
     type: Boolean,
-    required: true,
+    default: false,
   },
-  assigned: {
+  defectsNotCorrected: {
     type: Boolean,
-    required: true,
+    default: false,
   },
-  assignedTo: {
+  mechanicSignature: {
     type: String,
+    trim: true,
   },
-  driverName: {
-    type: String,
+  mechanicDate: {
+    type: String, // Using string to match form data, can be Date if needed
+    trim: true,
   },
-  accepted: {
-    type: Boolean,
-    required: true,
-  },
-  driverStatus: {
-    type: String,
-  },
+  
+  // User and Timestamp
   userId: {
-    type: String,
-    required: true
-  },
-  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: true
   },
   createdAt: {
     type: Date,
-    default: Date.now()
+    default: Date.now
   },
 })
 
-module.exports = mongoose.model('Todo', TodoSchema)
+module.exports = mongoose.model('Inspection', InspectionSchema)
