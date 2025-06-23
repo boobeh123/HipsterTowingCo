@@ -197,7 +197,7 @@ a {
 ***************************************************************/
 /* partials - flash.ejs */
 #scale-demo .card-content {
-    border: 2px solid red;
+    /* border: 2px solid red; */
     text-align: center;
 }
 #scale-demo .card-content .dismissBtn {
@@ -206,12 +206,12 @@ a {
     border-radius: .25rem;
     opacity: 0.5;
     color: #000;
-    border: 2px solid red;
+    /* border: 2px solid red; */
 
 }
 #scale-demo .card-content .dismissBtn:hover {
     color: #842029;
-    border: 2px solid red;
+    /* border: 2px solid red; */
 
 }
 #scale-demo .card-content .successDismissBtn {
@@ -220,12 +220,12 @@ a {
     border-radius: .25rem;
     opacity: 0.5;
     color: #000;
-    border: 2px solid red;
+    /* border: 2px solid red; */
 
 }
 #scale-demo .card-content .successDismissBtn:hover {
     color: #0f5132;
-    border: 2px solid red;
+    /* border: 2px solid red; */
 
 }
 /**************************************************************
