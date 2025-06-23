@@ -4,159 +4,119 @@
         <div class="container">
             <section class="container">
                 <% if (user.name !== '') { %>
-                <h1>Welcome <%=user.name%></h1>
+                <h1>Hello <%=user.name%></h1>
                 <% } else { %>
-                <h1 class="truncate">Welcome <%=user.email%></h1>
+                <h1 class="truncate">Welcome to pretriq</h1>
                 <% } %>
                 <div>
                     <a href="/todos/filtered" title="Filter closed calls"><i class="fas fa-filter"></i></a>
                     <a href="/todos/" title="Reset to default"><i class="fas fa-redo "></i></a>
+                    <!-- <a href="/createTodo/" title="Create inspection" method="POST"><i class="fas fa-edit "></i></a> -->
+                    <button id="startInspectionBtn" class="btn waves-effect waves-light green darken-1" title="Start Driver's Vehicle Inspection Report">
+                        <i class="fa-solid fa-plus"></i> Start pre-trip
+                    </button>
                 </div>
             </section>
                     <div class="container">
                         <ul class="collapsible">
                             <% todos.forEach( el => { %>
-                                <li class='todoItem' data-id='<%=el._id%>'>
-                                    <div class="collapsible-header">
-                                        <span class="new badge marginB <%= el.completed === true ? 'red' : 'green' %>" data-badge-caption="<%= el.completed === true ? 'Closed' : 'Open' %>"></span>
-                                        <div class="marginB">
-                                        <% drivers.forEach( driver => { %>
-                                            <% if ((driver._id == el.assignedTo) && (el.assigned)) { %>
-                                            <img src='<%=driver.image%>' class="center-align responsive-img circle" />
-                                                <% } %>
-                                            <% }) %>
-                                        <p class='bold center-align <%= el.completed === true ? 'completed' : 'not' %> '><span class='border-bottom'><%= moment(el.createdAt).format('LLL') %></span></p>
-                                    </div>
-                                    <div class="center-align">
-                                        <span data-id='<%=el._id%>' class="<%= el.completed === true ? 'completed' : 'not' %>">
-                                            <% if ((el.vehicleYear !== null) && (el.vehicleMake.length > 0) && (el.vehicleModel.length > 0)) { %>
-                                                <span class="bold">Pickup: </span><%= `${el.vehicleYear} ${el.vehicleMake} ${el.vehicleModel} ${el.vehicleColor}` %>
-                                                <% } else if ((el.vehicleYear == null) && (el.vehicleMake.length > 0) && (el.vehicleModel.length > 0)) { %>
-                                                    <span class="bold">Pickup: </span><%= `${el.vehicleMake} ${el.vehicleModel} ${el.vehicleColor}` %>
-                                                    <% } else { %>
-                                                        <span class="bold">Pickup: </span><%= `${el.vehicleDoor}-Door ${el.vehicleType} ${el.vehicleColor}` %>
-                                                        <% } %>
-                                                    </span>
-                                                </div>
-                                    <div class="center-align">
-                                        <% if (el.assigned) { %>
-                                            <% drivers.forEach(driver => { %>
-                                                <% if (driver._id == el.assignedTo) { %>
-                                                <p style="margin: 0;" class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver</span>: <%=driver.name%></p>
-                                                <% } %>
-                                            <% }) %> 
-                                            <% if ((el.accepted) && el.driverStatus !== '') { %>
-                                            <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver Status</span>: <%= el.driverStatus %></span>
+                                <li class="todoItem" data-id="<%=el._id%>">
+                                    <div class="collapsible-header valign-wrapper" style="display: flex; justify-content: space-between;">
+                                        <div style="flex: 1;">
+                                            <% if (el.conditionSatisfactory) { %>
+                                                <span class="new badge green" data-badge-caption="Vehicle OK"></span>
                                             <% } else { %>
-                                            <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver Status</span>: Requesting for ETA...</span>
+                                                <span class="new badge red" data-badge-caption="Defects Found"></span>
                                             <% } %>
-                                        <% } else { %>
-                                        <p style="margin: 0;" class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver</span>: Waiting for available driver...</p>
-                                        <span class=<%= el.completed === true ? 'completed' : 'not' %> '><span class="bold">Driver Status</span>: Searching for driver...</span>
-                                        <% } %>
+                                        </div>
+                                        <div style="flex: 3;">
+                                            <span class="bold">USDOT# <%= el.truckTractorNo %></span>
+                                            <% if (el.trailerNo) { %>
+                                                <span class="grey-text"> / Trailer #<%= el.trailerNo %></span>
+                                            <% } %>
+                                        </div>
+                                        <div style="flex: 2;" class="right-align grey-text">
+                                            <%= moment(el.createdAt).format('MMMM Do YYYY, h:mm:ss a') %>
+                                        </div>
                                     </div>
-                                    </div>
-                                    <div class="collapsible-body">
-                                        <div class="margin border-bottom">
-                                            <span class="bold">Contact:</span>
-                                            <span class='marginH <%= el.completed === true ? 'completed' : 'not' %> '><%= el.contactNumber %></span>
+                                    <div class="collapsible-body" style="padding: 2rem;">
+                                        <div class="row marginB">
+                                            <div class="col s12">
+                                                <h6 class="border-bottom">Remarks</h6>
+                                                <p><%= el.remarks || "No remarks provided." %></p>
+                                            </div>
                                         </div>
-                                        <div class="margin border-bottom">
-                                            <span class="bold">Ride with driver:</span>
-                                            <span class='marginH <%= el.completed === true ? 'completed' : 'not' %> '><%= el.contactRideAlong %></span>
-                                        </div>
-                                        <div class="margin border-bottom">
-                                            <span class="bold">Pickup:</span>
-                                            <span class='marginH priority <%= el.completed === true ? 'completed' : 'not' %> '><%= el.vehicleAddressPick %></span>
-                                        </div>
-                                        <div class="margin border-bottom">
-                                            <span class="bold">Dropoff:</span>
-                                            <span class='marginH priority <%= el.completed === true ? 'completed' : 'not' %> '><%= el.vehicleAddressDrop %></span>
-                                        </div>
-                                <div class="margin border-bottom">
-                                    <span class="bold">Notes:</span>
-                                    <p class='marginT <%= el.completed === true ? 'completed' : 'not' %> '><%= el.customerNotes %></p>
-                                </div>
-                                <div class="margin">
-                                    <% if (user.role === 'Customer') { %>
-                                        <% if (el.completed === false) { %>
-                                        <form class="col-1 margin" action="/todos/edit/<%=el._id%>" data-id="<%=el._id%>" method="GET"> 
-                                            <button type="submit" title="Edit Details" class="margin hoverable waves-effect waves-light btn blue-grey"><i class="fas fa-edit"></i></button>
-                                        </form>
-                                        <% } else { %>
-                                        <form class="col-1 margin" action="/todos/edit/<%=el._id%>" data-id="<%=el._id%>" method="GET"> 
-                                            <button type="submit" title="Edit Details" class="margin hoverable waves-effect waves-light btn blue-grey" disabled><i class="fas fa-edit"></i></button>
-                                        </form>
-                                        <% } %>
-                                    <% } else if (user.role === 'Driver') { %>
-                                        <% if (el.assigned === false) { %>
-                                        <form class="col-1 margin" action="/todos/assignSelf/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST"> 
-                                            <button type="submit" title="Assign call to driver" class="margin hoverable waves-effect waves-light btn green">Take call</button>
-                                        </form>
-                                        <% } %>
-                                        <% if ((el.completed) && (user._id == el.assignedTo)) { %>
-                                        <form class="col-1 margin" action="/todos/accepted/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST" disabled> 
-                                            <label for="driverStatus" class="bold">Update your status</label>
-                                            <select name="driverStatus" class="margin" disabled>
-                                            <option value="" selected>Clear</option>
-                                        </select>
-                                        <button type="submit" class="margin hoverable waves-effect waves-light btn blue-grey" disabled>Completed</button>
-                                        </form>
-                                    <% } else { %>
-                                        <% if (user._id == el.assignedTo) { %>
-                                        <form class="col-1 margin" action="/todos/accepted/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST"> 
-                                            <label for="driverStatus" class="bold">Update your status</label>
-                                            <select name="driverStatus" class="margin">
-                                            <option value="" selected>Please select a status</option>
-                                            <option value="Enroute">En-route</option>
-                                            <option value="Loading">Loading</option>
-                                            <option value="Entow">En-tow</option>
-                                            <option value="Unloading">Unloading</option>
-                                            <option value="Clear">Clear</option>
-                                        </select>
-                                        <button type="submit" class="margin hoverable waves-effect waves-light btn blue-grey">Submit ETA</button>
-                                        </form>
-                                        <% } %>
-                                    <% } %>
-                                    <% } else { %>
-                                        <div class="btnContainer">
-                                            <form class="col-1" action="/todos/markComplete/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST"> 
-                                                <button type="submit" title="Mark as complete" class="hoverable waves-effect waves-light btn green">Mark as complete</button>
-                                            </form>
-                                            <form class="col-1" action="/todos/markIncomplete/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST"> 
-                                                <button type="submit" title="Mark as incomplete" class="hoverable waves-effect waves-light btn orange">Mark as incomplete</button>
-                                            </form>
-                                            <form class="col-1" action="/todos/deleteTodo/<%=el._id%>?_method=DELETE" data-id="<%=el._id%>" method="POST"> 
-                                                <button type="submit" title="Delete permanently" class="hoverable waves-effect waves-light btn red accent-3">Delete records</button>
-                                            </form>
-                                        </div>
-                                        <% if (el.assigned === false) { %>
-                                        <form class="col-1 margin" action="/todos/assignTo/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST"> 
-                                                <label for="assignedTo" class="bold">Assign call to a driver:</label>
-                                                <select name="assignedTo" class="margin">
-                                                <option value="" selected>Please select a driver</option>
-                                                <% drivers.forEach( driver => { %>
-                                                    <% if (driver.name !== '') { %>
-                                                    <option value='<%=driver._id%>'><%=driver.name%></option>
-                                                    <% } else { %>
-                                                    <option value="<%=driver._id%>"><%=driver.email%></option>
+                                        
+                                        <% 
+                                            // Helper to find and format defect keys.
+                                            const findDefects = (defectsObject) => {
+                                                if (!defectsObject) return [];
+                                                return Object.entries(defectsObject)
+                                                    .filter(([key, value]) => value === true && key !== 'other')
+                                                    .map(([key, value]) => {
+                                                        // Convert camelCase to Title Case for display
+                                                        const result = key.replace(/([A-Z])/g, " $1");
+                                                        return result.charAt(0).toUpperCase() + result.slice(1);
+                                                    });
+                                            };
+                                            const truckDefects = findDefects(el.defects.truckTractor);
+                                            const trailerDefects = findDefects(el.defects.trailer);
+                                            const hasDefects = truckDefects.length > 0 || trailerDefects.length > 0 || (el.defects.truckTractor && el.defects.truckTractor.other) || (el.defects.trailer && el.defects.trailer.other);
+                                        %>
+
+                                        <% if (hasDefects) { %>
+                                        <div class="row marginB">
+                                            <div class="col s12">
+                                                <h6 class="border-bottom red-text text-darken-2">Reported Defects</h6>
+                                                <div class="row">
+                                                    <% if (truckDefects.length > 0) { %>
+                                                    <div class="col s12 m6">
+                                                        <strong>Truck/Tractor:</strong>
+                                                        <ul style="padding-left: 20px;">
+                                                            <% truckDefects.forEach(defect => { %>
+                                                                <li style="list-style-type: disc;"><%= defect %></li>
+                                                            <% }); %>
+                                                        </ul>
+                                                    </div>
                                                     <% } %>
-                                                <% }) %>
-                                            </select>
-                                            <button type="submit" title="Assign call to driver" class="margin hoverable waves-effect waves-light btn blue-grey">Assign</button>
-                                        </form>
-                                        <% } else { %>
-                                        <form class="col-1 margin" action="/todos/unassign/<%=el._id%>?_method=PUT" data-id="<%=el._id%>" method="POST"> 
-                                            <button type="submit" title="Unssign call to driver" class="margin hoverable waves-effect waves-light btn blue-grey">Unassign</button>
-                                        </form>
+                                                    <% if (el.defects.truckTractor && el.defects.truckTractor.other) { %>
+                                                        <div class="col s12 m6">
+                                                            <strong>Other (Truck):</strong>
+                                                            <p><%= el.defects.truckTractor.other %></p>
+                                                        </div>
+                                                    <% } %>
+                                                    <% if (trailerDefects.length > 0) { %>
+                                                    <div class="col s12 m6">
+                                                        <strong>Trailer:</strong>
+                                                        <ul style="padding-left: 20px;">
+                                                            <% trailerDefects.forEach(defect => { %>
+                                                                <li style="list-style-type: disc;"><%= defect %></li>
+                                                            <% }); %>
+                                                        </ul>
+                                                    </div>
+                                                    <% } %>
+                                                     <% if (el.defects.trailer && el.defects.trailer.other) { %>
+                                                        <div class="col s12 m6">
+                                                            <strong>Other (Trailer):</strong>
+                                                            <p><%= el.defects.trailer.other %></p>
+                                                        </div>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <% } %>
-                                    <% } %>
-                                </div>
-                            </div>
-                        </li>
-                    <% }) %>    
-                </ul>
-            </div>
+
+                                        <div class="right-align">
+                                            <a href="/todos/view/<%=el._id%>" class="btn-small waves-effect waves-light blue">View Full Report</a>
+                                            <form action="/todos/<%=el._id%>?_method=DELETE" method="POST" style="display: inline;">
+                                                <button type="submit" class="btn-small waves-effect waves-light red accent-3">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </li>
+                            <% }) %>    
+                        </ul>
+                    </div>
         </div>
         <div id="modal1" class="modal">
             <div class="modal-content">
@@ -235,5 +195,8 @@
                 </form>
             </div>
         </div>
+        
+        <%- include('./partials/inspectionModal.ejs') %>
+
     </main>
 <%- include('./partials/sidenavfooter.ejs') %>
