@@ -59,9 +59,9 @@ Well. There's still so much I want to build for this project, so stay tuned
 
 I'd solve one thing and three more thing would arise. I rage quit.
 Here are some images of my Guest-User-Flow:
-(first)[GuestUserFlow.png]
-(second)[GuestUserFlow2.png]
-(third)[GuestUserFlow3.png]
+![first](GuestUserFlow.png)
+![second](GuestUserFlow2.png)
+![third](GuestUserFlow3.png)
 
 ---------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------
