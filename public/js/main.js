@@ -179,4 +179,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+      // Newsletter AJAX
+  const newsletterForm = document.getElementById('newsletter-form');
+  const newsletterMessage = document.getElementById('newsletter-message');
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('newsletter-email').value;
+      try {
+        const res = await fetch('/newsletter/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        if (res.ok) {
+          newsletterMessage.innerHTML = '<span class="green-text">Thank you for subscribing!</span>';
+          newsletterForm.reset();
+        } else {
+          const text = await res.text();
+          newsletterMessage.innerHTML = `<span class="red-text">Error: ${text || 'Could not subscribe.'}</span>`;
+        }
+      } catch (err) {
+        newsletterMessage.innerHTML = '<span class="red-text">Error: Could not subscribe.</span>';
+      }
+    });
+  }
 });
