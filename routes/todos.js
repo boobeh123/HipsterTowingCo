@@ -5,7 +5,7 @@ const todosController = require('../controllers/todos')
 const { ensureAuth } = require('../middleware/auth')
 
 router.get('/', ensureAuth, todosController.getTodos)
-router.get('/filtered', todosController.getFilteredTodos)
+router.get('/loadmore', ensureAuth, todosController.getMoreInspections)
 
 // Validation and sanitization chain for /createInspection POST Route
 const createInspectionValidation = [
@@ -22,15 +22,6 @@ const createInspectionValidation = [
 ];
 router.post('/createInspection', ensureAuth, createInspectionValidation, todosController.createInspection)
 
-router.put('/markComplete/:id', todosController.markComplete)
-router.put('/markIncomplete/:id', todosController.markIncomplete)
-router.get('/edit/:id', todosController.editTodos)
-router.put('/:id', todosController.updateTodos)
-router.put('/assignTo/:id', todosController.dispatchAssignDriver)
-router.put('/unassign/:id', todosController.dispatchUnassignDriver)
-router.put('/assignSelf/:id', todosController.driverAssignDriver)
-router.put('/accepted/:id', todosController.driverUpdateETA)
-
-router.delete('/deleteTodo/:id', todosController.deleteTodo)
+router.delete('/:id', ensureAuth, todosController.deleteInspection)
 
 module.exports = router
