@@ -1,7 +1,7 @@
 {
-  "name": "todo-mvc-auth-local",
+  "name": "pretriq",
   "version": "1.0.0",
-  "description": "A full-stack web application that supports local account creations & individual to-do list functionality",
+  "description": "A full-stack web application that allows users to conduct Driver's Vehicle Inspection Reports digitally. The Pre-trip inspections are stored on MongoDB. Create an account to start your digital paper trail",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -19,6 +19,7 @@
     "express": "^4.17.1",
     "express-flash": "^0.0.2",
     "express-session": "^1.17.1",
+    "express-validator": "^7.2.1",
     "method-override": "^3.0.0",
     "moment": "^2.29.4",
     "mongodb": "^3.6.5",
