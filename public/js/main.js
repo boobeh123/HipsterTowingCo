@@ -73,12 +73,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (result.success) {
                         inspectionModal.close();
                         M.toast({html: 'Inspection submitted successfully!', classes: 'green'});
+                        // Track successful inspection submission
+                        gtag('event', 'inspection_submitted', {
+                            'truck_number': data.truckTractorNo,
+                            'has_defects': !data.conditionSatisfactory
+                        });
                         // Reload the page to show the new inspection
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000); 
                     } else {
                         M.toast({html: result.message || 'Error submitting inspection.', classes: 'red'});
+                        // Track failed submission
+                        gtag('event', 'inspection_error', {
+                            'error_message': result.message || 'Error submitting inspection'
+                        });
                     }
                 })
                 .catch(error => {
@@ -196,9 +205,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (res.ok) {
           newsletterMessage.innerHTML = '<span class="green-text">Thank you for subscribing!</span>';
           newsletterForm.reset();
+          // Track successful newsletter signup
+          gtag('event', 'newsletter_signup', {
+            'signup_location': 'homepage'
+          });
         } else {
           const text = await res.text();
           newsletterMessage.innerHTML = `<span class="red-text">Error: ${text || 'Could not subscribe.'}</span>`;
+          // Track failed newsletter signup
+          gtag('event', 'newsletter_error', {
+            'error_message': text || 'Could not subscribe'
+          });
         }
       } catch (err) {
         newsletterMessage.innerHTML = '<span class="red-text">Error: Could not subscribe.</span>';
