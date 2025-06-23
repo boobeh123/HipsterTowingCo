@@ -18,7 +18,7 @@
                 </div>
             </section>
                     <div class="container">
-                        <ul class="collapsible">
+                        <ul class="collapsible" id="inspection-list">
                             <% todos.forEach( el => { %>
                                 <li class="todoItem" data-id="<%=el._id%>">
                                     <div class="collapsible-header valign-wrapper" style="display: flex; justify-content: space-between;">
@@ -116,6 +116,14 @@
                                 </li>
                             <% }) %>    
                         </ul>
+
+                        <% if (hasMore) { %>
+                        <div class="center-align" style="margin-top: 2rem;">
+                            <button id="load-more-btn" class="btn waves-effect waves-light blue darken-2" data-page="<%= currentPage %>">
+                                Load More
+                            </button>
+                        </div>
+                        <% } %>
                     </div>
         </div>
         <div id="modal1" class="modal">
