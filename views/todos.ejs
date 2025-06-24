@@ -97,7 +97,7 @@
                                 <% } %>
 
                                 <div class="right-align">
-                                    <a href="/todos/view/<%=el._id%>" class="btn-small waves-effect waves-light blue" aria-label="View full report for inspection <%=el.truckTractorNo%>">View Full Report</a>
+                                    <a href="/todos/view/<%=el._id%>" class="btn-small waves-effect waves-light blue fullReportBtn" aria-label="View full report for inspection <%=el.truckTractorNo%>">View Full Report</a>
                                     <form action="/todos/<%=el._id%>?_method=DELETE" method="POST" class="form-inline">
                                         <button type="submit" class="btn-small waves-effect waves-light red accent-3" aria-label="Delete inspection for <%=el.truckTractorNo%>">Delete</button>
                                     </form>
@@ -106,15 +106,14 @@
                         </li>
                     <% }) %>    
                 </ul>
-
-                <% if (hasMore) { %>
-                <div class="center-align load-more-container">
-                    <button id="load-more-btn" class="btn waves-effect waves-light blue darken-2" data-page="<%= currentPage %>" aria-label="Load more inspections">
-                        Load More
-                    </button>
-                </div>
-                <% } %>
             </section>
+            <% if (hasMore) { %>
+            <div class="center-align load-more-container">
+                <button id="load-more-btn" class="btn waves-effect waves-light green darken-2" data-page="<%= currentPage %>" aria-label="Load more inspections">
+                    Load More
+                </button>
+            </div>
+            <% } %>
         </div>
     
         <%- include('./partials/inspectionModal.ejs') %>
