@@ -32,6 +32,19 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
+# 🛠️ pretriq Patch 1.2 — Form data to PDF - programmatically placing text
+📅 **Release Date:** June 24, 2025
+
+---
+
+## 📢 Developer's Notes - **Using jsPDF & html2canvas, sanitize sanitize sanitize, adding confetti**
+
+- learning how to programmatically display text with jspdf was fun - definitely see this being used in real worlds situations
+![jspdf](/public/imgs/dvir-template-grid.png)
+
+
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.1 — Google Analytics, Logo & Semantic HTML
 📅 **Release Date:** June 23, 2025
 
