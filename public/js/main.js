@@ -73,6 +73,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (result.success) {
                         inspectionModal.close();
                         M.toast({html: 'Inspection submitted successfully!', classes: 'green'});
+                        confetti({
+                            particleCount: 300,
+                            spread: 120,
+                            origin: { y: 0.5 }
+                          });
                         // Track successful inspection submission
                         gtag('event', 'inspection_submitted', {
                             'truck_number': data.truckTractorNo,
@@ -81,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Reload the page to show the new inspection
                         setTimeout(() => {
                             window.location.reload();
-                        }, 1000); 
+                        }, 5000); 
                     } else {
                         M.toast({html: result.message || 'Error submitting inspection.', classes: 'red'});
                         // Track failed submission
@@ -222,4 +227,114 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+
+  const pdfBtn = document.getElementById('open-dvir-pdf');
+  if (!pdfBtn) return;
+
+  pdfBtn.addEventListener('click', async function() {
+    const date = document.getElementById('inspection-date')?.textContent.trim() || '';
+    const truckTractorNo = document.getElementById('inspection-truckNo')?.textContent.trim() || '';
+    const trailerNo = document.getElementById('inspection-trailerNo')?.textContent.trim() || '';
+    const remarks = document.getElementById('inspection-remarks')?.textContent.trim() || '';
+    
+    await generateDVIRPDF(window.inspectionData);
+  });
 });
+
+async function generateDVIRPDF(data) {
+  const pdf = new window.jspdf.jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'letter'
+  });
+
+  const defects = data.defects?.truckTractor || {};
+  const defectsTrailer = data.defects?.trailer || {};
+
+  const img = new window.Image();
+  img.src = '/imgs/dvir-template.png';
+  await new Promise(resolve => { img.onload = resolve; });
+  pdf.addImage(img, 'PNG', 0, 0, 215.9, 279.4);
+ 
+// Iterates through dimensions (215.9mm x 279.4mm) of Letter size paper to determine where to draw grid lines
+//   for (let y = 0; y < 280; y += 10) {
+//     pdf.text(`${y}`, 2, y);
+//     pdf.line(0, y, 215.9, y);
+//   }
+//   for (let x = 0; x < 216; x += 10) {
+//     pdf.text(`${x}`, x, 5);
+//     pdf.line(x, 0, x, 279.4);
+//   }
+
+  pdf.setTextColor(0, 0, 0); 
+  pdf.setFontSize(12);
+  pdf.text(String(data.date || ''), 30, 41);
+  pdf.text(String(data.truckTractorNo || ''), 60, 50);
+  pdf.text(String(data.trailerNo || ''), 55 , 150);
+  // Truck/Tractor Defects (Left column)
+  if (defects.airCompressor === true)      pdf.text('X', 13, 58);
+  if (defects.airLines === true)           pdf.text('X', 13, 63);
+  if (defects.battery === true)            pdf.text('X', 13, 68);
+  if (defects.brakeAccessories === true)   pdf.text('X', 13, 73);
+  if (defects.brakes === true)             pdf.text('X', 13, 79);
+  if (defects.carburetor === true)         pdf.text('X', 13, 84);
+  if (defects.clutch === true)             pdf.text('X', 13, 90);
+  if (defects.defroster === true)          pdf.text('X', 13, 95);
+  if (defects.driveLine === true)          pdf.text('X', 13, 100);
+  if (defects.engine === true)             pdf.text('X', 13, 105);
+  if (defects.fifthWheel === true)         pdf.text('X', 13, 110);
+  if (defects.frontAxle === true)          pdf.text('X', 13, 115);
+  if (defects.fuelTanks === true)          pdf.text('X', 13, 120);
+  if (defects.heater === true)             pdf.text('X', 13, 126);
+  // Truck/Tractor Defects (Middle column)
+  if (defects.horn === true)               pdf.text('X', 78, 58);
+  if (defects.lights === true)             pdf.text('X', 78, 63);
+//   if (defects.headStop === true)           pdf.text('X', 78, 84);
+//   if (defects.tailDash === true)           pdf.text('X', 78, 90);
+//   if (defects.turnIndicators === true)     pdf.text('X', 78, 95);
+  if (defects.mirrors === true)            pdf.text('X', 78, 84);
+  if (defects.muffler === true)            pdf.text('X', 78, 90);
+  if (defects.oilPressure === true)        pdf.text('X', 78, 95);
+  if (defects.onBoardRecorder === true)    pdf.text('X', 78, 100);
+  if (defects.radiator === true)           pdf.text('X', 78, 105);
+  if (defects.rearEnd === true)            pdf.text('X', 78, 110);
+  if (defects.reflectors === true)         pdf.text('X', 78, 115);
+  if (defects.safetyEquipment === true)    pdf.text('X', 78, 120);
+  // Truck/Tractor Defects (Right column)
+  if (defects.springs === true)            pdf.text('X', 143, 57);
+  if (defects.starter === true)            pdf.text('X', 143, 62);
+  if (defects.steering === true)           pdf.text('X', 143, 68);
+  if (defects.tachograph === true)         pdf.text('X', 143, 74);
+  if (defects.tires === true)              pdf.text('X', 143, 79);
+  if (defects.transmission === true)       pdf.text('X', 143, 84);
+  if (defects.wheels === true)             pdf.text('X', 143, 89);
+  if (defects.windows === true)            pdf.text('X', 143, 94);
+  if (defects.windshieldWipers === true)   pdf.text('X', 143, 99);
+  if (defects.other === true)              pdf.text('X', 143, 104);
+  // Trailer Defects (Left column)
+  if (defectsTrailer.brakeConnections === true) pdf.text('X', 13, 156);
+  if (defectsTrailer.brakes === true)           pdf.text('X', 13, 162);
+  if (defectsTrailer.couplingChains === true)   pdf.text('X', 13, 167);
+  if (defectsTrailer.couplingPin === true)      pdf.text('X', 13, 172);
+  if (defectsTrailer.doors === true)            pdf.text('X', 13, 177);
+  // Trailer Defects (Middle column)
+  if (defectsTrailer.hitch === true)            pdf.text('X', 78, 156);
+  if (defectsTrailer.landingGear === true)      pdf.text('X', 78, 162);
+  if (defectsTrailer.lightsAll === true)        pdf.text('X', 78, 167);
+  if (defectsTrailer.roof === true)             pdf.text('X', 78, 172);
+  if (defectsTrailer.springs === true)          pdf.text('X', 78, 177);
+  // Trailer Defects (Right column)
+  if (defectsTrailer.tarpaulin === true)        pdf.text('X', 143, 155);
+  if (defectsTrailer.tires === true)            pdf.text('X', 143, 161);
+  if (defectsTrailer.wheels === true)           pdf.text('X', 143, 166);
+  if (defectsTrailer.other === true)            pdf.text('X', 143, 171);
+
+  // Safely handle remarks
+  const remarks = typeof data.remarks === 'string' ? data.remarks : '';
+  const remarksLines = pdf.splitTextToSize(remarks, 160);
+  if (Array.isArray(remarksLines) && remarksLines.length > 0) {
+    pdf.text(remarksLines, 30, 190);
+  }
+
+  window.open(pdf.output('bloburl'));
+}
