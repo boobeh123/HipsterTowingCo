@@ -1,32 +1,27 @@
-<% if (locals.messages.errors) { %>
-    <% messages.errors.forEach( el => { %>
-        <div id='scale-demo' class="card alert-danger scale-transition d-none" role="alert">
-            <div class="card-content">
-                <span class="center-align"><%= el.msg %></span>
-                <button id="scale-demo-trigger" class="scale-transition float-right dismissBtn" aria-label="Dismiss error message">X</button>
-            </div>
-        </div>
-    <% }) %>    
-<% } %>
-<% if (locals.messages.info) { %>
-    <% messages.info.forEach( el => { %>
-        <div id='scale-demo' class="card alert-success scale-transition" role="alert">
-            <div class="card-content">
-                <span class="center-align"><%= el.msg %></span>
-                <button id="scale-demo-trigger" class="scale-transition float-right successDismissBtn" aria-label="Dismiss info message">X</button>
-            </div>
-        </div>
-    <% }) %>    
-<% } %>
-<% if (locals.messages.success) { %>
-    <% messages.success.forEach( el => { %>
-        <div class="container" aria-live="assertive">
-            <div id='scale-demo' class="card alert-success scale-transition" role="alert">
-                <div class="card-content">
-                    <span class="center-align"><%= el.msg %></span>
-                    <button id="scale-demo-trigger" class="scale-transition float-right successDismissBtn" aria-label="Dismiss success message">X</button>
-                </div>
-            </div>
-        </div>
-    <% }) %>    
-<% } %>
+<% if (messages.errors) { %>
+    <% messages.errors.forEach(function(el) { %>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          M.toast({html: "<%= el.msg.replace(/"/g, '&quot;') %>", classes: 'red'});
+        });
+      </script>
+    <% }) %>
+  <% } %>
+  <% if (messages.info) { %>
+    <% messages.info.forEach(function(el) { %>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          M.toast({html: "<%= el.msg.replace(/"/g, '&quot;') %>", classes: 'blue'});
+        });
+      </script>
+    <% }) %>
+  <% } %>
+  <% if (messages.success) { %>
+    <% messages.success.forEach(function(el) { %>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          M.toast({html: "<%= el.msg.replace(/"/g, '&quot;') %>", classes: 'green'});
+        });
+      </script>
+    <% }) %>
+  <% } %>
