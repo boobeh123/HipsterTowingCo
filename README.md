@@ -37,9 +37,9 @@ I envision that this application has potential to become something with a global
 
 ---
 
-## 📢 Developer's Notes - **will do this later=tired af**
+## 📢 Developer's Notes - **serving error code 404 & 500 pages, visualizing data with Google Analytics, deciding on pretriq logo, adding social media links, using semantic HTML**
 
-- The code I pushed on this day was gr8
+- The code I pushed on this day was gr8... more coming soon day not over
 ![logos](logoimage.png)
 
 ---------------------------------------------------------------------------------------------------------------------------
