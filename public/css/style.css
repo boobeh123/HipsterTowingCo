@@ -115,6 +115,16 @@ select {
 .maxWidth {
     width: 100%;
 }
+
+#logo {
+    /* border: 2px solid red; */
+    padding-bottom: 1rem;
+}
+
+#sidenav-logo {
+    padding-bottom: 1rem;
+       
+}
 /**************************************************************
 * Typography
 ***************************************************************/
@@ -196,6 +206,15 @@ a {
 #startInspectionBtn {
     width: 90% !important;
     /* border: 2px solid red; */
+}
+
+.inspection-header-flex {
+    width: 100% !important;
+}
+
+.sidenav-logo-container {
+    display: flex;
+    justify-content: center;
 }
 
 /* inspectionModal.ejs */
@@ -573,6 +592,7 @@ a {
 /* todos.ejs */
 .todos-main {
     background-color: rgba(197, 202, 208, 0.15);
+    padding: 1rem 0;
 }
 .todos-main div section {
     display: flex;
@@ -582,11 +602,6 @@ a {
 .todos-main div section div a {
     color: black;
     margin: 0 0.25rem;
-}
-
-.todos-main .container .container .collapsible .todoItem .collapsible-header {
-    display: flex;
-    flex-direction: column;
 }
 
 .todos-main .container .container .collapsible .todoItem .collapsible-header div img {
@@ -620,8 +635,6 @@ a {
     margin: 0 0.25rem;
 }
 
-
-/* todos.ejs - inspection header flex layout */
 .inspection-header-flex {
     display: flex;
     justify-content: space-between;
@@ -636,17 +649,14 @@ a {
     flex: 2;
 }
 
-/* todos.ejs - collapsible body padding */
 .inspection-body-padding {
     padding: 2rem;
 }
 
-/* todos.ejs - section title font size */
 .inspection-section-title {
     font-size: 1.1rem;
 }
 
-/* todos.ejs - defect list and items */
 .inspection-defect-list {
     padding-left: 20px;
 }
@@ -654,16 +664,29 @@ a {
     list-style-type: disc;
 }
 
-/* todos.ejs - form inline display */
 .form-inline {
     display: inline;
 }
 
-/* todos.ejs - load more button container */
 .load-more-container {
     margin-top: 2rem;
 }
+.fullReportBtn {
+    width: 100%;
+    margin: 0 !important;
+}
 
+.inspection-header-flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.badge {
+    margin-right: 0.25rem;
+}
 /* profile.ejs  */
 .profile-main {
     background-color: rgba(197, 202, 208, 0.15);
@@ -697,10 +720,10 @@ a {
 ***************************************************************/
 /* partials - footer.ejs */
 .page-footer {
-    padding: 3rem 0 1rem 0;
+    /* padding: 3rem 0 1rem 0; */
+    margin: 0;
     background: transparent;
     border-top: 1px solid rgba(0,0,0, .1);
-    margin-top: 2rem;
 }
 
 .page-footer .container .row {
@@ -780,6 +803,8 @@ a {
 .social-links {
     margin-top: 1rem;
     background-color: transparent;
+    display: flex;
+    justify-content: center;
 }
 
 .social-links ul {
@@ -829,6 +854,8 @@ a {
   #error-fh h2 {
     margin-top: 0;
   }
+
+
 /**************************************************************
 * Media queries
 ***************************************************************/
@@ -1016,4 +1043,5 @@ a {
     .input-group {
         padding-top: 1rem;
     }
+    
 }
