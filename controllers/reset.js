@@ -42,7 +42,7 @@ module.exports = {
                             return res.redirect('/forgot');
                         }
                         user.resetPasswordToken = token;
-                        user.resetPasswordExpires = Date.now() + 3600000; // 1 hour          
+                        user.resetPasswordExpires = Date.now() + 3600000;
                         user.save(function (err) {
                             done(err, token, user);
                         });
