@@ -68,27 +68,17 @@
                 <li class="border-bottom margin">
                     <a class="sidenav-brand-logo" href="/todos" aria-label="Go to dashboard">pretriq</a>
                 </li>
-                <% if (user.role === 'user') { %>
-                    <% if (page === 'Dashboard') { %>
-                    <li>
-                        <a id="startInspectionBtn" href="#" class="hoverable waves-effect waves-light btn green darken-1" title="Start Driver's Vehicle Inspection Report" aria-label="Start a new pre-trip inspection" style="width:100%;margin-bottom:1rem;">
-                            <i class="fa-solid fa-plus" aria-hidden="true" style="margin-right: 0.5rem;"></i>Start pre-trip
-                        </a>
-                    </li>
-                    <li class="active"><a href="/todos" class="hoverable waves-effect waves-light transparent">Dashboard</a></li>
-                    <li><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
-                    <% } else { %>
-                    <li><a href="/todos" class="hoverable waves-effect waves-light transparent">Dashboard</a></li>
-                    <li class="active"><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
-                    <% } %>
+                <% if (page === 'Dashboard') { %>
+                <li>
+                    <a id="startInspectionBtn" href="#" class="hoverable waves-effect waves-light btn green darken-1" title="Start Driver's Vehicle Inspection Report" aria-label="Start a new pre-trip inspection">
+                        <i class="fa-solid fa-plus" aria-hidden="true"></i>Start pre-trip
+                    </a>
+                </li>
+                <li class="active"><a href="/todos" class="hoverable waves-effect waves-light transparent">Dashboard</a></li>
+                <li><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
                 <% } else { %>
-                    <% if (page === 'Dashboard') { %>
-                        <li class="active"><a href="/todos" class="hoverable waves-effect waves-light transparent">Dashboard</a></li>
-                        <li><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
-                        <% } else { %>
-                        <li><a href="/todos" class="hoverable waves-effect waves-light transparent">Dashboard</a></li>
-                        <li class="active"><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
-                        <% } %>
+                <li><a href="/todos" class="hoverable waves-effect waves-light transparent">Dashboard</a></li>
+                <li class="active"><a href="/profile" class="hoverable waves-effect waves-light transparent">Profile</a></li>
                 <% } %>
                 <li class="center-align logout-container">
                     <figure>

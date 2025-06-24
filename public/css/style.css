@@ -197,6 +197,16 @@ a {
     width: 90% !important;
     /* border: 2px solid red; */
 }
+
+/* inspectionModal.ejs */
+.truckTractorNoContainer {
+    margin-top: -1rem;
+    margin-bottom: 2rem;
+}
+
+.defectsCheckboxContainer {
+    margin-bottom: 0;
+}
 /**************************************************************
 * Flash
 ***************************************************************/
@@ -556,6 +566,10 @@ a {
     display: block;
 }
 
+#newsletter-message {
+    margin-top:1rem;
+}
+
 /* todos.ejs */
 .todos-main {
     background-color: rgba(197, 202, 208, 0.15);
@@ -783,6 +797,37 @@ a {
   }
   .social-links ul li a:hover {
     color: #4CAF50;
+  }
+
+  /* 404.ejs */
+  #error-fof {
+    margin-top: 4rem;
+  }
+
+  #error-fof h1 {
+    font-size: 5rem;
+    color: #66bb6a;
+    margin-bottom: 0;
+  }
+  
+  #error-fof h2 {
+    margin-top: 0;
+  }
+
+  /* 500.ejs */
+
+  #error-fh {
+    margin-top: 4rem;
+  }
+
+  #error-fh h1 {
+    font-size: 5rem;
+    color: #66bb6a;
+    margin-bottom: 0;
+  }
+
+  #error-fh h2 {
+    margin-top: 0;
   }
 /**************************************************************
 * Media queries
