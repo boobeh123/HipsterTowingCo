@@ -7,7 +7,7 @@
             <!-- Vehicle Information -->
             <div class="row">
                 <div class="input-field col s12">
-                    <input id="date" name="date" type="text" disabled>
+                    <input id="date" name="date" type="text" readonly>
                     <label for="date" class="active">Date</label>
                 </div>
             </div>
@@ -54,12 +54,12 @@
                 <p><label><input type="checkbox" name="defects[truckTractor][wheels]" value="true" /><span>Wheels</span></label></p>
                 <p><label><input type="checkbox" name="defects[truckTractor][windows]" value="true" /><span>Windows</span></label></p>
                 <p><label><input type="checkbox" name="defects[truckTractor][windshieldWipers]" value="true" /><span>Windshield Wipers</span></label></p>
-            </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <input id="truckOther" name="defects[truckTractor][other]" type="text">
-                    <label for="truckOther">Other</label>
-                </div>
+                <p>
+                    <label>
+                        <input type="checkbox" name="defects[truckTractor][other]" value="true" />
+                        <span>Other</span>
+                    </label>
+                </p>
             </div>
             
             <!-- Trailer Defects -->
@@ -84,12 +84,12 @@
                 <p><label><input type="checkbox" name="defects[trailer][tarpaulin]" value="true" /><span>Tarpaulin</span></label></p>
                 <p><label><input type="checkbox" name="defects[trailer][tires]" value="true" /><span>Tires</span></label></p>
                 <p><label><input type="checkbox" name="defects[trailer][wheels]" value="true" /><span>Wheels</span></label></p>
-            </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <input id="trailerOther" name="defects[trailer][other]" type="text">
-                    <label for="trailerOther">Other</label>
-                </div>
+                <p>
+                    <label>
+                        <input type="checkbox" name="defects[trailer][other]" value="true" />
+                        <span>Other</span>
+                    </label>
+                </p>
             </div>
 
             <!-- Remarks -->
