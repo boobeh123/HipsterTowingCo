@@ -10,7 +10,7 @@ module.exports = {
             const loggedInUser = await User.findById(req.user.id).lean()
             const allDrivers = await User.find({role: 'Driver'}).lean();
             
-            const limit = 2; // Number of items per page
+            const limit = 2;
             const inspections = await Inspection.find({userId: req.user.id}).sort({ createdAt: -1 }).limit(limit).lean()
             const totalInspections = await Inspection.countDocuments({userId: req.user.id});
 
@@ -19,7 +19,7 @@ module.exports = {
                 user: loggedInUser,
                 drivers: allDrivers,
                 page: pageName,
-                hasMore: totalInspections > limit, // Let the template know if there are more items
+                hasMore: totalInspections > limit, 
                 currentPage: 1 
             })
         } catch(err) {
@@ -50,17 +50,28 @@ module.exports = {
         }
     },
     createInspection: async (req, res) => {
-        // Check for validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            // If there are errors, send them back to the client
             const errorMessages = errors.array().map(error => error.msg).join(' ');
             return res.status(400).json({ success: false, message: errorMessages });
         }
 
         try {
-            // Data is sent as JSON from the client-side fetch
             const inspectionData = req.body;
+
+            // Sanitize 'other' fields to ensure Boolean
+            if (inspectionData.defects) {
+                if (inspectionData.defects.truckTractor) {
+                    if (inspectionData.defects.truckTractor.other === "" || inspectionData.defects.truckTractor.other === undefined) {
+                        inspectionData.defects.truckTractor.other = false;
+                    }
+                }
+                if (inspectionData.defects.trailer) {
+                    if (inspectionData.defects.trailer.other === "" || inspectionData.defects.trailer.other === undefined) {
+                        inspectionData.defects.trailer.other = false;
+                    }
+                }
+            }
 
             await Inspection.create({
                 ...inspectionData,
@@ -73,7 +84,6 @@ module.exports = {
 
         } catch (err) {
             console.error('Error creating inspection:', err);
-            // Check for Mongoose validation error
             if (err.name === 'ValidationError') {
                 const messages = Object.values(err.errors).map(val => val.message);
                 return res.status(400).json({ success: false, message: messages.join(' ') });
@@ -96,6 +106,19 @@ module.exports = {
         } catch (err) {
             console.log(err);
             res.redirect('/todos');
+        }
+    },
+    viewInspection: async (req, res) => {
+        try {
+            const inspection = await Inspection.findOne({ _id: req.params.id, userId: req.user.id }).lean();
+            if (!inspection) {
+                return res.status(404).render('errors/404');
+            }
+            const loggedInUser = await User.findById(req.user.id).lean();
+            res.render('todos/view', { inspection, user: loggedInUser, page: 'FullReport' });
+        } catch (err) {
+            console.error('Error fetching inspection:', err);
+            res.status(500).render('errors/500');
         }
     }
 }    
