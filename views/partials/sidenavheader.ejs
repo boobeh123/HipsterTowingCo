@@ -14,10 +14,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pretriq - Dashboard</title>
-    <meta name="title" content="Pretriq - Submit DoT Pre-Trip Inspection Checklists Digitally">
-    <meta name="description" content="Streamline your DoT pre-trip inspections with our digital checklist system. Create, submit, and send inspection reports with ease. Stay compliant and organized.">
+    <meta name="title" content="Pretriq - Submit FMCSA Pre-Trip Inspection Checklists Digitally">
+    <meta name="description" content="Streamline your FMCSA pre-trip inspections with our digital checklist system. Create, submit, and send inspection reports with ease. Stay compliant and organized.">
     <meta name="author" content="Bobby Asakawa">
-    <meta name="keywords" content="DOT, online pre-trip inspection checklist, digitally, compliance, trucking, transportation">
+    <meta name="keywords" content="DOT, FMCSA, online pre-trip inspection checklist, digitally, compliance, trucking, transportation">
     <meta name="robots" content="index, follow">
     <!-- Security Headers -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
@@ -43,15 +43,15 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://pretriq.up.railway.app/">
-    <meta property="og:title" content="Pretriq - Submit DoT Pre-Trip Inspection Checklists Digitally">
-    <meta property="og:description" content="Streamline your DoT pre-trip inspections with our digital checklist system. Create, submit, and send inspection reports with ease. Stay compliant and organized.">
+    <meta property="og:title" content="Pretriq - Submit FMCSA Pre-Trip Inspection Checklists Digitally">
+    <meta property="og:description" content="Streamline your FMCSA pre-trip inspections with our digital checklist system. Create, submit, and send inspection reports with ease. Stay compliant and organized.">
     <!-- <meta property="og:image" content="/imgs/og-image.jpg"> TO-DO -->
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://pretriq.up.railway.app/">
-    <meta property="twitter:title" content="Pretriq - Submit DoT Pre-Trip Inspection Checklists Digitally">
-    <meta property="twitter:description" content="Streamline your DoT pre-trip inspections with our digital checklist system. Create, submit, and send inspection reports with ease. Stay compliant and organized.">
+    <meta property="twitter:title" content="Pretriq - Submit FMCSA Pre-Trip Inspection Checklists Digitally">
+    <meta property="twitter:description" content="Streamline your FMCSA pre-trip inspections with our digital checklist system. Create, submit, and send inspection reports with ease. Stay compliant and organized.">
 </head>
 <body>
     <header class="partial-sidenavheader">
@@ -65,8 +65,8 @@
                 <% } %>
             </div>
             <ul id="slide-out" class="sidenav sidenav-fixed">
-                <li class="border-bottom margin">
-                    <a class="sidenav-brand-logo" href="/todos" aria-label="Go to dashboard">pretriq</a>
+                <li class="border-bottom margin sidenav-logo-container">
+                    <a class="sidenav-brand-logo" href="/todos" aria-label="Go to dashboard"><svg id="sidenav-logo" width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="8" y="48" font-family="'Roboto', Arial, sans-serif" font-size="48" font-weight="bold" fill="none" stroke="#222" stroke-width="2">q</text><text x="32" y="48" font-family="'Roboto', Arial, sans-serif" font-size="48" font-weight="bold" fill="none" stroke="#222" stroke-width="2">p</text></svg></a>
                 </li>
                 <% if (page === 'Dashboard') { %>
                 <li>
@@ -101,5 +101,6 @@
               </ul>
         </nav>
     </header>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
 </body>
 </html>
