@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 
-// Sub-schema for Truck/Tractor defects to be nested in the main InspectionSchema
 const TruckTractorDefectsSchema = new mongoose.Schema({
     airCompressor: { type: Boolean, default: false },
     airLines: { type: Boolean, default: false },
@@ -35,10 +34,9 @@ const TruckTractorDefectsSchema = new mongoose.Schema({
     wheels: { type: Boolean, default: false },
     windows: { type: Boolean, default: false },
     windshieldWipers: { type: Boolean, default: false },
-    other: { type: String, default: '' }
-}, { _id: false }); // No _id needed for sub-documents
+    other: { type: Boolean, default: false }
+}, { _id: false });
 
-// Sub-schema for Trailer defects
 const TrailerDefectsSchema = new mongoose.Schema({
     brakeConnections: { type: Boolean, default: false },
     brakes: { type: Boolean, default: false },
@@ -53,11 +51,10 @@ const TrailerDefectsSchema = new mongoose.Schema({
     tarpaulin: { type: Boolean, default: false },
     tires: { type: Boolean, default: false },
     wheels: { type: Boolean, default: false },
-    other: { type: String, default: '' }
+    other: { type: Boolean, default: false }
 }, { _id: false });
 
 const InspectionSchema = new mongoose.Schema({
-  // Basic Info
   truckTractorNo: {
     type: String,
     required: [true, 'USDOT/Truck number is required.'],
@@ -68,26 +65,20 @@ const InspectionSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  
-  // Defect Checklists (nested objects)
   defects: {
     truckTractor: TruckTractorDefectsSchema,
     trailer: TrailerDefectsSchema
   },
-
   remarks: {
     type: String,
     trim: true,
   },
-
-  // Signatures & Status
   conditionSatisfactory: {
     type: Boolean,
     default: false,
   },
-  driverSignature: { // Representing signature with a name or ID for now
+  driverSignature: { 
     type: String,
-    // required: true,
   },
   defectsCorrected: {
     type: Boolean,
@@ -102,11 +93,9 @@ const InspectionSchema = new mongoose.Schema({
     trim: true,
   },
   mechanicDate: {
-    type: String, // Using string to match form data, can be Date if needed
+    type: String,
     trim: true,
   },
-  
-  // User and Timestamp
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -116,6 +105,7 @@ const InspectionSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  date: { type: String, trim: true },
 })
 
 module.exports = mongoose.model('Inspection', InspectionSchema)
