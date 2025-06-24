@@ -1,0 +1,100 @@
+<%- include('../partials/sidenavheader.ejs') %>
+<main class="container" aria-labelledby="full-report-heading" role="main">
+  <div class="row">
+    <div class="col s12 m10 l8 offset-m1 offset-l2">
+      <article class="card z-depth-2 marginT" aria-labelledby="full-report-heading">
+        <header class="card-content">
+          <h1 id="full-report-heading" class="center-align bold">Driver's Vehicle Inspection Report</h1>
+          <div class="divider marginB" role="presentation"></div>
+          <section class="marginB" aria-labelledby="vehicle-info-heading">
+            <h2 id="vehicle-info-heading" class="sr-only">Vehicle Information</h2>
+            <div class="row">
+              <div class="col s12 m6">
+                <p><strong>Date:</strong> <span id="inspection-date"><%= inspection.date || '' %></span></p>
+                <p><strong>Truck/Tractor No.:</strong> <span id="inspection-truckNo"><%= inspection.truckTractorNo || '' %></span></p>
+                <p><strong>Trailer No.:</strong> <span id="inspection-trailerNo"><%= inspection.trailerNo || '' %></span></p>
+              </div>
+              <div class="col s12 m6">
+                <p><strong>Status:</strong> <span class="<%= inspection.conditionSatisfactory ? 'green-text' : 'red-text' %>"><%= inspection.conditionSatisfactory ? 'Satisfactory' : 'Defects Found' %></span></p>
+                <% if (inspection.createdAt) { %>
+                  <p><strong>Submitted:</strong> <%= new Date(inspection.createdAt).toLocaleString() %></p>
+                <% } %>
+              </div>
+            </div>
+          </section>
+          <section class="marginB" aria-labelledby="remarks-heading">
+            <h2 id="remarks-heading" class="border-bottom inspection-section-title">Remarks</h2>
+            <p id="inspection-remarks"><%= inspection.remarks || 'No remarks provided.' %></p>
+          </section>
+          <% 
+            // Helper to find and format defect keys.
+            const findDefects = (defectsObject) => {
+              if (!defectsObject) return [];
+              return Object.entries(defectsObject)
+                .filter(([key, value]) => value === true && key !== 'other')
+                .map(([key, value]) => {
+                  const result = key.replace(/([A-Z])/g, ' $1');
+                  return result.charAt(0).toUpperCase() + result.slice(1);
+                });
+            };
+            const truckDefects = findDefects(inspection.defects?.truckTractor);
+            const trailerDefects = findDefects(inspection.defects?.trailer);
+            const hasDefects = truckDefects.length > 0 || trailerDefects.length > 0 || (inspection.defects?.truckTractor && inspection.defects.truckTractor.other) || (inspection.defects?.trailer && inspection.defects.trailer.other);
+          %>
+          <% if (hasDefects) { %>
+          <section class="marginB" aria-labelledby="defects-heading">
+            <h2 id="defects-heading" class="border-bottom red-text text-darken-2 inspection-section-title">Reported Defects</h2>
+            <div class="row">
+              <% if (truckDefects.length > 0) { %>
+              <div class="col s12 m6">
+                <strong>Truck/Tractor:</strong>
+                <ul class="inspection-defect-list" role="list" aria-label="Truck/Tractor Defects">
+                  <% truckDefects.forEach(defect => { %>
+                    <li class="inspection-defect-item" role="listitem"><%= defect %></li>
+                  <% }); %>
+                </ul>
+              </div>
+              <% } %>
+              <% if (inspection.defects?.truckTractor && inspection.defects.truckTractor.other) { %>
+                <div class="col s12 m6">
+                  <strong>Other (Truck):</strong>
+                  <p><%= inspection.defects.truckTractor.other %></p>
+                </div>
+              <% } %>
+              <% if (trailerDefects.length > 0) { %>
+              <div class="col s12 m6">
+                <strong>Trailer:</strong>
+                <ul class="inspection-defect-list" role="list" aria-label="Trailer Defects">
+                  <% trailerDefects.forEach(defect => { %>
+                    <li class="inspection-defect-item" role="listitem"><%= defect %></li>
+                  <% }); %>
+                </ul>
+              </div>
+              <% } %>
+              <% if (inspection.defects?.trailer && inspection.defects.trailer.other) { %>
+                <div class="col s12 m6">
+                  <strong>Other (Trailer):</strong>
+                  <p><%= inspection.defects.trailer.other %></p>
+                </div>
+              <% } %>
+            </div>
+          </section>
+          <% } %>
+          <div class="center-align marginT">
+            <button id="open-dvir-pdf" class="btn-large blue" type="button" aria-label="Open official PDF report">
+              <i class="material-icons left" aria-hidden="true">picture_as_pdf</i>Open Official PDF
+            </button>
+          </div>
+        </header>
+        <footer class="card-action center-align" role="contentinfo">
+          <a href="/todos" class="btn-flat waves-effect" aria-label="Back to dashboard"><i class="material-icons left" aria-hidden="true">arrow_back</i>Back to Dashboard</a>
+        </footer>
+      </article>
+    </div>
+  </div>
+  <script>
+    window.inspectionData = <%- JSON.stringify(inspection) %>;
+  </script>
+</main>
+<%- include('../partials/sidenavfooter.ejs') %>
+<script src="/js/main.js"></script> 
