@@ -6,6 +6,7 @@ const { ensureAuth } = require('../middleware/auth')
 
 router.get('/', ensureAuth, todosController.getTodos)
 router.get('/loadmore', ensureAuth, todosController.getMoreInspections)
+router.get('/view/:id', ensureAuth, todosController.viewInspection)
 
 // Validation and sanitization chain for /createInspection POST Route
 const createInspectionValidation = [
