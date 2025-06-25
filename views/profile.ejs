@@ -1,63 +1,71 @@
 <%- include('./partials/sidenavheader.ejs') %>
     <main class="profile-main" aria-labelledby="profile-heading">
-        <div class="container card">
-            <section class="card-content clearfix" aria-labelledby="profile-heading">
-                <h1 class="border-bottom" id="profile-heading"><a href="/todos" aria-label="Back to dashboard"><i class="fas fa-chevron-left"></i></a>Profile Information</h1>
-                <div class="margin">
-                    <% if (user.name === '') { %>
-                    <p><span class="bold">Name</span>: </p>
-                    <% } else { %>
-                    <p><span class="bold">Name</span>: <span><%=user.name%></span></p>
-                    <% } %>
-                    <p><span class="bold">Email</span>: <span><%=user.email%></span></p>
-                    <p><span class="bold">Account Type</span>: <span><%=user.role%></span></p>
-                    <form class="col-1" action="/profile/edit/<%=user._id%>" method="GET"> 
-                        <button type="submit" title="Edit Profile" class="hoverable waves-effect waves-light btn blue-grey" aria-label="Edit Profile"><i class="fas fa-edit"></i></button>
+        <div class="container">
+            <div class="card-panel z-depth-2">
+                <h1 class="center-align flow-text" id="profile-heading">
+                    <a href="/todos" aria-label="Back to dashboard"><i class="fas fa-chevron-left"></i></a>
+                    Profile Information
+                </h1>
+                <div class="divider"></div>
+                <div class="center-align margin">
+                    <img src="<%= user.image === '' ? 'https://placeholder.pics/svg/100x100' : user.image %>" class="responsive-img circle z-depth-1" alt="User profile image" style="width: 120px; height: 120px;">
+                    <form id="profile-pic-form" class="margin" action="/profile" method="POST" enctype="multipart/form-data">
+                        <div class="file-field input-field" style="display: inline-block; vertical-align: middle;">
+                            <div class="btn blue-grey waves-effect waves-light hoverable" style="transition: background 0.2s;">
+                                <span><i class="material-icons left">cloud_upload</i>Browse</span>
+                                <input id="profile-file" type="file" name="file" required>
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Upload a new profile picture">
+                            </div>
+                        </div>
+                        <button id="upload-btn" type="submit" class="btn blue-grey waves-effect waves-light hoverable" aria-label="Update Picture" style="margin-left: 1rem; transition: background 0.2s;">
+                            <span id="upload-btn-text">Submit</span>
+                            <div id="upload-preloader" class="preloader-wrapper small active" style="display:none; vertical-align: middle;">
+                                <div class="spinner-layer spinner-blue-only">
+                                    <div class="circle-clipper left"><div class="circle"></div></div>
+                                    <div class="gap-patch"><div class="circle"></div></div>
+                                    <div class="circle-clipper right"><div class="circle"></div></div>
+                                </div>
+                            </div>
+                        </button>
                     </form>
                 </div>
-                <div class="margin">
-                    <% if (user.image === '') { %>
-                    <img src="https://placeholder.pics/svg/100x100" class='responsive-img circle' alt="Profile placeholder image" />
-                    <% } else { %>
-                    <img src="<%=user.image%>" class='responsive-img circle' alt="User profile image" />
-                    <% } %>
-                    <form class="col-1 margin" action="/profile" method="POST" enctype="multipart/form-data">
-                        <label for="profile-file" class="sr-only">Upload new profile picture</label>
-                        <input id="profile-file" type="file" class="" name="file" required>
-                        <button type="submit" title="Update Picture" class="hoverable waves-effect waves-light btn blue-grey" aria-label="Update Picture">Submit</button>
+                <section class="profile-info-section center-align margin" aria-labelledby="profile-info-heading">
+                    <h2 id="profile-info-heading" class="sr-only">Profile Details</h2>
+                    <div class="profile-info-card" role="region" aria-labelledby="profile-name-label">
+                        <dl>
+                            <dt id="profile-name-label" class="bold">Name:</dt>
+                            <dd><%= user.name || '' %></dd>
+                        </dl>
+                    </div>
+                    <div class="profile-info-card" role="region" aria-labelledby="profile-email-label">
+                        <dl>
+                            <dt id="profile-email-label" class="bold">Email:</dt>
+                            <dd><%= user.email %></dd>
+                        </dl>
+                    </div>
+                    <div class="profile-info-card" role="region" aria-labelledby="profile-role-label">
+                        <dl>
+                            <dt id="profile-role-label" class="bold">Account Type:</dt>
+                            <dd><%= user.role %></dd>
+                        </dl>
+                    </div>
+                    <form action="/profile/edit/<%=user._id%>" method="GET" style="display:inline;">
+                        <button type="submit" class="btn blue-grey waves-effect waves-light hoverable" aria-label="Edit Profile" style="margin-top: 0.5rem; transition: background 0.2s;">
+                            <i class="fas fa-edit left"></i> Edit Profile
+                        </button>
                     </form>
-                </div>
-            </section>
-        </div>
-        <% if ((user.isAdmin) && (user.role === 'Admin')) { %>
-        <div class="container card">
-            <div class="card-content" aria-labelledby="admin-heading">
-                <h1 class="border-bottom" id="admin-heading">Admin Console</h1>
-                <form action="/profile/setRole" method="POST" aria-labelledby="admin-heading">
-                    <div class="halfWidth">
-                    <label for="userId">Please choose an account:</label>
-                    <select class="margin" name="userId" required>
-                        <option value="" selected>Please select one</option>
-                        <% users.forEach(element => { %> 
-                            <% if ((!element.isAdmin) && user.role === 'Admin') { %> 
-                                <option value="<%=element._id%>"><%=element.email%></option>
-                            <% } %>
-                        <% }) %>
-                    </select>
-                </div>
-                <div class="halfWidth">
-                    <label for="role">Please choose a privilege level:</label>
-                    <select class="margin" name="role" required>
-                        <option value="" selected>Please select one</option>
-                        <option value="Dispatcher">Dispatcher</option>
-                        <option value="Driver">Driver</option>
-                        <option value="Customer">Customer</option>
-                    </select>
-                </div>
-                    <button type="submit" class="hoverable waves-effect waves-light btn blue-grey maxWidth" aria-label="Submit Role Change">Submit</button>
-                </form>
+                </section>
             </div>
+            <% if ((user.isAdmin) && (user.role === 'Admin')) { %>
+            <div class="card-panel z-depth-2">
+                <div class="card-content" aria-labelledby="admin-heading">
+                    <h1 class="border-bottom" id="admin-heading">Admin Console</h1>
+                    <button onclick="confetti()"></button>
+                </div>
+            </div>
+            <% } %>
         </div>
-        <% } %>
     </main>
 <%- include('./partials/sidenavfooter.ejs') %>
