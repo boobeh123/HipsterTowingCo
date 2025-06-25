@@ -157,6 +157,9 @@ a {
 }
 
 /* partials - sidenavheader.ejs */
+.partial-header {
+    background-color: mintcream !important;
+}
 .partial-sidenavheader, .todos-main, .sidenav-footer, .profile-main, .editprofile-main {
     padding-left: 300px;
 }
@@ -312,6 +315,80 @@ a {
 }
 
 /* Index.ejs */
+.hero-section {
+    height: 100vh;
+    margin: 0 !important;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    background-color: mintcream;
+}
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: -15%;
+    width: 120%;
+    height: 130%;
+    background: linear-gradient(120deg, #e8f5e9 60%, #b2dfdb 100%);
+    transform: skewY(32deg);
+    z-index: 0;
+    pointer-events: none;
+}
+.hero-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  background-image: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="200" r="120" stroke="white" stroke-width="2" fill="none" opacity="0.5"/><circle cx="1000" cy="600" r="80" stroke="white" stroke-width="1.5" fill="none" opacity="0.3"/><rect x="400" y="100" width="300" height="60" rx="20" stroke="white" stroke-width="1.5" fill="none" opacity="0.25"/><line x1="100" y1="700" x2="1100" y2="700" stroke="white" stroke-width="1" opacity="0.18"/><line x1="600" y1="0" x2="600" y2="800" stroke="white" stroke-width="1" opacity="0.12"/><polyline points="300,400 350,420 400,390 450,410" stroke="white" stroke-width="1.5" fill="none" opacity="0.22"/><rect x="900" y="200" width="120" height="40" rx="10" stroke="white" stroke-width="1" fill="none" opacity="0.18"/><circle cx="800" cy="150" r="30" stroke="white" stroke-width="1" fill="none" opacity="0.18"/></svg>');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  
+}
+.hero-section > * {
+    position: relative;
+    z-index: 1;
+}
+.hero-text {
+    padding: 2rem 1.5rem 2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.hero-img {
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(55, 71, 79, 0.18);
+    transition: transform 0.3s, box-shadow 0.3s;
+    max-width: 95%;
+    
+    margin-bottom: 3rem;
+    margin-top: 0rem;
+}
+.hero-img:hover, .hero-img:focus {
+    /* transform: scale(1.04) rotate(-1deg); */
+    box-shadow: 0 16px 48px rgba(76, 175, 80, 0.25);
+}
+
+.hero-canvas-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 2; /* Above ::before/::after, below content */
+  }
+  #hero-particles {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .hero-section > *:not(.hero-canvas-container) {
+    position: relative;
+    z-index: 3;
+  }
 .green-text {
     color: #66bb6a !important; 
 }
@@ -425,8 +502,10 @@ a {
     display: inline-block;
     padding: 2px;
     background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe, #667eea);
-    background-size: 400% 400%;
+    /* background-size: 400% 400%; */
     animation: gradientRotate 3s ease infinite;
+    display: inline-block; 
+    background: none;
 }
 
 .animated-button-container::before {
@@ -448,6 +527,7 @@ a {
     border: none;
     transition: all 0.3s ease;
     text-transform: uppercase;
+    width: 100%;
 }
 
 .animated-button:hover {
@@ -908,11 +988,21 @@ a {
     margin-top: 0;
   }
 
+  .hero-section {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    
+  }
 
+  .hero-section div {
+    margin: auto;
+  }
 /**************************************************************
 * Media queries
 ***************************************************************/
-
 @media (max-width: 600px) {
   .profile-main .card-panel {
     padding: 1rem 0.5rem;
@@ -933,11 +1023,31 @@ a {
   }
 }
 
+@media (min-width: 601px) and (max-width: 900px) {
+    .hero-section {
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+    }
+    .hero-text {
+      padding: 1.5rem 1rem 1.5rem 1.5rem;
+      font-size: 1.1rem;
+    }
+    .hero-img {
+      max-width: 80vw;
+      margin: 1rem auto;
+    }
+    .hero-section div {
+        margin: auto;
+    }
+  }
+
 @media only screen and (max-width : 992px) {
     .partial-sidenavheader, .todos-main, .sidenav-footer, .profile-main, .editprofile-main {
       padding-left: 0;
     }
-
   }
 
 @media screen and (min-device-width: 1024px) {
