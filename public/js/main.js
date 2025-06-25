@@ -311,6 +311,74 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+
+  // Parallax 
+  const heroImg = document.querySelector('.hero-img');
+  if (heroImg) {
+    heroImg.addEventListener('mousemove', function(e) {
+      const rect = this.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * 32; 
+      const rotateY = ((x - centerX) / centerX) * 16;
+      this.style.transform = `rotateX(${rotateX}deg) rotateY(${-rotateY}deg) scale(1.04)`;
+      this.style.transition = 'transform 0.1s';
+    });
+    heroImg.addEventListener('mouseleave', function() {
+      this.style.transform = '';
+      this.style.transition = 'transform 0.5s';
+    });
+    heroImg.addEventListener('mouseenter', function() {
+      this.style.transition = 'transform `0.2`s';
+    });
+  }
+
+  // Canvas
+  const canvas = document.getElementById('hero-particles');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h;
+  function resize() {
+    w = canvas.width = canvas.offsetWidth;
+    h = canvas.height = canvas.offsetHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Particle setup
+  const chars = ['p', 'q'];
+  const particles = Array.from({length: 24}, () => ({
+    x: Math.random() * w,
+    y: Math.random() * h,
+    r: 2 + Math.random() * 2,
+    dx: (Math.random() - 0.5) * 0.7,
+    dy: (Math.random() - 0.5) * 0.7,
+    alpha: 0.15 + Math.random() * 0.40,
+    color: ['#66bb6a', '#42a5f5', '#ffd600'][Math.floor(Math.random()*3)],
+    char: chars[Math.floor(Math.random()*chars.length)]
+  }));
+
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+    for (const p of particles) {
+      p.x += p.dx;
+      p.y += p.dy;
+      if (p.x < 0 || p.x > w) p.dx *= -1;
+      if (p.y < 0 || p.y > h) p.dy *= -1;
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.font = `${p.r * 7}px 'Roboto', Arial, sans-serif`;
+      ctx.fillStyle = p.color;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.char, p.x, p.y);
+      ctx.restore();
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
 });
 
 function isMobile() {
