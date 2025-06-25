@@ -32,15 +32,33 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
+# 🛠️ pretriq Patch 1.3 — Hero section
+📅 **Release Date:** June 25, 2025
+
+---
+
+## 📢 Developer's Notes - **Using Canva AI to generate images & using Canvas to make a dynamic background**
+
+- I used ChatGPT to describe the image as a prompt then used the prompt on an AI image generator. Came out solid
+- You ever watch cartoons and get the joke later in life? Yeah same, but with my on-demand-background-picker project. It even says it in the title
+  - Used canvas API to display bouncing letters over the screen
+
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.2 — Form data to PDF - programmatically placing text
 📅 **Release Date:** June 24, 2025
 
 ---
 
-## 📢 Developer's Notes - **Using jsPDF & html2canvas, sanitize sanitize sanitize, adding confetti**
+## 📢 Developer's Notes - **Using jsPDF & html2canvas, sanitize sanitize sanitize, adding confetti, updating profile page**
 
 - learning how to programmatically display text with jspdf was fun - definitely see this being used in real worlds situations
+- I am validating and sanitizing any thing possible, I want this app to be secure
+- confetti now shows up when completing an inspection!
+
 ![jspdf](/public/imgs/dvir-template-grid.png)
+![jspdf](/public/imgs/dvir-jspdf-fill.png)
+![confetti](/confetti.gif)
 
 
 ---------------------------------------------------------------------------------------------------------------------------
@@ -52,7 +70,11 @@ I envision that this application has potential to become something with a global
 
 ## 📢 Developer's Notes - **serving error code 404 & 500 pages, visualizing data with Google Analytics, deciding on pretriq logo, adding social media links, using semantic HTML**
 
-- coming soon
+- I didn't know your server had to serve 404 and 500 status code pages
+- Using Google Analytics to collect data was surprisingly very easy to implement
+- I added my social media links if any users want to give feedback on how to improve the app or bring bugs to my attention
+
+I picked the logo that looked like eyes
 ![logos](logoimage.png)
 
 
