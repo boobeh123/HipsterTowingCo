@@ -245,6 +245,72 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+
+  // Profile picture AJAX upload with preloader and toast
+  const profilePicForm = document.getElementById('profile-pic-form');
+  if (profilePicForm) {
+    profilePicForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('upload-btn');
+      const btnText = document.getElementById('upload-btn-text');
+      const preloader = document.getElementById('upload-preloader');
+      btn.disabled = true;
+      btnText.style.display = 'none';
+      preloader.style.display = 'inline-block';
+
+      const formData = new FormData(profilePicForm);
+      try {
+        const res = await fetch('/profile', {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          // Update the profile image if a new one is returned
+          if (data.imageUrl) {
+            const img = document.querySelector('.profile-main img.circle');
+            if (img) img.src = data.imageUrl;
+          }
+          M.toast({html: 'Profile photo updated!', classes: 'green'});
+          profilePicForm.reset();
+        } else {
+          const text = await res.text();
+          M.toast({html: text || 'Error uploading photo.', classes: 'red'});
+          profilePicForm.reset();
+
+        }
+      } catch (err) {
+        M.toast({html: 'Error uploading photo.', classes: 'red'});
+      } finally {
+        btn.disabled = false;
+        btnText.style.display = '';
+        preloader.style.display = 'none';
+      }
+    });
+  }
+
+  // Profile picture file input validation
+  const fileInput = document.getElementById('profile-file');
+  if (fileInput) {
+    fileInput.addEventListener('change', function() {
+      const file = this.files[0];
+      if (file) {
+        // Check file type
+        if (!file.type.startsWith('image/')) {
+          M.toast({html: 'Please select an image file.', classes: 'red'});
+          this.value = '';
+          return;
+        }
+        // Check file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          M.toast({html: 'Image must be less than 10MB.', classes: 'red'});
+          this.value = '';
+          return;
+        }
+      }
+    });
+  }
 });
 
 function isMobile() {
