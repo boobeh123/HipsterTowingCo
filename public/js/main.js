@@ -210,14 +210,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (res.ok) {
           newsletterMessage.innerHTML = '<span class="green-text">Thank you for subscribing!</span>';
           newsletterForm.reset();
-          // Track successful newsletter signup
           gtag('event', 'newsletter_signup', {
             'signup_location': 'homepage'
           });
         } else {
           const text = await res.text();
           newsletterMessage.innerHTML = `<span class="red-text">Error: ${text || 'Could not subscribe.'}</span>`;
-          // Track failed newsletter signup
           gtag('event', 'newsletter_error', {
             'error_message': text || 'Could not subscribe'
           });
@@ -229,19 +227,31 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   const pdfBtn = document.getElementById('open-dvir-pdf');
-  if (!pdfBtn) return;
-
-  pdfBtn.addEventListener('click', async function() {
-    const date = document.getElementById('inspection-date')?.textContent.trim() || '';
-    const truckTractorNo = document.getElementById('inspection-truckNo')?.textContent.trim() || '';
-    const trailerNo = document.getElementById('inspection-trailerNo')?.textContent.trim() || '';
-    const remarks = document.getElementById('inspection-remarks')?.textContent.trim() || '';
-    
-    await generateDVIRPDF(window.inspectionData);
-  });
+  if (pdfBtn) {
+    pdfBtn.addEventListener('click', async function() {
+      const pdf = await generateDVIRPDF(window.inspectionData, true); // true = don't auto-open
+      const blobUrl = pdf.output('bloburl');
+      if (isMobile()) {
+        // Official pdf button functionality for mobile - download pdf
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = 'inspection-report.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        // Official pdf button functionality for desktop - view new image
+        window.open(blobUrl);
+      }
+    });
+  }
 });
 
-async function generateDVIRPDF(data) {
+function isMobile() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+async function generateDVIRPDF(data, skipOpen) {
   const pdf = new window.jspdf.jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -289,9 +299,6 @@ async function generateDVIRPDF(data) {
   // Truck/Tractor Defects (Middle column)
   if (defects.horn === true)               pdf.text('X', 78, 58);
   if (defects.lights === true)             pdf.text('X', 78, 63);
-//   if (defects.headStop === true)           pdf.text('X', 78, 84);
-//   if (defects.tailDash === true)           pdf.text('X', 78, 90);
-//   if (defects.turnIndicators === true)     pdf.text('X', 78, 95);
   if (defects.mirrors === true)            pdf.text('X', 78, 84);
   if (defects.muffler === true)            pdf.text('X', 78, 90);
   if (defects.oilPressure === true)        pdf.text('X', 78, 95);
@@ -330,11 +337,21 @@ async function generateDVIRPDF(data) {
   if (defectsTrailer.other === true)            pdf.text('X', 143, 171);
 
   // Safely handle remarks
-  const remarks = typeof data.remarks === 'string' ? data.remarks : '';
+  const remarks = typeof data.remarks === 'string' ? decodeHTMLEntities(data.remarks) : '';
   const remarksLines = pdf.splitTextToSize(remarks, 160);
   if (Array.isArray(remarksLines) && remarksLines.length > 0) {
     pdf.text(remarksLines, 30, 190);
   }
 
-  window.open(pdf.output('bloburl'));
+  if (!skipOpen) {
+    window.open(pdf.output('bloburl'));
+  }
+  return pdf;
 }
+
+// Displays escaped user input on PDF
+function decodeHTMLEntities(text) {
+    const txt = document.createElement('textarea');
+    txt.innerHTML = text;
+    return txt.value;
+  }
