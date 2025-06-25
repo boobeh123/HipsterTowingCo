@@ -58,6 +58,7 @@ module.exports = {
     },
     updatePhoto: async (req, res) => {
         try {
+            let imageUrl;
             if (req.user.image === '') {
                 const result = await cloudinary.uploader.upload(req.file.path, {
                     width: 100, 
@@ -69,6 +70,7 @@ module.exports = {
                     image: result.secure_url,
                     cloudinaryId: result.public_id
                 })
+                imageUrl = result.secure_url;
             } else {
                 await cloudinary.uploader.destroy(req.user.cloudinaryId)
                 const result = await cloudinary.uploader.upload(req.file.path, {
@@ -80,12 +82,23 @@ module.exports = {
                 await User.findByIdAndUpdate(req.user.id, {
                     image: result.secure_url,
                     cloudinaryId: result.public_id
-            })
-        }
-            console.log('Profile picture added')
-            res.redirect('/profile')
+                })
+                imageUrl = result.secure_url;
+            }
+            console.log('Profile picture added');
+            if (
+                req.xhr ||
+                (req.headers.accept && req.headers.accept.includes('application/json')) ||
+                (req.headers['content-type'] && req.headers['content-type'].includes('application/json'))
+              ) {
+                return res.json({ imageUrl });
+              }
+            res.redirect('/profile');
         } catch(err) {
             console.error(err);
+            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                return res.status(500).json({ error: 'Error uploading photo.' });
+            }
             res.render('./errors/500.ejs')
         }
     }
