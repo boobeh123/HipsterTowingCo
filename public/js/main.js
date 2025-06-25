@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Reload the page to show the new inspection
                         setTimeout(() => {
                             window.location.reload();
-                        }, 5000); 
+                        }, 2500); 
                     } else {
                         M.toast({html: result.message || 'Error submitting inspection.', classes: 'red'});
                         // Track failed submission
