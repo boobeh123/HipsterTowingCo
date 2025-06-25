@@ -1,19 +1,4 @@
 /**************************************************************
-* Clearfix
-***************************************************************/
-.clearfix:before,
-.clearfix:after {
-    content: "";
-    display: table;
-}
-.clearfix:after {
-    clear: both;
-}
-.clearfix {
-    clear: both;
-    *zoom: 1;
-}
-/**************************************************************
 * Accessibility
 ***************************************************************/
 .sr-only {
@@ -715,6 +700,74 @@ a {
     border-left: 1px solid rgba(230, 0, 0, 0.5); 
     padding-left: .25rem;   
 }
+
+.profile-main .btn,
+.profile-main .file-field .btn {
+  transition: box-shadow 0.3s, background 0.3s;
+}
+.profile-main .btn:hover,
+.profile-main .file-field .btn:hover {
+  background: #37474f !important;
+  color: #fff !important;
+  box-shadow: 0 0 12px 2px #66bb6a;;
+}
+.profile-main .card-panel {
+  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+.profile-main .card-panel:hover {
+    
+  transform: translateY(-5px);
+  box-shadow: 0 8px 32px rgba(55, 71, 79, 0.18);
+  border: 1px solid #b0bec5;
+}
+
+/* Profile info label and value styling */
+.profile-main p span.bold {
+  color: #263238;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-right: 0.5rem;
+}
+.profile-main p span:not(.bold) {
+  color: #607d8b;
+  font-size: 1.08rem;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+.profile-main p {
+  margin-bottom: 0.5rem;
+}
+
+/* Profile info card-like design */
+.profile-main .profile-info-card {
+  background: #f5f7fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(55, 71, 79, 0.07);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+}
+
+/* Profile page spacing and font improvements */
+.profile-main .profile-info-section {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+.profile-main .profile-info-card {
+  font-size: 1.12rem;
+}
+.profile-main .profile-info-card dd {
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+.profile-main .profile-info-section form {
+  margin-top: 1.5rem;
+}
+
+
 /**************************************************************
 * Footer
 ***************************************************************/
@@ -859,80 +912,25 @@ a {
 /**************************************************************
 * Media queries
 ***************************************************************/
-@media screen and (min-device-width: 565px) {
 
-    .todoBtns {
-        display: inline-block;
-    }
-
-    .index-main .firstArea {
-        display: flex;
-        align-items: center;
-    }
-
-    .index-main .secondArea {
-        display: flex;
-    }
-
-    .index-main .secondArea .col {
-        width: 100%;
-    }
-
-    .index-main .bgOne {
-        background-color: #F8F0EA;
-    }
-    .index-main .thirdArea .bgTwo {
-        background-image: url('/imgs/pexels-mitchell-luo-3694711.jpg');
-        background-repeat: no-repeat;
-        background-position: bottom;
-        width: 100%;
-        padding: 0;
-    }
-    .index-main .thirdArea .container .bgThree {
-        background-color: #fefefe;
-        border-radius: 6px;
-        padding: 0.75rem 0;
-    }
-    .index-main .thirdArea .container .container section {
-        text-align: center;
-    }
-    .index-main .thirdArea .container .container form div {
-        text-align: center;
-    }
-    .index-main .thirdArea .container .container form div input {
-        display: inline-block;
-        width: 60%;
-    }
-    .index-main .thirdArea .container .container form div button {
-        display: inline-block;
-        width: 20%;
-    }
-
-    .profile-main .card .card-content {
-        display: block;
-    }
-    .profile-main .card .card-content div {
-        float: left;
-        width: 45%;
-    }
-    .profile-main .card .card-content div + div {
-        float: right;
-        width: 45%;
-    }
-
-    .page-footer .container .row {
-        display: flex;
-        flex-direction: row;
-    }
-    .page-footer .container .row h5 {
-        color: #616A79;
-        text-align: left;
-    }
-    .page-footer .container .row ul li {
-        margin: 0.25rem 0;
-        text-align: left;
-    }
-
+@media (max-width: 600px) {
+  .profile-main .card-panel {
+    padding: 1rem 0.5rem;
+  }
+  .profile-main .profile-info-card {
+    padding: 0.75rem 0.75rem;
+    font-size: 1rem;
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+  }
+  .profile-main .profile-info-section {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  .profile-main img.circle {
+    width: 80px !important;
+    height: 80px !important;
+  }
 }
 
 @media only screen and (max-width : 992px) {
