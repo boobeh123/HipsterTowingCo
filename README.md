@@ -5,6 +5,7 @@ Deployed on Railway: https://pretriq.up.railway.app/
 
 ## Demo
 ![demo](todomvcauthdemo.gif)
+![demo](/PRETRIQDEMO2025.gif)
 
 ## Optimizations 
 * Style landing page
