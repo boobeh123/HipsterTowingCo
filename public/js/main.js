@@ -188,6 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (collapsibles.length > 0) {
         M.Collapsible.init(collapsibles);
     }
+    AOS.init();
 
     const loadMoreBtn = document.getElementById('load-more-btn');
     if (loadMoreBtn) {
