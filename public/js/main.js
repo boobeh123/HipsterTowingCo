@@ -477,7 +477,7 @@ async function generateDVIRPDF(data, skipOpen) {
 //     pdf.text(`${x}`, x, 5);
 //     pdf.line(x, 0, x, 279.4);
 //   }
-
+  
   pdf.setTextColor(0, 0, 0); 
   pdf.setFontSize(12);
   pdf.text(String(data.date || ''), 30, 41);
