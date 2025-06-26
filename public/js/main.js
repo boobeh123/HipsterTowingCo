@@ -55,50 +55,118 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
 
-                // Submit form to the dedicated endpoint for authenticated users
-                fetch('/todos/createInspection', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => { throw new Error(err.message || 'Server error') });
+                const isAuthenticated = window.location.pathname !== '/';
+                
+                // Prepare guest inspection data
+                const newInspection = {
+                    ...data,
+                    id: Date.now().toString(),
+                    createdAt: new Date().toISOString()
+                };
+                
+                if (!isAuthenticated) {
+                    // Validate required fields for guest users
+                    if (!data.truckTractorNo || data.truckTractorNo.trim().length === 0) {
+                        M.toast({html: 'Please enter the USDOT # before submitting.', classes: 'red'});
+                        truckTractorNoInput.focus();
+                        return;
                     }
-                    return response.json();
-                })
-                .then(result => {
-                    if (result.success) {
-                        inspectionModal.close();
-                        M.toast({html: 'Inspection submitted successfully!', classes: 'green'});
-                        confetti({
-                            particleCount: 300,
-                            spread: 120,
-                            origin: { y: 0.5 }
-                          });
-                        // Track successful inspection submission
-                        gtag('event', 'inspection_submitted', {
-                            'truck_number': data.truckTractorNo,
-                            'has_defects': !data.conditionSatisfactory
-                        });
-                        // Reload the page to show the new inspection
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 2500); 
-                    } else {
-                        M.toast({html: result.message || 'Error submitting inspection.', classes: 'red'});
-                        // Track failed submission
-                        gtag('event', 'inspection_error', {
-                            'error_message': result.message || 'Error submitting inspection'
-                        });
+                    
+                    // Sanitize text inputs to prevent XSS
+                    if (data.remarks) {
+                        data.remarks = data.remarks.replace(/[<>]/g, '').trim();
                     }
-                })
-                .catch(error => {
-                    console.error('Error submitting inspection form:', error);
-                    M.toast({html: error.message || 'An error occurred. Please try again.', classes: 'red'});
-                });
+                    if (data.truckTractorNo) {
+                        data.truckTractorNo = data.truckTractorNo.replace(/[<>]/g, '').trim();
+                    }
+                    if (data.trailerNo) {
+                        data.trailerNo = data.trailerNo.replace(/[<>]/g, '').trim();
+                    }
+                    
+                    // Check localStorage size limit (usually 5-10MB)
+                    const existingInspections = JSON.parse(localStorage.getItem('guestInspections') || '[]');
+                    
+                    // Estimate size (rough calculation)
+                    const estimatedSize = JSON.stringify([...existingInspections, newInspection]).length;
+                    if (estimatedSize > 5000000) { // 5MB limit
+                        M.toast({html: 'Storage limit reached. Please create an account to save more inspections.', classes: 'orange'});
+                        return;
+                    }
+                }
+
+                if (isAuthenticated) {
+                    // Submit form to the dedicated endpoint for authenticated users
+                    fetch('/todos/createInspection', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw new Error(err.message || 'Server error') });
+                        }
+                        return response.json();
+                    })
+                    .then(result => {
+                        if (result.success) {
+                            inspectionModal.close();
+                            M.toast({html: 'Inspection submitted successfully!', classes: 'green'});
+                            confetti({
+                                particleCount: 300,
+                                spread: 120,
+                                origin: { y: 0.5 }
+                              });
+                            // Track successful inspection submission
+                            gtag('event', 'inspection_submitted', {
+                                'truck_number': data.truckTractorNo,
+                                'has_defects': !data.conditionSatisfactory
+                            });
+                            // Reload the page to show the new inspection
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 2500); 
+                        } else {
+                            M.toast({html: result.message || 'Error submitting inspection.', classes: 'red'});
+                            // Track failed submission
+                            gtag('event', 'inspection_error', {
+                                'error_message': result.message || 'Error submitting inspection'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error submitting inspection form:', error);
+                        M.toast({html: error.message || 'An error occurred. Please try again.', classes: 'red'});
+                    });
+                } else {
+                    // Guest user - save to localStorage and show popup
+                    const guestInspection = newInspection; // Use the validated data from above
+                    
+                    // Save to localStorage
+                    const existingInspections = JSON.parse(localStorage.getItem('guestInspections') || '[]');
+                    existingInspections.push(guestInspection);
+                    localStorage.setItem('guestInspections', JSON.stringify(existingInspections));
+                    
+                    // Track guest inspection submission
+                    gtag('event', 'guest_inspection_submitted', {
+                        'truck_number': guestInspection.truckTractorNo,
+                        'has_defects': !guestInspection.conditionSatisfactory,
+                        'user_type': 'guest',
+                        'inspection_id': guestInspection.id
+                    });
+                    
+                    // Close modal
+                    inspectionModal.close();
+                    confetti({
+                        particleCount: 300,
+                        spread: 120,
+                        origin: { y: 0.5 }
+                    });
+                    
+                    // Show success popup with download/create account options
+                    showGuestInspectionPopup(guestInspection);
+                }
             });
         }
     }
@@ -489,3 +557,106 @@ function decodeHTMLEntities(text) {
     txt.innerHTML = text;
     return txt.value;
   }
+
+// Show popup for guest inspection completion
+function showGuestInspectionPopup(inspectionData) {
+    // Create popup HTML
+    const popupHTML = `
+        <div id="guest-inspection-popup" class="modal" style="display: block; z-index: 1003; margin-top: 2rem;" role="dialog" aria-labelledby="guest-popup-title" aria-describedby="guest-popup-description" aria-modal="true">
+            <div class="modal-content">
+                <h4 id="guest-popup-title" class="green-text">Inspection Report Generated!</h4>
+                <div id="guest-popup-description">
+                    <p>Your inspection report has been created successfully. Guest inspection reports <b>are not saved to our servers</b> - please download the PDF to keep your report. Consider creating an account to store future documents"</p>
+                    <p><strong>Create an account to save reports and access your inspection history.</strong></p>
+                </div>
+                <div class="modal-footer" role="group" aria-label="Action buttons">
+                    <button id="download-guest-pdf" class="btn waves-effect waves-light green" aria-label="Download inspection report as PDF">
+                        <i class="material-icons left" aria-hidden="true">download</i>
+                        Download PDF
+                    </button>
+                    <a href="/signup" class="btn waves-effect waves-light blue" role="button" aria-label="Create a new account to save future reports">
+                        <i class="material-icons left" aria-hidden="true">person_add</i>
+                        Create Account
+                    </a>
+                    <button id="close-guest-popup" class="btn-flat waves-effect" aria-label="Close this dialog">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-overlay" style="display: block; z-index: 1002; background-color: rgba(0, 0, 0, 0.5); opacity: 1;" role="presentation" aria-hidden="true"></div>
+    `;
+    
+    // Add popup to page
+    document.body.insertAdjacentHTML('beforeend', popupHTML);
+    
+    // Add event listeners
+    document.getElementById('download-guest-pdf').addEventListener('click', async function() {
+        try {
+            const pdf = await generateDVIRPDF(inspectionData, true);
+            const blobUrl = pdf.output('bloburl');
+            
+            if (isMobile()) {
+                // Download for mobile
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = `inspection-report-${inspectionData.truckTractorNo}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } else {
+                // Open in new tab for desktop
+                window.open(blobUrl);
+            }
+            
+            // Track PDF download
+            gtag('event', 'guest_pdf_downloaded', {
+                'truck_number': inspectionData.truckTractorNo,
+                'user_type': 'guest',
+                'inspection_id': inspectionData.id,
+                'device_type': isMobile() ? 'mobile' : 'desktop'
+            });
+            
+            M.toast({html: 'PDF downloaded successfully!', classes: 'green'});
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            M.toast({html: 'Error generating PDF. Please try again.', classes: 'red'});
+            
+            // Track PDF error
+            gtag('event', 'guest_pdf_error', {
+                'error_message': error.message,
+                'truck_number': inspectionData.truckTractorNo,
+                'user_type': 'guest'
+            });
+        }
+    });
+    
+    document.getElementById('close-guest-popup').addEventListener('click', function() {
+        // Track popup close
+        gtag('event', 'guest_popup_closed', {
+            'truck_number': inspectionData.truckTractorNo,
+            'user_type': 'guest',
+            'inspection_id': inspectionData.id
+        });
+        
+        const popup = document.getElementById('guest-inspection-popup');
+        const overlay = document.querySelector('.modal-overlay');
+        if (popup) popup.remove();
+        if (overlay) overlay.remove();
+    });
+    
+    // Close popup when clicking overlay
+    document.querySelector('.modal-overlay').addEventListener('click', function() {
+        // Track popup close via overlay
+        gtag('event', 'guest_popup_closed_overlay', {
+            'truck_number': inspectionData.truckTractorNo,
+            'user_type': 'guest',
+            'inspection_id': inspectionData.id
+        });
+        
+        const popup = document.getElementById('guest-inspection-popup');
+        const overlay = document.querySelector('.modal-overlay');
+        if (popup) popup.remove();
+        if (overlay) overlay.remove();
+    });
+}
