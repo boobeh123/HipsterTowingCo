@@ -101,24 +101,36 @@
                 </div>
             </div>
         </section>
-        <section class="thirdArea" role="region" aria-labelledby="newsletter-heading">
+        <section id="contact-us" class="thirdArea" role="region" aria-labelledby="contact-heading">
             <div class="container">
-                <div class="newsletter-section" role="complementary" data-aos="zoom-out" data-aos-delay="300">
-                    <div class="newsletter-content">
-                        <h3 id="newsletter-heading">Stay Updated with Pretriq</h3>
-                        <p>Get notified about new features</p>
-                        <form id="newsletter-form" class="newsletter-form" action="/newsletter/subscribe" method="POST">
-                            <label for="newsletter-email" class="sr-only">Email address</label>
+                <div class="contact-section" role="complementary" data-aos="zoom-out" data-aos-delay="300">
+                    <div class="contact-content">
+                        <h3 id="contact-heading">Get in Touch</h3>
+                        <p>Have questions about Pretriq? We'd love to hear from you!</p>
+                        <form id="contact-form" class="contact-form" action="/contact/submit" method="POST">
                             <div class="input-group">
-                              <input id="newsletter-email" type="email" name="email" placeholder="Enter your email address" class="newsletter-input" required>
-                              <button type="submit" class="newsletter-btn">
-                                <span>Subscribe</span>
-                                <i class="material-icons" aria-hidden="true">arrow_forward</i>
-                              </button>
+                                <label for="contact-name" class="sr-only">Full Name</label>
+                                <input id="contact-name" type="text" name="name" placeholder="Your Full Name" class="contact-input" required>
                             </div>
-                            <small class="newsletter-note">We respect your privacy. Unsubscribe at any time.</small>
-                          </form>
-                        <div id="newsletter-message" class="center-align" aria-live="polite"></div>
+                            <div class="input-group">
+                                <label for="contact-email" class="sr-only">Email Address</label>
+                                <input id="contact-email" type="email" name="email" placeholder="Your Email Address" class="contact-input" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="contact-subject" class="sr-only">Subject</label>
+                                <input id="contact-subject" type="text" name="subject" placeholder="Subject" class="contact-input" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="contact-messageBox" class="sr-only">Message</label>
+                                <textarea id="contact-messageBox" name="message" placeholder="Your Message" class="contact-textarea" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="contact-btn">
+                                <span>Send Message</span>
+                                <i class="material-icons" aria-hidden="true">send</i>
+                            </button>
+                            <small class="contact-note">We'll get back to you within 24 hours.</small>
+                        </form>
+                        <div id="contact-message" class="center-align" aria-live="polite"></div>
                     </div>
                 </div>
             </div>
