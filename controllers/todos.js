@@ -11,8 +11,18 @@ module.exports = {
             const allDrivers = await User.find({role: 'Driver'}).lean();
             
             const limit = 2;
-            const inspections = await Inspection.find({userId: req.user.id}).sort({ createdAt: -1 }).limit(limit).lean()
-            const totalInspections = await Inspection.countDocuments({userId: req.user.id});
+            const q = req.query.q ? req.query.q.trim() : '';
+            let searchFilter = { userId: req.user.id };
+            if (q) {
+                const regex = new RegExp(q, 'i');
+                searchFilter.$or = [
+                    { truckTractorNo: regex },
+                    { trailerNo: regex },
+                    { remarks: regex }
+                ];
+            }
+            const inspections = await Inspection.find(searchFilter).sort({ createdAt: -1 }).limit(limit).lean()
+            const totalInspections = await Inspection.countDocuments(searchFilter);
 
             res.render('todos.ejs', {
                 todos: inspections,
@@ -20,7 +30,8 @@ module.exports = {
                 drivers: allDrivers,
                 page: pageName,
                 hasMore: totalInspections > limit, 
-                currentPage: 1 
+                currentPage: 1,
+                q
             })
         } catch(err) {
             console.log(err)
@@ -119,6 +130,28 @@ module.exports = {
         } catch (err) {
             console.error('Error fetching inspection:', err);
             res.status(500).render('errors/500');
+        }
+    },
+    searchTodos: async (req, res) => {
+        try {
+            const q = req.query.q ? req.query.q.trim() : '';
+            let searchFilter = { userId: req.user.id };
+            if (q) {
+                const regex = new RegExp(q, 'i');
+                searchFilter.$or = [
+                    { truckTractorNo: regex },
+                    { trailerNo: regex },
+                    { remarks: regex }
+                ];
+            }
+            const inspections = await Inspection.find(searchFilter)
+                .sort({ createdAt: -1 })
+                .limit(20)
+                .lean();
+            res.json({ inspections });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Error searching inspections.' });
         }
     }
 }    
