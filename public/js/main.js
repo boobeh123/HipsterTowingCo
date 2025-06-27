@@ -85,8 +85,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Check localStorage size limit (usually 5-10MB)
                     const existingInspections = JSON.parse(localStorage.getItem('guestInspections') || '[]');
-                    
-                    // Estimate size (rough calculation)
                     const estimatedSize = JSON.stringify([...existingInspections, newInspection]).length;
                     if (estimatedSize > 5000000) { // 5MB limit
                         M.toast({html: 'Storage limit reached. Please create an account to save more inspections.', classes: 'orange'});
@@ -95,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 if (isAuthenticated) {
-                    // Submit form to the dedicated endpoint for authenticated users
+                    // /createInspection POST request from dashboard
                     fetch('/todos/createInspection', {
                         method: 'POST',
                         headers: {
@@ -118,18 +116,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                 spread: 120,
                                 origin: { y: 0.5 }
                               });
-                            // Track successful inspection submission
                             gtag('event', 'inspection_submitted', {
                                 'truck_number': data.truckTractorNo,
                                 'has_defects': !data.conditionSatisfactory
                             });
-                            // Reload the page to show the new inspection
                             setTimeout(() => {
                                 window.location.reload();
-                            }, 2500); 
+                            }, 1750); 
                         } else {
                             M.toast({html: result.message || 'Error submitting inspection.', classes: 'red'});
-                            // Track failed submission
                             gtag('event', 'inspection_error', {
                                 'error_message': result.message || 'Error submitting inspection'
                             });
@@ -140,15 +135,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         M.toast({html: error.message || 'An error occurred. Please try again.', classes: 'red'});
                     });
                 } else {
-                    // Guest user - save to localStorage and show popup
-                    const guestInspection = newInspection; // Use the validated data from above
-                    
-                    // Save to localStorage
+                    // if not authenticated
+                    const guestInspection = newInspection;
+
                     const existingInspections = JSON.parse(localStorage.getItem('guestInspections') || '[]');
                     existingInspections.push(guestInspection);
                     localStorage.setItem('guestInspections', JSON.stringify(existingInspections));
                     
-                    // Track guest inspection submission
                     gtag('event', 'guest_inspection_submitted', {
                         'truck_number': guestInspection.truckTractorNo,
                         'has_defects': !guestInspection.conditionSatisfactory,
@@ -156,7 +149,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         'inspection_id': guestInspection.id
                     });
                     
-                    // Close modal
                     inspectionModal.close();
                     confetti({
                         particleCount: 300,
@@ -164,7 +156,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         origin: { y: 0.5 }
                     });
                     
-                    // Show success popup with download/create account options
                     showGuestInspectionPopup(guestInspection);
                 }
             });
@@ -263,293 +254,308 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-      // Newsletter AJAX
-  const newsletterForm = document.getElementById('newsletter-form');
-  const newsletterMessage = document.getElementById('newsletter-message');
-  if (newsletterForm) {
-    newsletterForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const email = document.getElementById('newsletter-email').value;
-      try {
-        const res = await fetch('/newsletter/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
+    // Contact Form AJAX
+    const contactForm = document.getElementById('contact-form');
+    const contactMessage = document.getElementById('contact-message');
+    if (contactForm) {
+        contactForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('contact-name').value.trim(),
+                email: document.getElementById('contact-email').value.trim(),
+                subject: document.getElementById('contact-subject').value.trim(),
+                message: document.getElementById('contact-messageBox').value.trim()
+            };
+
+            // Basic validation
+            if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+                contactMessage.innerHTML = '<span class="red-text">Please fill in all fields.</span>';
+                return;
+            }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.email)) {
+                contactMessage.innerHTML = '<span class="red-text">Please enter a valid email address.</span>';
+                return;
+            }
+
+            try {
+                const res = await fetch('/contact/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (res.ok) {
+                    contactMessage.innerHTML = '<span class="green-text">Thank you for your message! We\'ll get back to you soon.</span>';
+                    contactForm.reset();
+                    gtag('event', 'contact_form_submitted', {
+                        'form_location': 'homepage',
+                        'subject': formData.subject
+                    });
+                } else {
+                    const text = await res.text();
+                    contactMessage.innerHTML = `<span class="red-text">Error: ${text || 'Could not send message.'}</span>`;
+                    gtag('event', 'contact_form_error', {
+                        'error_message': text || 'Could not send message'
+                    });
+                }
+            } catch (err) {
+                contactMessage.innerHTML = '<span class="red-text">Error: Could not send message. Please try again.</span>';
+                gtag('event', 'contact_form_error', {
+                    'error_message': 'Network error'
+                });
+            }
         });
-        if (res.ok) {
-          newsletterMessage.innerHTML = '<span class="green-text">Thank you for subscribing!</span>';
-          newsletterForm.reset();
-          gtag('event', 'newsletter_signup', {
-            'signup_location': 'homepage'
-          });
-        } else {
-          const text = await res.text();
-          newsletterMessage.innerHTML = `<span class="red-text">Error: ${text || 'Could not subscribe.'}</span>`;
-          gtag('event', 'newsletter_error', {
-            'error_message': text || 'Could not subscribe'
-          });
-        }
-      } catch (err) {
-        newsletterMessage.innerHTML = '<span class="red-text">Error: Could not subscribe.</span>';
-      }
-    });
-  }
-
-  const pdfBtn = document.getElementById('open-dvir-pdf');
-  if (pdfBtn) {
-    pdfBtn.addEventListener('click', async function() {
-      const pdf = await generateDVIRPDF(window.inspectionData, true); // true = don't auto-open
-      const blobUrl = pdf.output('bloburl');
-      if (isMobile()) {
-        // Official pdf button functionality for mobile - download pdf
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = 'inspection-report.pdf';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      } else {
-        // Official pdf button functionality for desktop - view new image
-        window.open(blobUrl);
-      }
-    });
-  }
-
-  // Profile picture AJAX upload with preloader and toast
-  const profilePicForm = document.getElementById('profile-pic-form');
-  if (profilePicForm) {
-    profilePicForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const btn = document.getElementById('upload-btn');
-      const btnText = document.getElementById('upload-btn-text');
-      const preloader = document.getElementById('upload-preloader');
-      btn.disabled = true;
-      btnText.style.display = 'none';
-      preloader.style.display = 'inline-block';
-
-      const formData = new FormData(profilePicForm);
-      try {
-        const res = await fetch('/profile', {
-          method: 'POST',
-          body: formData,
-          headers: { 'Accept': 'application/json' }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          // Update the profile image if a new one is returned
-          if (data.imageUrl) {
-            const img = document.querySelector('.profile-main img.circle');
-            if (img) img.src = data.imageUrl;
-          }
-          M.toast({html: 'Profile photo updated!', classes: 'green'});
-          profilePicForm.reset();
-        } else {
-          const text = await res.text();
-          M.toast({html: text || 'Error uploading photo.', classes: 'red'});
-          profilePicForm.reset();
-
-        }
-      } catch (err) {
-        M.toast({html: 'Error uploading photo.', classes: 'red'});
-      } finally {
-        btn.disabled = false;
-        btnText.style.display = '';
-        preloader.style.display = 'none';
-      }
-    });
-  }
-
-  // Profile picture file input validation
-  const fileInput = document.getElementById('profile-file');
-  if (fileInput) {
-    fileInput.addEventListener('change', function() {
-      const file = this.files[0];
-      if (file) {
-        // Check file type
-        if (!file.type.startsWith('image/')) {
-          M.toast({html: 'Please select an image file.', classes: 'red'});
-          this.value = '';
-          return;
-        }
-        // Check file size (max 10MB)
-        if (file.size > 10 * 1024 * 1024) {
-          M.toast({html: 'Image must be less than 10MB.', classes: 'red'});
-          this.value = '';
-          return;
-        }
-      }
-    });
-  }
-
-  // Parallax 
-  const heroImg = document.querySelector('.hero-img');
-  if (heroImg) {
-    heroImg.addEventListener('mousemove', function(e) {
-      const rect = this.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * 32; 
-      const rotateY = ((x - centerX) / centerX) * 16;
-      this.style.transform = `rotateX(${rotateX}deg) rotateY(${-rotateY}deg) scale(1.04)`;
-      this.style.transition = 'transform 0.1s';
-    });
-    heroImg.addEventListener('mouseleave', function() {
-      this.style.transform = '';
-      this.style.transition = 'transform 0.5s';
-    });
-    heroImg.addEventListener('mouseenter', function() {
-      this.style.transition = 'transform `0.2`s';
-    });
-  }
-
-  // Canvas
-  const canvas = document.getElementById('hero-particles');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let w, h;
-  function resize() {
-    w = canvas.width = canvas.offsetWidth;
-    h = canvas.height = canvas.offsetHeight;
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  // Particle setup
-  const chars = ['p', 'q'];
-  const particles = Array.from({length: 24}, () => ({
-    x: Math.random() * w,
-    y: Math.random() * h,
-    r: 2 + Math.random() * 2,
-    dx: (Math.random() - 0.5) * 0.7,
-    dy: (Math.random() - 0.5) * 0.7,
-    alpha: 0.15 + Math.random() * 0.40,
-    color: ['#66bb6a', '#42a5f5', '#ffd600'][Math.floor(Math.random()*3)],
-    char: chars[Math.floor(Math.random()*chars.length)]
-  }));
-
-  function animate() {
-    ctx.clearRect(0, 0, w, h);
-    for (const p of particles) {
-      p.x += p.dx;
-      p.y += p.dy;
-      if (p.x < 0 || p.x > w) p.dx *= -1;
-      if (p.y < 0 || p.y > h) p.dy *= -1;
-      ctx.save();
-      ctx.globalAlpha = p.alpha;
-      ctx.font = `${p.r * 7}px 'Roboto', Arial, sans-serif`;
-      ctx.fillStyle = p.color;
-      ctx.textBaseline = 'middle';
-      ctx.textAlign = 'center';
-      ctx.fillText(p.char, p.x, p.y);
-      ctx.restore();
     }
-    requestAnimationFrame(animate);
-  }
-  animate();
+
+    const pdfBtn = document.getElementById('open-dvir-pdf');
+    if (pdfBtn) {
+        pdfBtn.addEventListener('click', async function() {
+            const pdf = await generateDVIRPDF(window.inspectionData, true); // true = don't auto-open
+            const blobUrl = pdf.output('bloburl');
+            if (isMobile()) {
+                // Official pdf button functionality for mobile - download pdf
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = 'inspection-report.pdf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } else {
+                // Official pdf button functionality for desktop - view new image
+                window.open(blobUrl);
+            }
+        });
+    }
+
+    // Profile picture AJAX upload with preloader and toast
+    const profilePicForm = document.getElementById('profile-pic-form');
+    if (profilePicForm) {
+        profilePicForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('upload-btn');
+            const btnText = document.getElementById('upload-btn-text');
+            const preloader = document.getElementById('upload-preloader');
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            preloader.style.display = 'inline-block';
+
+            const formData = new FormData(profilePicForm);
+            try {
+                const res = await fetch('/profile', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    // Update the profile image if a new one is returned
+                    if (data.imageUrl) {
+                        const img = document.querySelector('.profile-main img.circle');
+                        if (img) img.src = data.imageUrl;
+                    }
+                    M.toast({html: 'Profile photo updated!', classes: 'green'});
+                    profilePicForm.reset();
+                } else {
+                    const text = await res.text();
+                    M.toast({html: text || 'Error uploading photo.', classes: 'red'});
+                    profilePicForm.reset();
+
+                }
+            } catch (err) {
+                M.toast({html: 'Error uploading photo.', classes: 'red'});
+            } finally {
+                btn.disabled = false;
+                btnText.style.display = '';
+                preloader.style.display = 'none';
+            }
+        });
+    }
+
+    // Profile picture file input validation
+    const fileInput = document.getElementById('profile-file');
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                // Check file type
+                if (!file.type.startsWith('image/')) {
+                    M.toast({html: 'Please select an image file.', classes: 'red'});
+                    this.value = '';
+                    return;
+                }
+                // Check file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    M.toast({html: 'Image must be less than 10MB.', classes: 'red'});
+                    this.value = '';
+                    return;
+                }
+            }
+        });
+    }
+
+    // Parallax 
+    const heroImg = document.querySelector('.hero-img');
+    if (heroImg) {
+        heroImg.addEventListener('mousemove', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * 32; 
+            const rotateY = ((x - centerX) / centerX) * 16;
+            this.style.transform = `rotateX(${rotateX}deg) rotateY(${-rotateY}deg) scale(1.04)`;
+            this.style.transition = 'transform 0.1s';
+        });
+        heroImg.addEventListener('mouseleave', function() {
+            this.style.transform = '';
+            this.style.transition = 'transform 0.5s';
+        });
+        heroImg.addEventListener('mouseenter', function() {
+            this.style.transition = 'transform `0.2`s';
+        });
+    }
+
+    // Canvas
+    const canvas = document.getElementById('hero-particles');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    function resize() {
+        w = canvas.width = canvas.offsetWidth;
+        h = canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Particle setup
+    const chars = ['p', 'q'];
+    const particles = Array.from({length: 24}, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: 2 + Math.random() * 2,
+        dx: (Math.random() - 0.5) * 0.7,
+        dy: (Math.random() - 0.5) * 0.7,
+        alpha: 0.15 + Math.random() * 0.40,
+        color: ['#66bb6a', '#42a5f5', '#ffd600'][Math.floor(Math.random()*3)],
+        char: chars[Math.floor(Math.random()*chars.length)]
+    }));
+
+    function animate() {
+        ctx.clearRect(0, 0, w, h);
+        for (const p of particles) {
+            p.x += p.dx;
+            p.y += p.dy;
+            if (p.x < 0 || p.x > w) p.dx *= -1;
+            if (p.y < 0 || p.y > h) p.dy *= -1;
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.font = `${p.r * 7}px 'Roboto', Arial, sans-serif`;
+            ctx.fillStyle = p.color;
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            ctx.fillText(p.char, p.x, p.y);
+            ctx.restore();
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
 });
 
 function isMobile() {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 async function generateDVIRPDF(data, skipOpen) {
-  const pdf = new window.jspdf.jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'letter'
-  });
+    const pdf = new window.jspdf.jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'letter'
+    });
 
-  const defects = data.defects?.truckTractor || {};
-  const defectsTrailer = data.defects?.trailer || {};
+    const defects = data.defects?.truckTractor || {};
+    const defectsTrailer = data.defects?.trailer || {};
 
-  const img = new window.Image();
-  img.src = '/imgs/dvir-template.png';
-  await new Promise(resolve => { img.onload = resolve; });
-  pdf.addImage(img, 'PNG', 0, 0, 215.9, 279.4);
- 
-// Iterates through dimensions (215.9mm x 279.4mm) of Letter size paper to determine where to draw grid lines
-//   for (let y = 0; y < 280; y += 10) {
-//     pdf.text(`${y}`, 2, y);
-//     pdf.line(0, y, 215.9, y);
-//   }
-//   for (let x = 0; x < 216; x += 10) {
-//     pdf.text(`${x}`, x, 5);
-//     pdf.line(x, 0, x, 279.4);
-//   }
-  
-  pdf.setTextColor(0, 0, 0); 
-  pdf.setFontSize(12);
-  pdf.text(String(data.date || ''), 30, 41);
-  pdf.text(String(data.truckTractorNo || ''), 60, 50);
-  pdf.text(String(data.trailerNo || ''), 55 , 150);
-  // Truck/Tractor Defects (Left column)
-  if (defects.airCompressor === true)      pdf.text('X', 13, 58);
-  if (defects.airLines === true)           pdf.text('X', 13, 63);
-  if (defects.battery === true)            pdf.text('X', 13, 68);
-  if (defects.brakeAccessories === true)   pdf.text('X', 13, 73);
-  if (defects.brakes === true)             pdf.text('X', 13, 79);
-  if (defects.carburetor === true)         pdf.text('X', 13, 84);
-  if (defects.clutch === true)             pdf.text('X', 13, 90);
-  if (defects.defroster === true)          pdf.text('X', 13, 95);
-  if (defects.driveLine === true)          pdf.text('X', 13, 100);
-  if (defects.engine === true)             pdf.text('X', 13, 105);
-  if (defects.fifthWheel === true)         pdf.text('X', 13, 110);
-  if (defects.frontAxle === true)          pdf.text('X', 13, 115);
-  if (defects.fuelTanks === true)          pdf.text('X', 13, 120);
-  if (defects.heater === true)             pdf.text('X', 13, 126);
-  // Truck/Tractor Defects (Middle column)
-  if (defects.horn === true)               pdf.text('X', 78, 58);
-  if (defects.lights === true)             pdf.text('X', 78, 63);
-  if (defects.mirrors === true)            pdf.text('X', 78, 84);
-  if (defects.muffler === true)            pdf.text('X', 78, 90);
-  if (defects.oilPressure === true)        pdf.text('X', 78, 95);
-  if (defects.onBoardRecorder === true)    pdf.text('X', 78, 100);
-  if (defects.radiator === true)           pdf.text('X', 78, 105);
-  if (defects.rearEnd === true)            pdf.text('X', 78, 110);
-  if (defects.reflectors === true)         pdf.text('X', 78, 115);
-  if (defects.safetyEquipment === true)    pdf.text('X', 78, 120);
-  // Truck/Tractor Defects (Right column)
-  if (defects.springs === true)            pdf.text('X', 143, 57);
-  if (defects.starter === true)            pdf.text('X', 143, 62);
-  if (defects.steering === true)           pdf.text('X', 143, 68);
-  if (defects.tachograph === true)         pdf.text('X', 143, 74);
-  if (defects.tires === true)              pdf.text('X', 143, 79);
-  if (defects.transmission === true)       pdf.text('X', 143, 84);
-  if (defects.wheels === true)             pdf.text('X', 143, 89);
-  if (defects.windows === true)            pdf.text('X', 143, 94);
-  if (defects.windshieldWipers === true)   pdf.text('X', 143, 99);
-  if (defects.other === true)              pdf.text('X', 143, 104);
-  // Trailer Defects (Left column)
-  if (defectsTrailer.brakeConnections === true) pdf.text('X', 13, 156);
-  if (defectsTrailer.brakes === true)           pdf.text('X', 13, 162);
-  if (defectsTrailer.couplingChains === true)   pdf.text('X', 13, 167);
-  if (defectsTrailer.couplingPin === true)      pdf.text('X', 13, 172);
-  if (defectsTrailer.doors === true)            pdf.text('X', 13, 177);
-  // Trailer Defects (Middle column)
-  if (defectsTrailer.hitch === true)            pdf.text('X', 78, 156);
-  if (defectsTrailer.landingGear === true)      pdf.text('X', 78, 162);
-  if (defectsTrailer.lightsAll === true)        pdf.text('X', 78, 167);
-  if (defectsTrailer.roof === true)             pdf.text('X', 78, 172);
-  if (defectsTrailer.springs === true)          pdf.text('X', 78, 177);
-  // Trailer Defects (Right column)
-  if (defectsTrailer.tarpaulin === true)        pdf.text('X', 143, 155);
-  if (defectsTrailer.tires === true)            pdf.text('X', 143, 161);
-  if (defectsTrailer.wheels === true)           pdf.text('X', 143, 166);
-  if (defectsTrailer.other === true)            pdf.text('X', 143, 171);
+    const img = new window.Image();
+    img.src = '/imgs/dvir-template.png';
+    await new Promise(resolve => { img.onload = resolve; });
+    pdf.addImage(img, 'PNG', 0, 0, 215.9, 279.4);
+    
+    pdf.setTextColor(0, 0, 0); 
+    pdf.setFontSize(12);
+    pdf.text(String(data.date || ''), 30, 41);
+    pdf.text(String(data.truckTractorNo || ''), 60, 50);
+    pdf.text(String(data.trailerNo || ''), 55 , 150);
+    // Truck/Tractor Defects (Left column)
+    if (defects.airCompressor === true)      pdf.text('X', 13, 58);
+    if (defects.airLines === true)           pdf.text('X', 13, 63);
+    if (defects.battery === true)            pdf.text('X', 13, 68);
+    if (defects.brakeAccessories === true)   pdf.text('X', 13, 73);
+    if (defects.brakes === true)             pdf.text('X', 13, 79);
+    if (defects.carburetor === true)         pdf.text('X', 13, 84);
+    if (defects.clutch === true)             pdf.text('X', 13, 90);
+    if (defects.defroster === true)          pdf.text('X', 13, 95);
+    if (defects.driveLine === true)          pdf.text('X', 13, 100);
+    if (defects.engine === true)             pdf.text('X', 13, 105);
+    if (defects.fifthWheel === true)         pdf.text('X', 13, 110);
+    if (defects.frontAxle === true)          pdf.text('X', 13, 115);
+    if (defects.fuelTanks === true)          pdf.text('X', 13, 120);
+    if (defects.heater === true)             pdf.text('X', 13, 126);
+    // Truck/Tractor Defects (Middle column)
+    if (defects.horn === true)               pdf.text('X', 78, 58);
+    if (defects.lights === true)             pdf.text('X', 78, 63);
+    if (defects.mirrors === true)            pdf.text('X', 78, 84);
+    if (defects.muffler === true)            pdf.text('X', 78, 90);
+    if (defects.oilPressure === true)        pdf.text('X', 78, 95);
+    if (defects.onBoardRecorder === true)    pdf.text('X', 78, 100);
+    if (defects.radiator === true)           pdf.text('X', 78, 105);
+    if (defects.rearEnd === true)            pdf.text('X', 78, 110);
+    if (defects.reflectors === true)         pdf.text('X', 78, 115);
+    if (defects.safetyEquipment === true)    pdf.text('X', 78, 120);
+    // Truck/Tractor Defects (Right column)
+    if (defects.springs === true)            pdf.text('X', 143, 57);
+    if (defects.starter === true)            pdf.text('X', 143, 62);
+    if (defects.steering === true)           pdf.text('X', 143, 68);
+    if (defects.tachograph === true)         pdf.text('X', 143, 74);
+    if (defects.tires === true)              pdf.text('X', 143, 79);
+    if (defects.transmission === true)       pdf.text('X', 143, 84);
+    if (defects.wheels === true)             pdf.text('X', 143, 89);
+    if (defects.windows === true)            pdf.text('X', 143, 94);
+    if (defects.windshieldWipers === true)   pdf.text('X', 143, 99);
+    if (defects.other === true)              pdf.text('X', 143, 104);
+    // Trailer Defects (Left column)
+    if (defectsTrailer.brakeConnections === true) pdf.text('X', 13, 156);
+    if (defectsTrailer.brakes === true)           pdf.text('X', 13, 162);
+    if (defectsTrailer.couplingChains === true)   pdf.text('X', 13, 167);
+    if (defectsTrailer.couplingPin === true)      pdf.text('X', 13, 172);
+    if (defectsTrailer.doors === true)            pdf.text('X', 13, 177);
+    // Trailer Defects (Middle column)
+    if (defectsTrailer.hitch === true)            pdf.text('X', 78, 156);
+    if (defectsTrailer.landingGear === true)      pdf.text('X', 78, 162);
+    if (defectsTrailer.lightsAll === true)        pdf.text('X', 78, 167);
+    if (defectsTrailer.roof === true)             pdf.text('X', 78, 172);
+    if (defectsTrailer.springs === true)          pdf.text('X', 78, 177);
+    // Trailer Defects (Right column)
+    if (defectsTrailer.tarpaulin === true)        pdf.text('X', 143, 155);
+    if (defectsTrailer.tires === true)            pdf.text('X', 143, 161);
+    if (defectsTrailer.wheels === true)           pdf.text('X', 143, 166);
+    if (defectsTrailer.other === true)            pdf.text('X', 143, 171);
 
-  // Safely handle remarks
-  const remarks = typeof data.remarks === 'string' ? decodeHTMLEntities(data.remarks) : '';
-  const remarksLines = pdf.splitTextToSize(remarks, 160);
-  if (Array.isArray(remarksLines) && remarksLines.length > 0) {
-    pdf.text(remarksLines, 30, 190);
-  }
+    // Safely handle remarks
+    const remarks = typeof data.remarks === 'string' ? decodeHTMLEntities(data.remarks) : '';
+    const remarksLines = pdf.splitTextToSize(remarks, 160);
+    if (Array.isArray(remarksLines) && remarksLines.length > 0) {
+        pdf.text(remarksLines, 30, 190);
+    }
 
-  if (!skipOpen) {
-    window.open(pdf.output('bloburl'));
-  }
-  return pdf;
+    if (!skipOpen) {
+        window.open(pdf.output('bloburl'));
+    }
+    return pdf;
 }
 
 // Displays escaped user input on PDF
@@ -557,20 +563,23 @@ function decodeHTMLEntities(text) {
     const txt = document.createElement('textarea');
     txt.innerHTML = text;
     return txt.value;
-  }
+}
 
 // Show popup for guest inspection completion
 function showGuestInspectionPopup(inspectionData) {
     // Create popup HTML
     const popupHTML = `
         <div id="guest-inspection-popup" class="modal" style="display: block; z-index: 1003; margin-top: 2rem;" role="dialog" aria-labelledby="guest-popup-title" aria-describedby="guest-popup-description" aria-modal="true">
-            <div class="modal-content">
-                <h4 id="guest-popup-title" class="green-text">Inspection Report Generated!</h4>
+            <div class="modal-content" style="position: relative;">
+                <button id="close-guest-popup" class="btn-flat waves-effect" style="position: absolute; top: 10px; right: 10px; z-index: 1;" aria-label="Close this dialog">
+                    <i class="material-icons">close</i>
+                </button>
+                <h4 id="guest-popup-title" class="green-text"><span class="green-text" style="padding-right: 5px;">✓</span>Inspection Report Generated!</h4>
                 <div id="guest-popup-description">
-                    <p>Your inspection report has been created successfully. Guest inspection reports <b>are not saved to our servers</b> - please download the PDF to keep your report. Consider creating an account to store future documents"</p>
-                    <p><strong>Create an account to save reports and access your inspection history.</strong></p>
+                    <p>Your inspection report has been created successfully. Guest inspection reports <b>are not saved to our servers</b> - please download the PDF to keep your report.</p>
+                    <p><strong>Consider creating an account to store future documents and access your inspection history.</strong></p>
                 </div>
-                <div class="modal-footer" role="group" aria-label="Action buttons">
+                <div class="modal-footer" role="group" aria-label="Action buttons" style="display: flex; justify-content: space-evenly; border-bottom: 1px solid gray; border-top: 1px solid gray;">
                     <button id="download-guest-pdf" class="btn waves-effect waves-light green" aria-label="Download inspection report as PDF">
                         <i class="material-icons left" aria-hidden="true">download</i>
                         Download PDF
@@ -579,9 +588,6 @@ function showGuestInspectionPopup(inspectionData) {
                         <i class="material-icons left" aria-hidden="true">person_add</i>
                         Create Account
                     </a>
-                    <button id="close-guest-popup" class="btn-flat waves-effect" aria-label="Close this dialog">
-                        Close
-                    </button>
                 </div>
             </div>
         </div>
