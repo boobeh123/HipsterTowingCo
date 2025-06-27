@@ -22,16 +22,89 @@ const sendAdminNotification = async (contactData) => {
   const mailOptions = {
     from: process.env.EMAILNAME,
     to: process.env.EMAILNAME, 
-    subject: `New Contact Form Submission: ${contactData.subject}`,
+    subject: `User Submission: ${contactData.subject}`,
     html: `
-      <h2>New Contact Form Submission</h2>
-      <p><strong>From:</strong> ${contactData.name} (${contactData.email})</p>
-      <p><strong>Subject:</strong> ${contactData.subject}</p>
-      <p><strong>Message:</strong></p>
-      <p>${contactData.message.replace(/\n/g, '<br>')}</p>
-      <hr>
-      <p><small>Submitted on: ${new Date().toLocaleString()}</small></p>
+        <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Thank you for contacting pretriq</title>
+      <style>
+        body {
+          background: #f5f7fa;
+          margin: 0;
+          padding: 0;
+          font-family: 'Roboto', Arial, sans-serif;
+        }
+        .email-container {
+          max-width: 480px;
+          margin: 2rem auto;
+          background: #fff;
+          border-radius: 12px;
+          box-shadow: 0 4px 24px rgba(102,126,234,0.10);
+          padding: 2rem 1.5rem;
+        }
+        .header {
+          color: #185a9d;
+          font-size: 1.5rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          text-align: center;
+        }
+        .content {
+          color: #333;
+          font-size: 1.1rem;
+          margin-bottom: 1.5rem;
+        }
+        .message {
+          background: #f1f8e9;
+          border-left: 4px solid #43cea2;
+          padding: 1rem;
+          margin: 1.5rem 0;
+          font-style: italic;
+          color: #2e7d32;
+        }
+        .footer {
+          color: #888;
+          font-size: 0.95rem;
+          text-align: center;
+          margin-top: 2rem;
+        }
+        @media only screen and (max-width: 600px) {
+          .email-container {
+            padding: 1rem 0.5rem;
+          }
+          .header {
+            font-size: 1.2rem;
+          }
+          .content {
+            font-size: 1rem;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-container">
+        <div class="header"><h2><strong>${contactData.subject}</strong></h2></div>
+          <div class="content">
+            <div class="message">
+              <p><strong>From:${contactData.name}</strong> - (${contactData.email}):</p>
+              <p><strong>Message:</strong></p>
+              <p><em>${contactData.message.replace(/\n/g, '<br>')}</em></p>
+            </div>
+          </div>
+          <div class="footer">
+            <hr>
+            <p><small>Submitted on: ${new Date().toLocaleString()}</small></p><br>
+            <p style="color:#aaa; font-size:0.95rem; margin-top:1.5rem; text-align:center;">You are receiving this email because you contacted Pretriq via our website.<br>If you did not make this request, you can safely ignore this email.</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
     `
+
   };
 
   return transporter.sendMail(mailOptions);
@@ -51,7 +124,7 @@ const sendUserConfirmation = async (contactData) => {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Thank you for contacting Pretriq</title>
+      <title>Thank you for contacting pretriq</title>
       <style>
         body {
           background: #f5f7fa;
