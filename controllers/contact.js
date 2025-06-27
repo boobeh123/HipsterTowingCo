@@ -1,19 +1,6 @@
 const Contact = require('../models/Contact');
 const nodemailer = require('nodemailer');
-
-// Create transporter for sending emails
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    service: 'gmail',
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.EMAILNAME,
-      pass: process.env.EMAILPASSWORD
-    },
-    tls: { rejectUnauthorized: false }
-  });
-};
+const { createTransporter } = require('../utils/mailer');
 
 // Send notification emails (user to pretriq)
 const sendAdminNotification = async (contactData) => {
@@ -192,7 +179,7 @@ const sendUserConfirmation = async (contactData) => {
         </div>
       <div class="footer">
         Best regards,<br>
-        The Pretriq Team<br>
+        The pretriq Team<br>
         <a href="https://pretriq.com" style="color:#185a9d;text-decoration:none;">pretriq.com</a>
       </div>
       <div style="margin-top:2rem; text-align:center;">
