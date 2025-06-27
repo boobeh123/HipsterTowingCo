@@ -2,10 +2,9 @@ const express = require('express')
 const router = express.Router()
 const authController = require('../controllers/auth') 
 const homeController = require('../controllers/home')
-const { ensureAuth, ensureGuest } = require('../middleware/auth')
 const passwordResetController = require('../controllers/reset')
-const todosController = require('../controllers/todos')
-const upload = require("../middleware/multer");
+const privacyController = require('../controllers/privacy')
+
 
 router.get('/', homeController.getIndex)
 router.get('/login', authController.getLogin)
@@ -17,5 +16,6 @@ router.get('/forgot', passwordResetController.getPasswordReset)
 router.post('/forgot', passwordResetController.postPasswordReset)
 router.get('/reset/:token', passwordResetController.getRecoverPassword)
 router.post('/reset/:token', passwordResetController.postRecoverPassword)
+router.get('/privacy', privacyController.getPrivacy)
 
 module.exports = router
