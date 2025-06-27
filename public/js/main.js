@@ -554,6 +554,46 @@ document.addEventListener('DOMContentLoaded', function() {
         requestAnimationFrame(animate);
     }
     animate();
+
+    // Forgot password AJAX
+    const forgotForm = document.querySelector('form[action="/forgot"]');
+    if (forgotForm) {
+        forgotForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const emailInput = forgotForm.querySelector('input[name="email"]');
+            const submitBtn = forgotForm.querySelector('button[type="submit"]');
+            const email = emailInput.value.trim();
+            if (!email) {
+                M.toast({html: 'Please enter your email address.', classes: 'red'});
+                emailInput.focus();
+                return;
+            }
+            submitBtn.disabled = true;
+            try {
+                const res = await fetch('/forgot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ email })
+                });
+                if (res.redirected) {
+                    // Always show a generic message for security
+                    M.toast({html: 'If that email is registered, you will receive a password reset link.', classes: 'green'});
+                    forgotForm.reset();
+                } else {
+                    const text = await res.text();
+                    if (text && text.toLowerCase().includes('valid email')) {
+                        M.toast({html: text, classes: 'red'});
+                    } else {
+                        M.toast({html: 'If that email is registered, you will receive a password reset link.', classes: 'green'});
+                    }
+                }
+            } catch (err) {
+                M.toast({html: 'There was an error. Please try again.', classes: 'red'});
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    }
 });
 
 function isMobile() {
