@@ -2,6 +2,8 @@
 A full-stack web application that is deployed with Railway. Under development
 
 Deployed on Railway: https://pretriq.com/
+
+Default domain assigned by Railway:
 ( https://pretriq.up.railway.app/ )
 
 ## Demo
