@@ -101,5 +101,24 @@ module.exports = {
             }
             res.render('./errors/500.ejs')
         }
+    },
+    deleteProfile: async (req, res) => {
+        try {
+            // Only allow users to delete their own profile
+            if (req.user._id.toString() !== req.params.id) {
+                return res.status(403).render('./errors/404.ejs');
+            }
+            await User.findByIdAndDelete(req.user._id);
+            req.logout(() => {
+                req.session.destroy((err) => {
+                    if (err) console.log('Error : Failed to destroy the session during profile deletion.', err);
+                    req.user = null;
+                    res.redirect('/');
+                });
+            });
+        } catch (err) {
+            console.error(err);
+            res.render('./errors/500.ejs');
+        }
     }
 }
