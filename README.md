@@ -33,6 +33,26 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
+# 🛠️ pretriq Patch 1.4 — Unit Testing, Integration Testing, E2E Testing
+📅 **Release Date:** June 26, 2025
+
+---
+
+## 📢 Developer's Notes - **Unit testing controllers, unit testing models**
+
+- I created a unit test for a single controller's function
+  - Then I created unit tests for every function on that controller
+    - Then I created unit tests for every controller, and their functions
+      - Imagine my face when realizing it's best practice to test every. single. function that a controller has
+  - These tests check a function's logic, checks if it's handling errors and branching them correctly, checks if the correct response is being sent, checks if it's calling the right model
+- I created a unit tests for every model and every schema
+  - Check for validation rules, default values and custom methods
+
+![My first unit test passing!](/passedunittest.png)
+  
+
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.4 — https://www.pretriq.com/
 📅 **Release Date:** June 26, 2025
 
