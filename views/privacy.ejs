@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+<main class="container" id="privacy-main" role="main" aria-label="Privacy Policy main content" style="max-width: 900px; margin: 2rem auto; padding: 2rem 1rem; background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(24,90,157,0.08);">
+  <header role="banner" aria-label="Privacy Policy header">
+    <h1 style="font-size:2.2rem; font-weight:800; margin-bottom:1.5rem;">Privacy Policy</h1>
+    <p>Effective date: <strong><%= new Date().getFullYear() %></strong></p>
+  </header>
+  <section aria-labelledby="privacy-intro" style="margin-top:2rem;">
+    <h2 id="privacy-intro">1. Introduction</h2>
+    <p>pretriq ("we", "us", or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect your information when you use our digital FMCSA pre-trip inspection platform, including our website and related services.</p>
+  </section>
+  <section aria-labelledby="privacy-collect" style="margin-top:2rem;">
+    <h2 id="privacy-collect">2. Information We Collect</h2>
+    <ul>
+      <li><strong>Account Information:</strong> When you create an account, we collect your email address, password, and optional profile image. (See User model)</li>
+      <li><strong>Inspection Data:</strong> When you submit inspection reports, we collect vehicle/trailer USDOT numbers, defects, remarks, and related inspection details. (See Inspection model)</li>
+      <li><strong>Contact Information:</strong> When you contact us, we collect your name, email, subject, and message. (See Contact model)</li>
+      <li><strong>Usage Data:</strong> We use Google Analytics to collect anonymized usage data, such as pages visited, device/browser info, and general location (city/country). This data is not linked to your account.</li>
+      <li><strong>Local Storage:</strong> For guest users, we may store inspection data temporarily in your browser's localStorage to enhance your experience. This inspection data is not transmitted to our servers.</li>
+    </ul>
+  </section>
+  <section aria-labelledby="privacy-use" style="margin-top:2rem;">
+    <h2 id="privacy-use">3. How We Use Your Information</h2>
+    <ul>
+      <li>To provide and improve our services, including user authentication, inspection management, and customer support.</li>
+      <li>To communicate with you about your account, inspection reports, or contact requests.</li>
+      <li>To analyze usage and improve our platform (using Google Analytics).</li>
+      <li>To comply with legal obligations and protect our users and platform.</li>
+    </ul>
+  </section>
+  <section aria-labelledby="privacy-sharing" style="margin-top:2rem;">
+    <h2 id="privacy-sharing">4. Data Sharing & Disclosure</h2>
+    <ul>
+      <li>We do <strong>not</strong> sell or rent your personal information to third parties.</li>
+      <li>We may share data with trusted service providers (e.g., email delivery, analytics) who are contractually obligated to protect your data.</li>
+      <li>We may disclose information if required by law or to protect our rights, users, or platform.</li>
+    </ul>
+  </section>
+  <section aria-labelledby="privacy-security" style="margin-top:2rem;">
+    <h2 id="privacy-security">5. Data Security & Retention</h2>
+    <ul>
+      <li>We use industry-standard security measures to protect your data, which includes encryption.</li>
+      <li>Inspection and account data is retained as long as your account is active or as needed to provide our services. Contact messages are retained for customer support and legal compliance.</li>
+      <li>Guest inspection data stored in localStorage is only on your device and can be cleared at any time by you.</li>
+    </ul>
+  </section>
+  <section aria-labelledby="privacy-rights" style="margin-top:2rem;">
+    <h2 id="privacy-rights">6. Your Rights & Choices</h2>
+    <ul>
+      <li>You may access, update, or delete your account information at any time by logging into your profile.</li>
+      <li>You may request deletion of your inspection or contact data by emailing us (see below).</li>
+      <li>You can opt out of Google Analytics tracking via browser settings or plugins.</li>
+      <li>For questions or requests, contact us at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a>.</li>
+    </ul>
+  </section>
+  <section aria-labelledby="privacy-changes" style="margin-top:2rem;">
+    <h2 id="privacy-changes">7. Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. We will notify users of significant changes by posting the new policy on this page and updating the effective date above.</p>
+  </section>
+  <section aria-labelledby="privacy-contact" style="margin-top:2rem;">
+    <h2 id="privacy-contact">8. Contact Us</h2>
+    <p>If you have any questions about this Privacy Policy or your data, please contact us at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a>.</p>
+  </section>
+</main>
+<%- include('partials/footer') %>
