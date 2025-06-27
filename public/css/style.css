@@ -739,11 +739,7 @@ a {
     background-color: rgba(197, 202, 208, 0.15);
     padding: 1rem 0;
 }
-.todos-main div section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
+
 .todos-main div section div a {
     color: black;
     margin: 0 0.25rem;
@@ -817,8 +813,15 @@ a {
     margin-top: 2rem;
 }
 .fullReportBtn {
-    width: 100%;
     margin: 0 !important;
+}
+.button-row {
+    display: flex;
+    gap: 0.5rem;
+}
+.button-row .btn,
+.button-row form {
+    flex: 1;
 }
 
 .inspection-header-flex {
