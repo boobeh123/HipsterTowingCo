@@ -80,13 +80,14 @@ Outgoing emails (pretriq to user)
   - The new approach lets the user submit an inspection and stores it locally to their device. The user is prompted to download their data *then* create an account, or continue as a guest. Modal text stating that local data is not stored and to save your documents by downlading. End.
   - The old approach lets the user submit an inspection and stores it locally to their device with a guestId. The user is prompted to create an account or continue as a guest. Edge cases introduced:
     - If user wants to continue as a guest, what am I comparing the guestId to? Nothing in the server to compare it to, since guestId is generated locally.
-      - Create something to compare it to, session storage
+      - Create something to compare it to
         - should've stopped here but I went on for a few more hours
     - If user wants to sign up, they are now expecting their report to be stored after the account is created
-      - Create a conversion function to transform locally stored data into cloud storage that is accepted by our database schema
+      - Create a conversion function to transform locally stored data into data that is accepted by our database schema then moved into MongoDB
         - Works, but did not solve guestId/session storage problem, so the time invested here was for fun
   
   Here's the keep it simple version:
+  
   ![GUF](/GuestUserFlow4.png)
 
 ---------------------------------------------------------------------------------------------------------------------------
