@@ -496,7 +496,7 @@ a {
     padding-top: 2rem;
 }
 .index-main .secondArea {
-    
+   
     margin-bottom: 0;
 }
 .index-main .secondArea .col .card {
@@ -537,6 +537,10 @@ a {
 }
 .index-main .thirdArea {
     padding: 1rem 0;
+    background: linear-gradient(135deg, #f093fb 0%, #43cea2 100%);
+    background: black;
+    box-shadow: 0 8px 32px rgba(24,90,157,0.18);
+    background-image: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="200" r="120" stroke="white" stroke-width="2" fill="none" opacity="0.5"/><circle cx="1000" cy="600" r="80" stroke="white" stroke-width="1.5" fill="none" opacity="0.3"/><rect x="400" y="100" width="300" height="60" rx="20" stroke="white" stroke-width="1.5" fill="none" opacity="0.25"/><line x1="100" y1="700" x2="1100" y2="700" stroke="white" stroke-width="1" opacity="0.18"/><line x1="600" y1="0" x2="600" y2="800" stroke="white" stroke-width="1" opacity="0.12"/><polyline points="300,400 350,420 400,390 450,410" stroke="white" stroke-width="1.5" fill="none" opacity="0.22"/><rect x="900" y="200" width="120" height="40" rx="10" stroke="white" stroke-width="1" fill="none" opacity="0.18"/><circle cx="800" cy="150" r="30" stroke="white" stroke-width="1" fill="none" opacity="0.18"/></svg>');
 }
 .index-main .thirdArea .container .container form div input {
     border: 1px solid gray;
@@ -597,7 +601,7 @@ a {
     }
 }
 
-.newsletter-section {
+.contact-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 20px;
     padding: 3rem 2rem;
@@ -606,27 +610,26 @@ a {
     color: white;
     box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
     transition: all 0.3s ease;
-    cursor: pointer;
 }
 
-.newsletter-section:hover {
+.contact-section:hover {
     transform: translateY(-5px);
     box-shadow: 0 25px 50px rgba(102, 126, 234, 0.4);
 }
 
-.newsletter-section:hover .newsletter-content h3 {
+.contact-section:hover .contact-content h3 {
     transform: scale(1.02);
     transition: transform 0.3s ease;
 }
 
-.newsletter-content h3 {
+.contact-content h3 {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
     color: white;
 }
 
-.newsletter-content p {
+.contact-content p {
     font-size: 1.2rem;
     margin-bottom: 2rem;
     opacity: 0.9;
@@ -635,22 +638,27 @@ a {
     margin-right: auto;
 }
 
-.newsletter-form {
-    max-width: 500px;
+.contact-form {
+    max-width: 600px;
     margin: 0 auto;
 }
 
-.input-group {
-    display: flex;
+.contact-form .input-group {
+    margin-bottom: 1.5rem;
     background: white;
-    border-radius: 50px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    margin-bottom: 1rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
 }
 
-.newsletter-input {
-    flex: 1;
+.contact-form .input-group:hover {
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.contact-input {
+    width: 100%;
     border: none !important;
     border-bottom: none !important;
     outline: none !important;
@@ -660,15 +668,29 @@ a {
     box-shadow: none !important;
 }
 
-.newsletter-input::placeholder {
+.contact-textarea {
+    width: 100%;
+    border: none !important;
+    outline: none !important;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    background: white;
+    box-shadow: none !important;
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+}
+
+.contact-input::placeholder,
+.contact-textarea::placeholder {
     color: #999;
 }
 
-.newsletter-btn {
+.contact-btn {
     background: linear-gradient(45deg, #4CAF50, #45a049);
     border: none;
     color: white;
-    padding: 1rem 2rem;
+    padding: 1rem 2.5rem;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
@@ -678,30 +700,38 @@ a {
     gap: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    border-radius: 50px;
+    margin: 2rem auto 1rem auto;
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
 }
 
-.newsletter-btn:hover {
+.contact-btn:hover {
     background: linear-gradient(45deg, #45a049, #4CAF50);
-    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+    transform: translateY(-2px);
 }
 
-.newsletter-btn i {
+.contact-btn i {
     font-size: 1.2rem;
     transition: transform 0.3s ease;
 }
 
-.newsletter-btn:hover i {
+.contact-btn:hover i {
     transform: translateX(3px);
 }
 
-.newsletter-note {
+.contact-note {
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.9rem;
     display: block;
+    margin-top: 1rem;
 }
 
-#newsletter-message {
-    margin-top:1rem;
+#contact-message {
+    margin-top: 1rem;
+}
+#contact-subject, #contact-email, #contact-name {
+    padding-left: 1.5rem;
 }
 
 /* todos.ejs */
@@ -1194,34 +1224,34 @@ a {
 
 
 @media screen and (max-width: 768px) {
-    .newsletter-section {
+    .contact-section {
         padding: 2rem 1rem;
         margin: 1rem 0;
     }
     
-    .newsletter-content h3 {
+    .contact-content h3 {
         font-size: 2rem;
     }
     
-    .newsletter-content p {
+    .contact-content p {
         font-size: 1rem;
     }
     
-    .input-group {
+    .contact-form .input-group {
         flex-direction: column;
         border-radius: 15px;
     }
     
-    .newsletter-input {
+    .contact-input {
         border-radius: 15px 15px 0 0;
     }
     
-    .newsletter-btn {
+    .contact-btn {
         border-radius: 0 0 15px 15px;
         justify-content: center;
     }
 
-    .input-group {
+    .contact-form .input-group {
         padding-top: 1rem;
     }
     
