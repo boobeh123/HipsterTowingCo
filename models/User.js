@@ -5,7 +5,7 @@ const validator = require('validator')
 const UserSchema = new mongoose.Schema({
   role: { 
     type: String,
-    enum: ['user', 'admin', 'manager'],
+    enum: ['user', 'admin'],
     default: 'user'
   },
   email: { 
@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema({
   },
   image: { 
     type: String,
-    default: 'default-avatar.png' // You might want to set a default avatar
+    default: ''
   },
   cloudinaryId: { 
     type: String 
@@ -47,12 +47,15 @@ const UserSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  agreedToTerms: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true // Adds createdAt and updatedAt fields
 })
 
-// Create indexes
 UserSchema.index({ email: 1 })
 UserSchema.index({ role: 1 })
 
@@ -84,7 +87,7 @@ UserSchema.virtual('profileUrl').get(function() {
 
 // Method to check if user is admin
 UserSchema.methods.isAdminUser = function() {
-  return this.role === 'admin' || this.isAdmin === true
+  return this.role === 'Admin' || this.isAdmin === true
 }
 
 module.exports = mongoose.model('User', UserSchema)
