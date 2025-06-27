@@ -61,6 +61,7 @@ const User = require('../models/User')
     if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' })
     if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push({ msg: 'Password must be at least 8 characters long' })
     if (req.body.password !== req.body.confirmPassword) validationErrors.push({ msg: 'Passwords do not match' })
+    if (!req.body.terms) validationErrors.push({ msg: 'You must agree to the Terms of Use to create an account.' })
   
     if (validationErrors.length) {
       req.flash('errors', validationErrors)
@@ -75,7 +76,8 @@ const User = require('../models/User')
       password: req.body.password,
       isAdmin: false,
       image: '',
-      cloudinaryId: ''
+      cloudinaryId: '',
+      agreedToTerms: true
     })
   
     User.findOne({$or: [
