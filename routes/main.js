@@ -4,6 +4,7 @@ const authController = require('../controllers/auth')
 const homeController = require('../controllers/home')
 const passwordResetController = require('../controllers/reset')
 const privacyController = require('../controllers/privacy')
+const termController = require('../controllers/terms')
 
 
 router.get('/', homeController.getIndex)
@@ -17,5 +18,6 @@ router.post('/forgot', passwordResetController.postPasswordReset)
 router.get('/reset/:token', passwordResetController.getRecoverPassword)
 router.post('/reset/:token', passwordResetController.postRecoverPassword)
 router.get('/privacy', privacyController.getPrivacy)
+router.get('/terms', termController.getTerms)
 
 module.exports = router
