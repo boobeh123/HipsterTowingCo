@@ -66,8 +66,11 @@ const InspectionSchema = new mongoose.Schema({
     trim: true,
   },
   defects: {
-    truckTractor: TruckTractorDefectsSchema,
-    trailer: TrailerDefectsSchema
+    type: {
+      truckTractor: { type: TruckTractorDefectsSchema, default: () => ({}) },
+      trailer: { type: TrailerDefectsSchema, default: () => ({}) }
+    },
+    default: () => ({})
   },
   remarks: {
     type: String,
