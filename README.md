@@ -33,16 +33,61 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
-# 🛠️ pretriq Patch 1.3 — Hero section
+# 🛠️ pretriq Patch 1.4 — https://www.pretriq.com/
+📅 **Release Date:** June 26, 2025
+
+---
+
+## 📢 Developer's Notes - **Custom Domain & SSL, Frontend changes, Emailing & Email templates**
+
+- I got the day off today
+  - I should be cleaning
+    - I'm doing this
+- I purchased the domain & SSL from NameCheap on the 25th
+  - Turns out Railway automatically certifies deployed websites/apps with SSL if it has a custom domain
+    - I have not refunded the SSL from NameCheap -- lose money
+- I actually was developing the card section on the night of the 25th, but fell asleep on the floor
+  - Newsletter section is now a functional contact us form with Nodemailer
+    - Users who send a message through the contact form receive an automated email response from pretriq
+      - I also receive an automated email response from pretriq notifying me about your feedback
+- The two incoming/outgoing emails have templates. I styled these templates. Bro. web dev goes so deep. Looks professional tho.
+  - Not bad for only putting a small amount of time into it after just making it for the first time
+
+Incoming emails (user feedback to me):
+![incoming](/incoming.png) 
+
+Outgoing emails (pretriq to user)
+![outgoing](/outgoing.png)
+  
+  
+
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
+# 🛠️ pretriq Patch 1.3 — Guest User Flow v2 & Hero section
 📅 **Release Date:** June 25, 2025
 
 ---
 
-## 📢 Developer's Notes - **Using Canva AI to generate images & using Canvas to make a dynamic background**
+## 📢 Developer's Notes - **Fixed bug w/ PDF download on mobile, Profile page optimizations, Hero section update-- canvas & hero image, Tackling guest-user-flow**
 
-- I used ChatGPT to describe the image as a prompt then used the prompt on an AI image generator. Came out solid
-- You ever watch cartoons and get the joke later in life? Yeah same, but with my on-demand-background-picker project. It even says it in the title
+- When the "download official pdf" button launched it was intended as a "View" button vs a download. Mobile users couldn't view it, but desktop users could. I figured to use the solution that can solves for both
+- Registered users can view the optimizations to the profile page
+- Big visual updates to the hero-section for our landing page
   - Used canvas API to display bouncing letters over the screen
+    - You ever watch cartoons and get the joke later in life? Yeah same, but with my on-demand-background-picker project. It even says it in the title
+  - I used ChatGPT to describe the image as a prompt then used the prompt on an AI image generator. Came out solid
+- When I first tackled guest user flow, my mistake was not creating the functionality/foundation for authenticated users first. Building that first allowed me to easier visualize how to approach this problem
+  - The new approach lets the user submit an inspection and stores it locally to their device. The user is prompted to download their data *then* create an account, or continue as a guest. Modal text stating that local data is not stored and to save your documents by downlading. End.
+  - The old approach lets the user submit an inspection and stores it locally to their device with a guestId. The user is prompted to create an account or continue as a guest. Edge cases introduced:
+    - If user wants to continue as a guest, what am I comparing the guestId to? Nothing in the server to compare it to, since guestId is generated locally.
+      - Create something to compare it to, session storage
+        - should've stopped here but I went on for a few more hours
+    - If user wants to sign up, they are now expecting their report to be stored after the account is created
+      - Create a conversion function to transform locally stored data into cloud storage that is accepted by our database schema
+        - Works, but did not solve guestId/session storage problem, so the time invested here was for fun
+  
+  Here's the keep it simple version:
+  ![GUF](/GuestUserFlow4.png)
 
 ---------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------
