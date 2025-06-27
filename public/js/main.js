@@ -1,3 +1,93 @@
+// Live search dashboard
+if (window.location.pathname === '/todos') {
+    console.log('Live search script loaded');
+    const searchInput = document.getElementById('search');
+    const inspectionList = document.getElementById('inspection-list');
+    let debounceTimeout;
+
+    function renderInspections(inspections) {
+        if (!inspectionList) {
+            console.log('Inspection list not found');
+            return;
+        }
+        if (!inspections.length) {
+            inspectionList.innerHTML = '<li class="center-align">No inspections found.</li>';
+            return;
+        }
+        inspectionList.innerHTML = inspections.map(el => {
+            const badge = el.conditionSatisfactory
+                ? '<span class="new badge green" data-badge-caption="Vehicle OK"><span class="sr-only">Vehicle OK</span></span>'
+                : '<span class="new badge red" data-badge-caption="Defects Found"><span class="sr-only">Defects Found</span></span>';
+            const trailer = el.trailerNo ? `<span class="grey-text"> / Trailer #${el.trailerNo}</span>` : '';
+            const date = new Date(el.createdAt).toLocaleString();
+            return `
+                <li class="todoItem" data-id="${el._id}" role="listitem">
+                    <div class="collapsible-header inspection-header-flex" id="inspection-header-${el._id}" aria-labelledby="inspection-header-${el._id}">
+                        <div class="inspection-header-flex1">${badge}</div>
+                        <div class="inspection-header-flex3">
+                            <span class="bold">USDOT# ${el.truckTractorNo}</span>${trailer}
+                        </div>
+                        <div class="inspection-header-flex2 right-align grey-text">${date}</div>
+                    </div>
+                    <div class="collapsible-body inspection-body-padding">
+                        <section class="row marginB">
+                            <div class="col s12">
+                                <h3 class="border-bottom inspection-section-title">Remarks</h3>
+                                <p>${el.remarks || 'No remarks provided.'}</p>
+                            </div>
+                        </section>
+                        <div class="right-align">
+                            <a href="/todos/view/${el._id}" class="btn-small waves-effect waves-light blue fullReportBtn" aria-label="View full report for inspection ${el.truckTractorNo}">View Full Report</a>
+                            <form action="/todos/${el._id}?_method=DELETE" method="POST" class="form-inline" style="display:inline;">
+                                <button type="submit" class="btn-small waves-effect waves-light red accent-3" aria-label="Delete inspection for ${el.truckTractorNo}">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </li>
+            `;
+        }).join('');
+        if (window.M && window.M.Collapsible) {
+            M.Collapsible.init(document.querySelectorAll('.collapsible'));
+        }
+    }
+
+    if (searchInput) {
+        console.log('Search input found, adding event listener');
+        searchInput.addEventListener('input', function () {
+            clearTimeout(debounceTimeout);
+            const q = this.value.trim();
+            console.log('Search query:', q);
+            
+            if (q.length === 0) {
+                // If search is empty, reload the page to show all results
+                window.location.href = '/todos';
+                return;
+            }
+            
+            debounceTimeout = setTimeout(() => {
+                console.log('Sending search request for:', q);
+                fetch(`/todos/search?q=${encodeURIComponent(q)}`)
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
+                        return res.json();
+                    })
+                    .then(data => {
+                        console.log('Search results:', data);
+                        renderInspections(data.inspections || []);
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        inspectionList.innerHTML = '<li class="center-align red-text">Error loading search results.</li>';
+                    });
+            }, 300);
+        });
+    } else {
+        console.log('Search input not found');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Check if the inspection modal exists on the page before trying to initialize it
     const inspectionModalEl = document.getElementById('inspectionModal');
