@@ -1,7 +1,8 @@
 ## Description
 A full-stack web application that is deployed with Railway. Under development
 
-Deployed on Railway: https://pretriq.up.railway.app/
+Deployed on Railway: https://pretriq.com/
+( https://pretriq.up.railway.app/ )
 
 ## Demo
 ![demo](todomvcauthdemo.gif)
