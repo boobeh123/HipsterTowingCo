@@ -1,5 +1,5 @@
 ## Description
-A full-stack web application that is deployed with Railway. Under development
+A full-stack web application that conducts pretrips digitally & overlays the data onto a PDF. The core functionality works for guest users and the application is completely free for all users. Users may create an account to store their Driver Vehicle Inspection Reports into MongoDB. Documents that are securely stored with MongoDB can be searched and filtered by the owner of the documents. The code is open source so you can see what data is being collected and know that user-privacy and transparency are values I build by. This site is viewable across mobile-view ports and is deployed live on Railway.
 
 Deployed on Railway: https://pretriq.com/
 
