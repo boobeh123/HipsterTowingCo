@@ -54,11 +54,10 @@ I envision that this application has potential to become something with a global
   - Not bad for only putting a small amount of time into it after just making it for the first time
 
 Incoming emails (user feedback to me):
-![incoming](/incoming.png) 
+<img src="/incoming.png" width="450">
 
 Outgoing emails (pretriq to user)
-![outgoing](/outgoing.png)
-  
+<img src="/outgoing.png" width="450">
   
 
 ---------------------------------------------------------------------------------------------------------------------------
@@ -103,8 +102,8 @@ Outgoing emails (pretriq to user)
 - I am validating and sanitizing any thing possible, I want this app to be secure
 - confetti now shows up when completing an inspection!
 
-![jspdf](/public/imgs/dvir-template-grid.png)
-![jspdf](/public/imgs/dvir-jspdf-fill.png)
+<img src="/public/imgs/dvir-template-grid.png"  width="450">
+<img src="/public/imgs/dvir-jspdf-fill.png"  width="450">
 ![confetti](/confetti.gif)
 
 
