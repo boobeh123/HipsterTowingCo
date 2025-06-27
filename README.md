@@ -58,6 +58,7 @@ Incoming emails (user feedback to me):
 <img src="/incoming.png" height="450">
 
 Outgoing emails (pretriq to user)
+<br />
 <img src="/outgoing.png" height="450">
   
 
