@@ -1,14 +1,32 @@
 <%- include('./partials/sidenavheader.ejs') %>
-    <main class="todos-main" role="main" aria-labelledby="dashboard-heading">
+    <main class="todos-main center-align" role="main" aria-labelledby="dashboard-heading">
         <%- include('./partials/flash.ejs') %>
-        <div class="container">
-            <section class="container" aria-labelledby="dashboard-heading">
+        <div class="container center-align">
+            <section class="container center-align" aria-labelledby="dashboard-search-heading" style="margin-bottom: 1.5rem;">
+                <h2 id="dashboard-search-heading" class="sr-only">Search Inspections</h2>
+                <form action="/todos" method="GET" class="row" role="search" aria-label="Search inspections">
+                    <div class="input-field col s10 m6">
+                        <input id="search" name="q" type="text" value="<%= typeof q !== 'undefined' ? q : '' %>" placeholder="Search by truck, trailer, or remarks..." aria-label="Search inspections">
+                    </div>
+                    <div class="input-field col s2 m2">
+                        <button type="submit" class="btn waves-effect waves-light blue" aria-label="Search">
+                            <i class="material-icons left">search</i> Search
+                        </button>
+                    </div>
+                    <% if (typeof q !== 'undefined' && q) { %>
+                    <div class="input-field col s12 m4">
+                        <a href="/todos" class="btn grey lighten-1" aria-label="Clear search">Clear</a>
+                    </div>
+                    <% } %>
+                </form>
+            </section>
+            <section class="container center-align" aria-labelledby="dashboard-heading">
                 <div class="action-bar" role="region" aria-label="Inspection actions">
                 </div>
             </section>
-            <section class="container" aria-labelledby="inspection-list-heading">
+            <section class="container center-align" aria-labelledby="inspection-list-heading">
                 <h2 id="inspection-list-heading" class="sr-only">Inspection History</h2>
-                <ul class="collapsible" id="inspection-list" role="list" aria-label="Inspection history list">
+                <ul class="collapsible center-align" id="inspection-list" role="list" aria-label="Inspection history list">
                     <% todos.forEach( el => { %>
                         <li class="todoItem" data-id="<%=el._id%>" role="listitem">
                             <div class="collapsible-header inspection-header-flex" id="inspection-header-<%=el._id%>" aria-labelledby="inspection-header-<%=el._id%>">
@@ -96,10 +114,10 @@
                                 </section>
                                 <% } %>
 
-                                <div class="right-align">
-                                    <a href="/todos/view/<%=el._id%>" class="btn-small waves-effect waves-light blue fullReportBtn" aria-label="View full report for inspection <%=el.truckTractorNo%>">View Full Report</a>
+                                <div class="right-align center-align button-row">
+                                    <a href="/todos/view/<%=el._id%>" class="btn waves-effect waves-light blue" aria-label="View full report for inspection <%=el.truckTractorNo%>">View Full Report</a>
                                     <form action="/todos/<%=el._id%>?_method=DELETE" method="POST" class="form-inline">
-                                        <button type="submit" class="btn-small waves-effect waves-light red accent-3" aria-label="Delete inspection for <%=el.truckTractorNo%>">Delete</button>
+                                        <button type="submit" class="btn waves-effect waves-light red accent-3" aria-label="Delete inspection for <%=el.truckTractorNo%>">Delete</button>
                                     </form>
                                 </div>
                             </div>
