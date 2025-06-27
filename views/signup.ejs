@@ -21,7 +21,14 @@
                             <label for="signup-password" class="sr-only">Password</label>
                             <input id="signup-password" type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required>
                             <label for="signup-confirmPassword" class="sr-only">Confirm Password</label>
-                            <input id="signup-confirmPassword" type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required>
+                            <input id="signup-confirmPassword" type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required style="margin-bottom: 0.5rem !important;">
+                            <label for="signup-terms" class="center-align" style="display:block; margin-top:1rem;">
+                                <input id="signup-terms" name="terms" type="checkbox" class="filled-in" required aria-required="true" />
+                                <span style="margin-bottom: .75rem;">
+                                  I agree to the
+                                  <a href="/terms" target="_blank" rel="noopener" aria-label="Read our Terms of Use">Terms of Use</a>
+                                </span>
+                            </label>
                             <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
                             <p class="center-align">Already have an account? <a href='/login'>Sign In</a></p>
                         </form>
