@@ -12,3 +12,5 @@ config/test.env
 /config/test.env
 ./config/test.env
 ../config/test.env
+SETUP_GUIDE.md
+README_E2E.md
