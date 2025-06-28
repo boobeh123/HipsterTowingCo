@@ -8,3 +8,7 @@ config/env
 ./config/env
 ../config/env
 /middleware/.env
+config/test.env
+/config/test.env
+./config/test.env
+../config/test.env
