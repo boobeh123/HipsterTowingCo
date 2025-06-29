@@ -32,6 +32,7 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq announcement — Production database was wiped during testing.
 📅 **Release Date:** June 28, 2025
@@ -52,6 +53,21 @@ I envision that this application has potential to become something with a global
 - Testing an application is no joke. It's basically rewriting the app three times over!
   - This is a small web too with not that many featuers.........
 - pretriq is now production-ready 
+- Removed inline css & js
+- Added performance optimizations
+  - Compression headers for Cache control for static assets
+  - Security headers for XSS protection & content type options
+  - Static file caching - 1 year cache for static files
+  - ETags - efficient caching
+- SEO enhancements
+  - Added robots.txt for Search engine crawler guidance
+  - sitemap.xml for Search engine site structure
+  - Structured dada for search result snippets
+- Image enhancements
+  - Converted all images to WebP
+  - Lazy loaded all images
+- Compression improvements
+  - Utilize Brotli compression to compress style.css & main.js
 
 Every test suite being tested at once. All tests pass. 🚀<strong>Pretriq is production ready</strong>🚀<br>
 ![AllTestsPassed](/AllTestsPassed.png)
