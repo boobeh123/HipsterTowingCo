@@ -40,16 +40,18 @@ I envision that this application has potential to become something with a global
 
 ## 📢 Developer's Notes - **E2E testing, creating a test database&cluster, running test suites for Unit testing(controllers,middleware,models,routes), Integration(models) & E2E(views/viewsW/DB)**
 
-- I 
+- Testing an application is no joke. It's basically rewriting the app three times over!
+  - This is a small web too with not that many featuers.........
+- pretriq is now production-ready 
 
-All unit tests pass across controllers, models, routes, middleware, and client-side JavaScript
+All <strong>unit test</strong> pass across controllers, models, routes, middleware, and client-side JavaScript<br>
 ![UnitTestPass](/UnitPass.png)
 
-All integration tests pass with (test)database connectivity
+All <strong>integration tests</strong> pass with (test)database connectivity<br>
 ![IntegrationTestPass](/IntegrationPass.png)
 
 All E2E tests pass with with (test)database connectivity
-![TBD](tbd.png)
+![TBH](E2EPass.png)
   
 
 ---------------------------------------------------------------------------------------------------------------------------
