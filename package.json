@@ -12,13 +12,15 @@
     "test:e2e:critical": "jest test/e2eCritical.test.js",
     "test:e2e:full": "jest test/e2eWithDB.test.js",
     "test:e2e:all": "jest test/e2e*.test.js",
-    "test:all": "jest"
+    "test:all": "jest",
+    "convert-webp": "node scripts/convert-webp.js"
   },
   "author": "Bobby Asakawa",
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "cloudinary": "^1.32.0",
+    "compression": "^1.8.0",
     "connect-mongo": "^3.2.0",
     "dotenv": "^8.2.0",
     "ejs": "^3.1.6",
@@ -43,6 +45,7 @@
   "devDependencies": {
     "jest": "^30.0.3",
     "jest-environment-jsdom": "^30.0.2",
+    "sharp": "^0.32.6",
     "supertest": "^7.1.1"
   }
 }
