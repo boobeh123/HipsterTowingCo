@@ -12,16 +12,28 @@
                 </div>
             </div>
             <div class="col s12 m6 hero-image center-align">
-                <img 
-                    src="/imgs/hero.webp" 
+                <picture>
+                  <source
+                    type="image/webp"
+                    srcset="/imgs/hero-400.webp 400w, /imgs/hero-600.webp 600w, /imgs/hero-900.webp 900w, /imgs/hero-1200.webp 1200w"
+                    sizes="(max-width: 600px) 100vw, 600px"
+                  >
+                  <source
+                    type="image/jpeg"
+                    srcset="/imgs/hero-400.jpg 400w, /imgs/hero-600.jpg 600w, /imgs/hero-900.jpg 900w, /imgs/hero-1200.jpg 1200w"
+                    sizes="(max-width: 600px) 100vw, 600px"
+                  >
+                  <img 
+                    src="/imgs/hero-600.webp" 
                     alt="Digital truck with inspection dashboard" 
                     class="responsive-img hero-img" 
                     tabindex="0"
                     width="600"
                     height="400"
                     fetchpriority="high"
-                    onerror="this.onerror=null; this.src='/imgs/hero.jpg'; console.log('Fallback to JPG');"
-                />
+                    loading="eager"
+                  />
+                </picture>
             </div>
         </section>
         <section id="services" class="row blue-grey lighten-4 d-flex secondArea services-section" role="region" aria-labelledby="features-heading" data-aos="fade-up">
