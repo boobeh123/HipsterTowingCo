@@ -33,7 +33,7 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
-# 🛠️ pretriq Patch 1.5 — Finalize Testing
+# 🛠️ pretriq Patch 1.5 — 🎉 Finalize Testing 🎉
 📅 **Release Date:** June 28, 2025
 
 ---
@@ -44,7 +44,7 @@ I envision that this application has potential to become something with a global
   - This is a small web too with not that many featuers.........
 - pretriq is now production-ready 
 
-Every test suite being tested at once. All tests pass. <strong>Pretriq is production ready</strong>
+Every test suite being tested at once. All tests pass. 🚀<strong>Pretriq is production ready</strong>🚀
 ![AllTestsPassed](/AllTestsPassed.png)
 
 All <strong>unit test</strong> pass across controllers, models, routes, middleware, and client-side JavaScript<br>
