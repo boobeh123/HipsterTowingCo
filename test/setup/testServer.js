@@ -9,10 +9,10 @@ const methodOverride = require("method-override");
 const path = require('path');
 
 // Import routes
-const mainRoutes = require('../routes/main');
-const todoRoutes = require('../routes/todos');
-const profileRoutes = require('../routes/profile');
-const contactRoutes = require('../routes/contact');
+const mainRoutes = require('../../routes/main');
+const todoRoutes = require('../../routes/todos');
+const profileRoutes = require('../../routes/profile');
+const contactRoutes = require('../../routes/contact');
 
 // Import test database config
 const { connectTestDB, disconnectTestDB, clearTestDB } = require('../config/database.test');
@@ -20,13 +20,25 @@ const { connectTestDB, disconnectTestDB, clearTestDB } = require('../config/data
 const createTestServer = async () => {
   const app = express();
   
-  // Try to connect to test database
-  const dbConnected = await connectTestDB();
+  // Try to connect to test database with timeout
+  let dbConnected = false;
+  try {
+    console.log('🔄 Attempting to connect to test database...');
+    dbConnected = await Promise.race([
+      connectTestDB(),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Database connection timeout')), 10000)
+      )
+    ]);
+  } catch (error) {
+    console.log('⚠️ Database connection failed, continuing with mock data:', error.message);
+    dbConnected = false;
+  }
   
   // Allow moment to be used in templating engine
   app.locals.moment = require('moment');
   app.set('view engine', 'ejs');
-  app.set('views', path.join(__dirname, '../views'));
+  app.set('views', path.join(__dirname, '../../views'));
   
   // Middleware
   app.use(express.static('public'));
