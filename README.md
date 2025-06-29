@@ -46,10 +46,10 @@ All unit tests pass across controllers, models, routes, middleware, and client-s
 ![UnitTestPass](/UnitPass.png)
 
 All integration tests pass with (test)database connectivity
-![IntegrationTestPass](/IntegrationPass.png.png)
+![IntegrationTestPass](/IntegrationPass.png)
 
 All E2E tests pass with with (test)database connectivity
-![TBH](tbd.png)
+![TBD](tbd.png)
   
 
 ---------------------------------------------------------------------------------------------------------------------------
