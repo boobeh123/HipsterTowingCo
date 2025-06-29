@@ -1,5 +1,6 @@
 <%- include('./partials/header.ejs') %>
-    <main class="signup-main">
+    <main class="signup-main center-align" role="main" aria-labelledby="signup-heading">
+        <%- include('./partials/flash.ejs') %>
         <div class="container firstArea">
             <section class="container" aria-labelledby="signup-welcome-heading">
                 <h3 id="signup-welcome-heading">Inspections Reimagined</h3>
@@ -11,23 +12,24 @@
             <div class="container">
                 <div class="card col hoverable">
                     <div aria-live="polite">
-                        <%- include('./partials/flash.ejs') %>
+                        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                            <% errors.forEach(error => { %>
+                                <div class="alert alert-danger"><%= error %></div>
+                            <% }) %>
+                        <% } %>
                     </div>
                     <div class="card-content">
                         <h4 class="center-align" id="signup-heading">Create an account</h4>
                         <form action="/signup" method="POST" aria-labelledby="signup-heading">
                             <label for="signup-email" class="sr-only">Email address</label>
-                            <input id="signup-email" type="email" name="email" placeholder="Email*" autofocus autocomplete="email" required>
+                            <input id="signup-email" type="email" name="email" placeholder="Email*" autofocus required autocomplete="email">
                             <label for="signup-password" class="sr-only">Password</label>
-                            <input id="signup-password" type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required>
-                            <label for="signup-confirmPassword" class="sr-only">Confirm Password</label>
-                            <input id="signup-confirmPassword" type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required style="margin-bottom: 0.5rem !important;">
-                            <label for="signup-terms" class="center-align" style="display:block; margin-top:1rem;">
-                                <input id="signup-terms" name="terms" type="checkbox" class="filled-in" required aria-required="true" />
-                                <span style="margin-bottom: .75rem;">
-                                  I agree to the
-                                  <a href="/terms" target="_blank" rel="noopener" aria-label="Read our Terms of Use">Terms of Use</a>
-                                </span>
+                            <input id="signup-password" type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required class="signup-password">
+                            <label for="signup-confirm-password" class="sr-only">Confirm password</label>
+                            <input id="signup-confirm-password" type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required>
+                            <label for="signup-terms" class="center-align signup-terms-label">
+                                <input id="signup-terms" type="checkbox" name="terms" required>
+                                <span class="signup-terms-span">I agree to the <a href="/terms" target="_blank">Terms of Use</a> and <a href="/privacy" target="_blank">Privacy Policy</a></span>
                             </label>
                             <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
                             <p class="center-align">Already have an account? <a href='/login'>Sign In</a></p>
