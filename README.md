@@ -33,10 +33,30 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
+# 🛠️ pretriq Patch 1.6.005
+📅 **Release Date:** February 16th, 2026
+
+
+## 📢 Developer's Notes
+
+- On a fun note: The `Date` API's method `Date.getMonth()` starts from 0 (January), so you must add one to the result for the current month
+- I'll be breaking down the project piece by piece
+  - I will be taking a look at everything on the home `('/')` route - Todo:
+    - Guest inspection functionality 
+    - Review semantics & ARIA within HTML
+    - Review styles 
+    - Review partials
+      - Review the semantics & ARIA for all partials used on home route
+    - Build out the sections I removed from home route
+
+- The button is added back, but guest inspection functionality is still under maintenance
+  - Clicking the button will only display the modal (for now)
+
+
+
 # 🛠️ pretriq Patch 1.6.004
 📅 **Release Date:** February 15th, 2026
 
----
 
 ## 📢 Developer's Notes - Thanks for your interest in pretriq!
 
