@@ -33,6 +33,15 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
+# 🛠️ pretriq announcement — Production database was wiped during testing.
+📅 **Release Date:** June 28, 2025
+
+---
+- I'm sorry to anyone who was effected by this. I ran a command before making a test database. Data was overwritten. 
+  - I lost about a week of pretrip documents
+
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.5 — 🎉 Finalize Testing 🎉
 📅 **Release Date:** June 28, 2025
 
