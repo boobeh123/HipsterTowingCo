@@ -33,8 +33,29 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
+# 🛠️ pretriq Patch 1.5 — Finalize Testing
+📅 **Release Date:** June 28, 2025
+
+---
+
+## 📢 Developer's Notes - **E2E testing, creating a test database&cluster, running test suites for Unit testing(controllers,middleware,models,routes), Integration(models) & E2E(views/viewsW/DB)**
+
+- I 
+
+All unit tests pass across controllers, models, routes, middleware, and client-side JavaScript
+![UnitTestPass](/UnitPass.png)
+
+All integration tests pass with (test)database connectivity
+![IntegrationTestPass](/IntegrationPass.png.png)
+
+All E2E tests pass with with (test)database connectivity
+![TBH](tbd.png)
+  
+
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.4 — Unit Testing, Integration Testing, E2E Testing
-📅 **Release Date:** June 26, 2025
+📅 **Release Date:** June 27, 2025
 
 ---
 
