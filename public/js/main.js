@@ -88,7 +88,57 @@ if (window.location.pathname === '/todos') {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+// Confetti button functionality
+function setupConfettiButtons() {
+    const confettiButtons = document.querySelectorAll('button[data-confetti]');
+    confettiButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (typeof confetti === 'function') {
+                confetti();
+            }
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // Initialize WebP support detection and wait for it to complete
+    console.log('🔍 Checking WebP support...');
+    await checkWebPSupport();
+    
+    // Setup lazy loading after WebP detection is complete
+    setupLazyLoading();
+    
+    // Setup confetti buttons
+    setupConfettiButtons();
+    
+    // Special handling for hero image - load it immediately if it's the only lazy image
+    const heroImage = document.querySelector('.hero-img[data-src]');
+    if (heroImage) {
+        console.log('🎯 Hero image found, loading immediately');
+        // Force WebP if supported, even if image already has src
+        const webpSrc = heroImage.getAttribute('data-src-webp');
+        if (webpSrc && document.documentElement.classList.contains('webp')) {
+            console.log('🎯 Hero image: Using WebP version immediately');
+            heroImage.src = webpSrc;
+            heroImage.classList.remove('lazy-image', 'lazy-image-placeholder');
+            heroImage.classList.add('loaded');
+            heroImage.removeAttribute('data-src');
+            heroImage.removeAttribute('data-src-webp');
+        } else {
+            setTimeout(() => loadImage(heroImage), 50);
+        }
+    }
+    
+    // Fallback: Load all lazy images after 2 seconds if they haven't loaded
+    setTimeout(() => {
+        const unloadedImages = document.querySelectorAll('img[data-src]');
+        if (unloadedImages.length > 0) {
+            console.log('⚠️ Fallback: Loading', unloadedImages.length, 'images that haven\'t loaded yet');
+            unloadedImages.forEach(img => loadImage(img));
+        }
+    }, 2000);
+    
     // Check if the inspection modal exists on the page before trying to initialize it
     const inspectionModalEl = document.getElementById('inspectionModal');
     if (inspectionModalEl) {
@@ -796,4 +846,132 @@ function showGuestInspectionPopup(inspectionData) {
         if (popup) popup.remove();
         if (overlay) overlay.remove();
     });
+}
+
+// WebP support detection
+function checkWebPSupport() {
+    return new Promise((resolve) => {
+        const webP = new Image();
+        webP.onload = webP.onerror = function () {
+            const isSupported = webP.height === 2;
+            if (isSupported) {
+                document.documentElement.classList.add('webp');
+                console.log('✅ WebP support detected');
+            } else {
+                document.documentElement.classList.add('no-webp');
+                console.log('❌ WebP not supported');
+            }
+            resolve(isSupported);
+        };
+        webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+    });
+}
+
+// Lazy loading functionality
+function setupLazyLoading() {
+    const lazyImages = document.querySelectorAll('img[data-src]');
+    console.log('🔍 Found lazy images:', lazyImages.length);
+    
+    // Log each lazy image for debugging
+    lazyImages.forEach((img, index) => {
+        console.log(`🔍 Image ${index + 1}:`, {
+            dataSrc: img.getAttribute('data-src'),
+            dataSrcWebp: img.getAttribute('data-src-webp'),
+            classes: img.className,
+            visible: img.offsetParent !== null
+        });
+    });
+    
+    if ('IntersectionObserver' in window) {
+        console.log('✅ Using IntersectionObserver for lazy loading');
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    console.log('📸 Loading image via IntersectionObserver:', img.getAttribute('data-src'));
+                    loadImage(img);
+                    imageObserver.unobserve(img);
+                }
+            });
+        }, {
+            rootMargin: '50px 0px', // Start loading 50px before the image comes into view
+            threshold: 0.01
+        });
+
+        lazyImages.forEach(img => imageObserver.observe(img));
+    } else {
+        console.log('⚠️ IntersectionObserver not supported, loading all images immediately');
+        // Fallback for older browsers
+        lazyImages.forEach(img => loadImage(img));
+    }
+    
+    // Additional fallback: Check if any images are already visible and load them
+    setTimeout(() => {
+        const unloadedImages = document.querySelectorAll('img[data-src]');
+        unloadedImages.forEach(img => {
+            const rect = img.getBoundingClientRect();
+            const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+            if (isVisible) {
+                console.log('📸 Loading visible image:', img.getAttribute('data-src'));
+                loadImage(img);
+            }
+        });
+    }, 100);
+}
+
+function loadImage(img) {
+    const src = img.getAttribute('data-src');
+    const webpSrc = img.getAttribute('data-src-webp');
+    const currentSrc = img.src;
+    
+    console.log('🖼️ Loading image:', src);
+    console.log('🖼️ WebP available:', webpSrc);
+    console.log('🖼️ WebP supported:', document.documentElement.classList.contains('webp'));
+    console.log('🖼️ Current src:', currentSrc);
+    
+    // Remove lazy loading classes first
+    img.classList.remove('lazy-image', 'lazy-image-placeholder');
+    
+    // Check if this image has already been processed
+    if (img.classList.contains('loaded')) {
+        console.log('🖼️ Image already processed, skipping');
+        return;
+    }
+    
+    // Determine the best source to use
+    let targetSrc = src; // Default to data-src
+    
+    if (webpSrc && document.documentElement.classList.contains('webp')) {
+        console.log('🖼️ Using WebP version:', webpSrc);
+        targetSrc = webpSrc;
+    } else {
+        console.log('🖼️ Using original version:', src);
+        targetSrc = src;
+    }
+    
+    // Only change src if we have a valid target source
+    if (targetSrc) {
+        console.log('🖼️ Setting image src to:', targetSrc);
+        img.src = targetSrc;
+    } else {
+        console.log('🖼️ No valid source found, keeping current src');
+    }
+    
+    img.classList.add('loaded');
+    img.removeAttribute('data-src');
+    img.removeAttribute('data-src-webp');
+    
+    // Add error handling
+    img.onerror = function() {
+        console.error('❌ Failed to load image:', this.src);
+        // Fallback to original JPG if WebP fails
+        if (this.src.includes('.webp') && src) {
+            console.log('🔄 Falling back to JPG:', src);
+            this.src = src;
+        }
+    };
+    
+    img.onload = function() {
+        console.log('✅ Image loaded successfully:', this.src);
+    };
 }
