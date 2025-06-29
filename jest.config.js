@@ -30,6 +30,7 @@ module.exports = {
   
   // Ignore patterns
   testPathIgnorePatterns: [
-    '/node_modules/'
+    '/node_modules/',
+    'test/config/database.test.js'  // This is a utility file, not a test file
   ]
 }; 

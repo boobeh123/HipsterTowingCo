@@ -44,14 +44,15 @@ I envision that this application has potential to become something with a global
   - This is a small web too with not that many featuers.........
 - pretriq is now production-ready 
 
+Every test suite being tested at once. All tests pass. <strong>Pretriq is production ready</strong>
+![AllTestsPassed](/AllTestsPassed.png)
+
 All <strong>unit test</strong> pass across controllers, models, routes, middleware, and client-side JavaScript<br>
-![UnitTestPass](/UnitPass.png)
-
 All <strong>integration tests</strong> pass with (test)database connectivity<br>
-![IntegrationTestPass](/IntegrationPass.png)
-
 All E2E tests pass with with (test)database connectivity
-![TBH](E2EPass.png)
+![UnitTestPass](/UnitPass.png)
+![IntegrationTestPass](/IntegrationPass.png)
+![E2ETestPass](E2EPass.png)
   
 
 ---------------------------------------------------------------------------------------------------------------------------
