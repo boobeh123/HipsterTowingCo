@@ -18,7 +18,7 @@ jest.mock('../../../middleware/auth', () => ({
 // Mock multer middleware
 jest.mock('../../../middleware/multer', () => {
   const mockSingle = jest.fn().mockReturnValue((req, res, next) => {
-    req.file = { 
+    req.file = {
       fieldname: 'file',
       originalname: 'test-image.jpg',
       mimetype: 'image/jpeg',
