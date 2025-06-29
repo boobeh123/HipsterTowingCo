@@ -244,7 +244,6 @@ a {
 .partial-header nav .nav-wrapper .brand-logo,
 .partial-sidenavheader nav .nav-wrapper .brand-logo {
     color: black;
-    font-family: Lato;
     font-weight: 700;
 }
 .partial-header nav,
@@ -266,7 +265,6 @@ a {
 .partial-sidenavheader nav ul div .sidenav-brand-logo {
     text-align: center;
     font-size: 2rem;
-    font-family: Lato;
     font-weight: 700;
 }
 .partial-sidenavheader nav ul .logout-container {
@@ -465,9 +463,11 @@ a {
     box-shadow: 0 8px 32px rgba(55, 71, 79, 0.18);
     transition: transform 0.3s, box-shadow 0.3s;
     max-width: 95%;
-    
     margin-bottom: 3rem;
     margin-top: 0rem;
+    display: block;
+    opacity: 1;
+    animation: none;
 }
 .hero-img:hover, .hero-img:focus {
     /* transform: scale(1.04) rotate(-1deg); */
