@@ -31,32 +31,65 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://unpkg.com">
+    <!-- DNS prefetch for hero image domain -->
+    <link rel="dns-prefetch" href="//pretriq.com">
     <!-- Preload critical CSS -->
     <link rel="preload" href="/css/style.css" as="style">
-    <!-- Google fonts with display swap -->
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100&family=Roboto:wght@100;400;700&display=swap" rel="stylesheet">
-    <!-- MaterializeCSS -->
+    <!-- Preload hero image for faster LCP -->
+    <link rel="preload" href="/imgs/hero.webp" as="image" type="image/webp">
+    <link rel="preload" href="/imgs/hero.jpg" as="image" type="image/jpeg">
+    <!-- Optimized Google fonts - reduced to essential weights only -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <!-- MaterializeCSS - load asynchronously to prevent render blocking -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" media="print" onload="this.media='all'">
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- External css -->
-    <link rel="stylesheet" href="/css/normalize.css" type="text/css" media="print" onload="this.media='all'">
+    <!-- Material Icons - load asynchronously -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" media="print" onload="this.media='all'">
+    <!-- Critical CSS inline to prevent render blocking -->
+    <style>
+        /* Critical above-the-fold styles */
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
+        .hero-section { height: 100vh; margin: 0 !important; position: relative; overflow: hidden; z-index: 1; background-color: mintcream; }
+        .hero-img { border-radius: 16px; box-shadow: 0 8px 32px rgba(55, 71, 79, 0.18); max-width: 95%; margin-bottom: 3rem; margin-top: 0rem; display: block; opacity: 1; }
+        .hero-text { padding: 2rem; display: flex; flex-direction: column; justify-content: center; }
+        h1 { font-size: 2.5rem; margin: 1rem 0; line-height: 1.2; font-weight: 700; }
+        .hero-section h1 { font-size: 2.8rem; margin: 0 0 1.5rem 0; line-height: 1.1; font-weight: 800; }
+        .responsive-img { max-width: 100%; height: auto; display: block; }
+        .row { margin-left: auto; margin-right: auto; margin-bottom: 20px; }
+        .col { float: left; box-sizing: border-box; }
+        .s12 { width: 100%; margin-left: auto; left: auto; right: auto; }
+        .m6 { width: 50%; margin-left: auto; left: auto; right: auto; }
+        .center-align { text-align: center; }
+        .valign-wrapper { display: flex; align-items: center; }
+    </style>
+    <!-- Critical CSS first -->
     <link rel="stylesheet" href="/css/style.css" type="text/css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Non-critical CSS load asynchronously -->
+    <link rel="stylesheet" href="/css/normalize.css" type="text/css" media="print" onload="this.media='all'">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <!-- Fallback for browsers that don't support onload -->
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="/css/normalize.css" type="text/css">
+        <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    </noscript>
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://pretriq.com/">
     <meta property="og:title" content="Pretriq - Submit FMCSA DoT Pre-Trip Inspection Checklists Digitally">
     <meta property="og:description" content="Streamline your FMCSA pre-trip inspections with our digital checklist system. Create, submit, and send inspection reports with ease. Stay compliant and organized.">
-    <!-- <meta property="og:image" content="/imgs/og-image.jpg"> TO-DO -->
-
+    <meta property="og:image" content="https://pretriq.com/imgs/hero.jpg">
+    <meta property="og:image:width" content="600">
+    <meta property="og:image:height" content="400">
+    <meta property="og:image:alt" content="Digital truck with inspection dashboard">
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://pretriq.com/">
     <meta property="twitter:title" content="Pretriq - Submit FMCSA Pre-Trip Inspection Checklists Digitally">
     <meta property="twitter:description" content="Streamline your FMCSA pre-trip inspections with our digital checklist system. Create, submit, and send inspection reports with ease. Stay compliant and organized.">
-    <!-- <meta property="twitter:image" content="/imgs/og-image.jpg"> TO-DO -->
-    
+    <meta property="twitter:image" content="https://pretriq.com/imgs/hero.jpg">
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
     {
@@ -94,18 +127,18 @@
                 <a href="#" data-target="mobile-demo" class="sidenav-trigger" aria-label="Open mobile menu" aria-expanded="false" aria-controls="mobile-demo" aria-haspopup="true">
                     <i class="material-icons" aria-hidden="true">menu</i>
                 </a>
-                <ul class="right hide-on-med-and-down" role="navigation">
+                <ul class="right hide-on-med-and-down" aria-label="Desktop navigation menu">
                     <% if (typeof user !== 'undefined') { %>
                         <% if (user.role === 'Customer') { %>
-                        <li role="none"><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger" role="menuitem" aria-label="Request a tow service">Request Tow</a></li>
-                        <li role="none"><a href="/profile" class="hoverable waves-effect waves-light btn blue-grey lighten-2" role="menuitem" aria-label="View your profile">Profile</a></li>
+                        <li role="none"><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger" aria-label="Request a tow service">Request Tow</a></li>
+                        <li role="none"><a href="/profile" class="hoverable waves-effect waves-light btn blue-grey lighten-2" aria-label="View your profile">Profile</a></li>
                         <% } else { %>
-                        <li role="none"><a href="/profile" class="hoverable waves-effect waves-light btn blue darken-1" role="menuitem" aria-label="View your profile">Profile</a></li>
+                        <li role="none"><a href="/profile" class="hoverable waves-effect waves-light btn blue darken-1" aria-label="View your profile">Profile</a></li>
                         <% } %>
-                        <li role="none"><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text" role="menuitem" aria-label="Sign out of your account">Sign out</a></li>
+                        <li role="none"><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text" aria-label="Sign out of your account">Sign out</a></li>
                     <% } else { %>
-                        <li role="none"><a href="/login" class="hoverable waves-effect waves-light btn transparent black-text" role="menuitem" aria-label="Sign in to your account">Login</a></li>
-                        <li role="none"><a href="/signup" class="hoverable waves-effect waves-light btn green lighten-1" role="menuitem" aria-label="Create a new account">Create Account</a></li>
+                        <li role="none"><a href="/login" class="hoverable waves-effect waves-light btn transparent black-text" aria-label="Sign in to your account">Login</a></li>
+                        <li role="none"><a href="/signup" class="hoverable waves-effect waves-light btn green lighten-1" aria-label="Create a new account">Create Account</a></li>
                     <% } %>
                 </ul>
             </div>
