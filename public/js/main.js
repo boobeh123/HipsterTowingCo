@@ -644,6 +644,57 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         });
     }
+
+    // Accessibility fix for sidenav
+    const mobileSidenav = document.getElementById('mobile-demo');
+    if (mobileSidenav) {
+        // Helper to set tabindex on all focusable elements inside sidenav
+        function setSidenavTabbable(tabbable) {
+            const focusables = mobileSidenav.querySelectorAll('a, button, input, select, textarea, [tabindex]');
+            focusables.forEach(el => {
+                if (tabbable) {
+                    el.removeAttribute('tabindex');
+                } else {
+                    el.setAttribute('tabindex', '-1');
+                }
+            });
+        }
+
+        // Initial state: sidenav is hidden, so remove from tab order
+        if (mobileSidenav.getAttribute('aria-hidden') === 'true') {
+            setSidenavTabbable(false);
+        }
+
+        // Listen for Materialize sidenav events
+        document.addEventListener('click', function(e) {
+            // If a sidenav trigger is clicked, wait for sidenav to open
+            if (e.target.closest('.sidenav-trigger')) {
+                setTimeout(() => {
+                    if (mobileSidenav.getAttribute('aria-hidden') === 'false') {
+                        setSidenavTabbable(true);
+                    }
+                }, 350); // Wait for animation
+            }
+            // If a sidenav close button or link is clicked, wait for sidenav to close
+            if (e.target.closest('.sidenav a')) {
+                setTimeout(() => {
+                    if (mobileSidenav.getAttribute('aria-hidden') === 'true') {
+                        setSidenavTabbable(false);
+                    }
+                }, 350);
+            }
+        });
+
+        // Also listen for attribute changes (in case sidenav is closed by overlay or swipe)
+        const observer = new MutationObserver(() => {
+            if (mobileSidenav.getAttribute('aria-hidden') === 'true') {
+                setSidenavTabbable(false);
+            } else {
+                setSidenavTabbable(true);
+            }
+        });
+        observer.observe(mobileSidenav, { attributes: true, attributeFilter: ['aria-hidden'] });
+    }
 });
 
 function isMobile() {
