@@ -8,15 +8,15 @@ Deployed on Railway: https://pretriq.com/
 ![demo](/PRETRIQDEMO2025.gif)
 
 ## Optimizations 
-* Style landing page
+* ~Style landing page~
 * Style signup/login page
 * Convert to PWA
-* Implement Tesseract for OCR & Quagga2/ZXing for scanning
-* Implement html2canvas & jsPDF
+* ~Implement Tesseract for OCR & Quagga2/ZXing for scanning~
+* ~Implement html2canvas & jsPDF~
 * Implement a 'recent activity' feed
-* Add SEO
-* Optimize for accessibility & screen readers
-* Optimize pageload
+* ~Add SEO~
+* ~Optimize for accessibility & screen readers~
+* ~Optimize pageload
 
 ### Tech used:
 <img src="https://profilinator.rishav.dev/skills-assets/html5-original-wordmark.svg" alt="HTML5" height="50" /><img src="https://profilinator.rishav.dev/skills-assets/css3-original-wordmark.svg" alt="CSS3" height="50" /><img src="https://profilinator.rishav.dev/skills-assets/javascript-original.svg" alt="JavaScript" height="40" /><img src="https://profilinator.rishav.dev/skills-assets/nodejs-original-wordmark.svg" alt="NodeJS" height="50" /><img src="https://profilinator.rishav.dev/skills-assets/mongodb-original-wordmark.svg" alt="MongoDB" height="50" /><img src="https://profilinator.rishav.dev/skills-assets/express-original-wordmark.svg" alt="ExpressJS" height="50" />
@@ -157,6 +157,7 @@ Outgoing emails (pretriq to user)
 
 <img src="/public/imgs/dvir-template-grid.png"  width="600">
 <img src="/public/imgs/dvir-jspdf-fill.png"  width="600">
+
 ![confetti](/confetti.gif)
 
 
