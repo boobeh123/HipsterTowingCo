@@ -33,6 +33,25 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
+# 🛠️ pretriq Patch 1.6b — Revert to a previous state
+📅 **Release Date:** July 1st, 2025
+
+---
+
+## 📢 Developer's Notes - **I got obsessed with optimizing my google lighthouse score to the point where I broke stuff**
+
+- Database is fine and no rollbacks there
+- I rolled the site back to June 28th, 2025. 
+  - Everything should be at its most stable point (version after tests)
+
+- This project will have less updates unless I receive feedback to implement a feature 
+
+- 7-day Analytics update:
+![analytics2.png](/analytics2.png)
+  
+
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq announcement — Production database was wiped during testing.
 📅 **Release Date:** June 28, 2025
 
