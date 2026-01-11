@@ -33,6 +33,16 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
+# 🛠️ pretriq Patch 1.6c 
+📅 **Release Date:** January 22nd, 2026
+
+---
+
+## 📢 Developer's Notes - **Down for maintenance**
+
+- Guest inspections still work
+- Authentication is disabled
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6b — Revert to a previous state
 📅 **Release Date:** July 1st, 2025
 
