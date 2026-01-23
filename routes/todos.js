@@ -4,26 +4,13 @@ const { body, validationResult } = require('express-validator');
 const todosController = require('../controllers/todos') 
 const { ensureAuth } = require('../middleware/auth')
 
-router.get('/', ensureAuth, todosController.getTodos)
-router.get('/loadmore', ensureAuth, todosController.getMoreInspections)
-router.get('/view/:id', ensureAuth, todosController.viewInspection)
-router.get('/search', ensureAuth, todosController.searchTodos)
+// router.get('/', ensureAuth, todosController.getTodos)
+// router.get('/loadmore', ensureAuth, todosController.getMoreInspections)
+// router.get('/view/:id', ensureAuth, todosController.viewInspection)
+// router.get('/search', ensureAuth, todosController.searchTodos)
 
-// Validation and sanitization chain for /createInspection POST Route
-const createInspectionValidation = [
-    
-    body('truckTractorNo', 'USDOT # must be at least 3 characters long.')
-        .trim()
-        .isLength({ min: 3 }),
+// router.post('/createInspection', ensureAuth, createInspectionValidation, todosController.createInspection)
 
-    // Sanitize all other string fields to prevent XSS
-    body('trailerNo').trim().escape(),
-    body('remarks').trim().escape(),
-    body('defects.truckTractor.other').trim().escape(),
-    body('defects.trailer.other').trim().escape(),
-];
-router.post('/createInspection', ensureAuth, createInspectionValidation, todosController.createInspection)
-
-router.delete('/:id', ensureAuth, todosController.deleteInspection)
+// router.delete('/:id', ensureAuth, todosController.deleteInspection)
 
 module.exports = router
