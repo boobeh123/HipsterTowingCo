@@ -1,20 +1,18 @@
 const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
-const validator = require('validator')
 
 const UserSchema = new mongoose.Schema({
   role: { 
     type: String,
-    enum: ['user', 'admin'],
     default: 'user'
   },
   email: { 
-    type: String, 
+    type: String,
     unique: true,
-    required: [true, 'Email is required'],
+    required: true,
     lowercase: true,
-    validate: [validator.isEmail, 'Please provide a valid email']
-  },
+    trim: true 
+},
   name: { 
     type: String,
     required: false,
@@ -23,14 +21,8 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
-    minlength: [8, 'Password must be at least 8 characters long'],
-    select: false // Don't return password in queries by default
-  },
-  isAdmin: {
-    type: Boolean, 
-    default: false 
-  },
+    required: true
+},
   image: { 
     type: String,
     default: ''
@@ -38,26 +30,24 @@ const UserSchema = new mongoose.Schema({
   cloudinaryId: { 
     type: String 
   },
-  resetPasswordToken: String,
-  resetPasswordExpires: Date,
-  lastLogin: {
-    type: Date,
-    default: Date.now
-  },
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  agreedToTerms: {
-    type: Boolean,
-    default: false
-  }
-}, {
-  timestamps: true // Adds createdAt and updatedAt fields
-})
-
-UserSchema.index({ email: 1 })
-UserSchema.index({ role: 1 })
+  // resetPasswordToken: String,
+  // resetPasswordExpires: Date,
+  // lastLogin: {
+  //   type: Date,
+  //   default: Date.now
+  // },
+  // isActive: {
+  //   type: Boolean,
+  //   default: true
+  // },
+  // agreeToTerms: {
+  //   type: Boolean,
+  //   required: true,
+  //   default: false
+  // },
+}, 
+    { timestamps: true }
+)
 
 // Password hash middleware
 UserSchema.pre('save', function save(next) {
@@ -78,16 +68,6 @@ UserSchema.methods.comparePassword = function comparePassword(candidatePassword,
   bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
     cb(err, isMatch)
   })
-}
-
-// Virtual for user's full profile URL
-UserSchema.virtual('profileUrl').get(function() {
-  return `/profile/${this._id}`
-})
-
-// Method to check if user is admin
-UserSchema.methods.isAdminUser = function() {
-  return this.role === 'Admin' || this.isAdmin === true
 }
 
 module.exports = mongoose.model('User', UserSchema)
