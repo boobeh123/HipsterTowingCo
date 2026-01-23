@@ -2,7 +2,7 @@
     <main class="login-main">
         <div class="container firstArea">
             <section class="container" aria-labelledby="login-welcome-heading">
-                <h3 id="login-welcome-heading">Inspections Reimagined</h3>
+                <h3 id="login-welcome-heading">Down for maintenance</h3>
                 <p>Welcome to pretriq</p>
                 <a href="/">Back to Home Page &gt;</a>
             </section>
@@ -17,12 +17,11 @@
                         <h4 class="center-align" id="login-heading">Log in to your account</h4>
                         <form action="/login" method="POST" aria-labelledby="login-heading">
                             <label for="login-email" class="sr-only">Email address</label>
-                            <input id="login-email" type="email" name="email" placeholder="Email*" autofocus required autocomplete='email'>
+                            <input id="login-email" type="email" name="email" placeholder="Email*" autofocus required autocomplete='email' disabled>
                             <label for="login-password" class="sr-only">Password</label>
-                            <input id="login-password" type="password" name="password" placeholder="Password*" required autocomplete='current-password'>
+                            <input id="login-password" type="password" name="password" placeholder="Password*" required autocomplete='current-password' disabled>
                             <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
                             <p class="center-align">Need an account? <a href='/signup'>Sign Up</a></p>
-                            <a class="center-align forgot marginT" href='/forgot'>Forgot Password?</a>
                         </form>
                     </div>
                 </div>
