@@ -707,17 +707,13 @@ function showGuestInspectionPopup(inspectionData) {
                 <h4 id="guest-popup-title" class="green-text"><span class="green-text" style="padding-right: 5px;">✓</span>Inspection Report Generated!</h4>
                 <div id="guest-popup-description">
                     <p>Your inspection report has been created successfully. Guest inspection reports <b>are not saved to our servers</b> - please download the PDF to keep your report.</p>
-                    <p><strong>Consider creating an account to store future documents and access your inspection history.</strong></p>
+                    <p><strong>Registration is down for maintenance. Please use guest inspections</strong></p>
                 </div>
                 <div class="modal-footer" role="group" aria-label="Action buttons" style="display: flex; justify-content: space-evenly; border-bottom: 1px solid gray; border-top: 1px solid gray;">
                     <button id="download-guest-pdf" class="btn waves-effect waves-light green" aria-label="Download inspection report as PDF">
                         <i class="material-icons left" aria-hidden="true">download</i>
                         Download PDF
                     </button>
-                    <a href="/signup" class="btn waves-effect waves-light blue" role="button" aria-label="Create a new account to save future reports">
-                        <i class="material-icons left" aria-hidden="true">person_add</i>
-                        Create Account
-                    </a>
                 </div>
             </div>
         </div>
