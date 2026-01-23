@@ -2,7 +2,7 @@
     <main class="signup-main">
         <div class="container firstArea">
             <section class="container" aria-labelledby="signup-welcome-heading">
-                <h3 id="signup-welcome-heading">Inspections Reimagined</h3>
+                <h3 id="signup-welcome-heading">Down for maintenance</h3>
                 <p>Welcome to pretriq</p>
                 <a href="/">Back to Home Page &gt;</a>
             </section>
@@ -17,13 +17,13 @@
                         <h4 class="center-align" id="signup-heading">Create an account</h4>
                         <form action="/signup" method="POST" aria-labelledby="signup-heading">
                             <label for="signup-email" class="sr-only">Email address</label>
-                            <input id="signup-email" type="email" name="email" placeholder="Email*" autofocus autocomplete="email" required>
+                            <input id="signup-email" type="email" name="email" placeholder="Email*" autofocus autocomplete="email" required disabled>
                             <label for="signup-password" class="sr-only">Password</label>
-                            <input id="signup-password" type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required>
+                            <input id="signup-password" type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required disabled>
                             <label for="signup-confirmPassword" class="sr-only">Confirm Password</label>
-                            <input id="signup-confirmPassword" type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required style="margin-bottom: 0.5rem !important;">
+                            <input id="signup-confirmPassword" type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required style="margin-bottom: 0.5rem !important;" disabled>
                             <label for="signup-terms" class="center-align" style="display:block; margin-top:1rem;">
-                                <input id="signup-terms" name="terms" type="checkbox" class="filled-in" required aria-required="true" />
+                                <input id="signup-terms" name="terms" type="checkbox" class="filled-in" required aria-required="true" disabled/>
                                 <span style="margin-bottom: .75rem;">
                                   I agree to the
                                   <a href="/terms" target="_blank" rel="noopener" aria-label="Read our Terms of Use">Terms of Use</a>
