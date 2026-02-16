@@ -93,39 +93,8 @@
         <nav role="navigation" aria-label="Main navigation">
             <div class="nav-wrapper">
                 <a href="/" class="brand-logo" aria-label="Pretriq Home"><svg id="logo" width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="8" y="48" font-family="'Roboto', Arial, sans-serif" font-size="48" font-weight="bold" fill="none" stroke="#222" stroke-width="2">q</text><text x="32" y="48" font-family="'Roboto', Arial, sans-serif" font-size="48" font-weight="bold" fill="none" stroke="#222" stroke-width="2">p</text></svg></a>
-                <a href="#" data-target="mobile-demo" class="sidenav-trigger" aria-label="Open mobile menu" aria-expanded="false" aria-controls="mobile-demo" aria-haspopup="true">
-                    <i class="material-icons" aria-hidden="true">menu</i>
-                </a>
-                <ul class="right hide-on-med-and-down" role="navigation">
-                    <% if (typeof user !== 'undefined') { %>
-                        <% if (user.role === 'Customer') { %>
-                        <li role="none"><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger" role="menuitem" aria-label="Request a tow service">Request Tow</a></li>
-                        <li role="none"><a href="/profile" class="hoverable waves-effect waves-light btn blue-grey lighten-2" role="menuitem" aria-label="View your profile">Profile</a></li>
-                        <% } else { %>
-                        <li role="none"><a href="/profile" class="hoverable waves-effect waves-light btn blue darken-1" role="menuitem" aria-label="View your profile">Profile</a></li>
-                        <% } %>
-                        <li role="none"><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text" role="menuitem" aria-label="Sign out of your account">Sign out</a></li>
-                    <% } else { %>
-                        <li role="none"><a href="/login" class="hoverable waves-effect waves-light btn transparent black-text" role="menuitem" aria-label="Sign in to your account">Login</a></li>
-                        <li role="none"><a href="/signup" class="hoverable waves-effect waves-light btn green lighten-1" role="menuitem" aria-label="Create a new account">Create Account</a></li>
-                    <% } %>
-                </ul>
             </div>
         </nav>    
-        <ul class="sidenav" id="mobile-demo" role="menu" aria-label="Mobile navigation menu" aria-hidden="true" tabindex="-1">
-            <% if (typeof user !== 'undefined'){ %>
-                <% if (user.role === 'Customer') { %>
-                <li role="none"><a href="#" data-target="modal1" class="hoverable waves-effect waves-light btn blue darken-1 modal-trigger" role="menuitem" aria-label="Request a tow service">Request Tow</a></li>
-                <li role="none"><a href="/profile" class="hoverable waves-effect waves-light btn blue-grey lighten-2" role="menuitem" aria-label="View your profile">Profile</a></li>
-                <% } else { %>
-                <li role="none"><a href="/profile" class="hoverable waves-effect waves-light btn blue darken-1" role="menuitem" aria-label="View your profile">Profile</a></li>
-                <% } %>
-                <li role="none"><a href="/logout" class="hoverable waves-effect waves-light btn transparent black-text" role="menuitem" aria-label="Sign out of your account">Sign out</a></li>
-            <% } else { %>
-                <li role="none"><a href="/login" class="hoverable waves-effect waves-light btn transparent black-text" role="menuitem" aria-label="Sign in to your account">Login</a></li>
-                <li role="none"><a href="/signup" class="hoverable waves-effect waves-light btn green lighten-1" role="menuitem" aria-label="Create a new account">Create Account</a></li>
-            <% } %>
-        </ul>
     </header>
 </body>
 </html>
