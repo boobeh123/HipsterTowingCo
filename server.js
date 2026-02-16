@@ -10,9 +10,9 @@ const mongoose = require('mongoose')
 const passport = require('passport')
 const flash = require('express-flash')
 const mainRoutes = require('./routes/main')
-const todoRoutes = require('./routes/todos')
-const profileRoutes = require('./routes/profile')
-const contactRoutes = require('./routes/contact');
+// const todoRoutes = require('./routes/todos')
+// const profileRoutes = require('./routes/profile')
+// const contactRoutes = require('./routes/contact');
 
 require('dotenv').config({path: './config/.env'})
 
@@ -20,8 +20,6 @@ require('dotenv').config({path: './config/.env'})
 require('./config/passport')(passport)
 
 connectDB()
-// Allow moment to be used in templating engine
-app.locals.moment = require('moment')
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
@@ -37,19 +35,28 @@ app.use(
       saveUninitialized: false,
       store: MongoStore.create({
           mongoUrl: process.env.DB_STRING,
-      })
-  })
+        })
+    })
 )
-app.use(flash())
 
 // Passport middleware
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.use(flash())
+
+// Allow moment to be used in templating engine
+app.locals.moment = require('moment')
+// Available to all Views
+// app.use((req, res, next) => {
+
+// })
+
+
 app.use('/', mainRoutes)
-app.use('/todos', todoRoutes)
-app.use('/profile', profileRoutes)
-app.use('/contact', contactRoutes);
+// app.use('/todos', todoRoutes)
+// app.use('/profile', profileRoutes)
+// app.use('/contact', contactRoutes);
 
 app.listen(process.env.PORT, ()=>{
     console.log('Server is running, you better catch it!')
