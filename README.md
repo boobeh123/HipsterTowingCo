@@ -51,6 +51,7 @@ I envision that this application has potential to become something with a global
 
 - The button is added back, but guest inspection functionality is still under maintenance
   - Clicking the button will only display the modal (for now)
+    - Clicking the cancel button, clicking anywhere outside the modal, & pressing the `Esc` key will now close the modal
 
 
 
