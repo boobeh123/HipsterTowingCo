@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (submitInspectionBtn) {
         submitInspectionBtn.addEventListener('click', async () => {
             const raw = readFormData();
-
+            alert('hello world - come back later')
             console.log(`sib: ${raw}`); // Output - Undefined
         })
     }
