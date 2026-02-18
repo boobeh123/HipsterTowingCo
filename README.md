@@ -33,6 +33,24 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
+# 🛠️ pretriq Patch 1.6.006
+📅 **Release Date:** February 17th, 2026
+
+
+## 📢 Developer's Notes
+
+- I'm going through the `readFormData` function to better understand what is going on
+  - I learned a lot, and you can see my findings within `public/js/main.js`
+  - No actual updates with patch 1.6.006
+
+- Goals to reach:
+  - Guest inspection functionality 
+  - Review semantics & ARIA within HTML
+  - Review styles 
+  - Review partials
+    - Review the semantics & ARIA for all partials used on home route
+  - Build out the sections I removed from home route
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.005
 📅 **Release Date:** February 16th, 2026
 
