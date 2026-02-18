@@ -7,18 +7,13 @@ function openModal() {
 
     if (dateField) {
         const todaysDate = new Date();
-        // console.log(todaysDate);
-        // console.log(todaysDate.getMonth());
-        // console.log(todaysDate.getDate());
-        // console.log(todaysDate.getDay());
         dateField.value = `${todaysDate.getMonth() + 1}/${todaysDate.getDate()}/${todaysDate.getFullYear()}`;   // Month/Day/Year
-        // console.log(`${todaysDate.getMonth() + 1}/${todaysDate.getDate()}/${todaysDate.getFullYear()}`);
     }
     overlay.classList.add('is-open');
 
-    if (truckTractorNoInputField) {
-        truckTractorNoInputField.focus();
-    }
+    // if (truckTractorNoInputField) {
+        // truckTractorNoInputField.focus();
+    // }
 
 }
 
@@ -30,28 +25,43 @@ function closeModal() {
     }
 }
 
-// checkbox form example: name="defects[truckTractor][brakes]"
+/**************************************************************
+ * readFormData()
+ * When a guest submits the form, this function iterates through the input fields and returns an object
+ * Parameters: This function takes in no parameters.
+ * Returns: This function returns an object.
+ * Examples: 
+ * If we are given:         should return:
+ * Date <input>             String "2/17/2026"
+ * truckTractorNo <input>   String "1234567"
+ * defects <input>          Boolean { truckTractorNo: { steering: true }, trailer: { brakes: true} }
+ * trailerNo <input>        String "1234567"
+ * remarks <input>          String "Turning the steering wheel fully to either direction creates a noise, needs power steering fluid. Brakes are screeching and truck needs maintenance"
+ * mechanicDate <input>     String "" intentionally left blank to print/sign irl
+ * driverDate <input>       String "" same as above
+
+* 1. We iterate through the form submitted by the user. Logging the value returns:
+2/17/2026 1234567 true 1234567 true Hello world <empty string> <empty string>
+* 2. We iterate through the form submitted by the user. Logging the key reurns:
+date truckTractorNo defects[truckTractor][steering]* trailerNo defects[trailer][brakes]* remarks mechanicDate driverDate
+* defects is an object and we are using bracket notation to access the object 
+***************************************************************/
 function readFormData() {
     const formData = new FormData(form);
     const data = {};
     
-    console.log(`rfd: ${formData}`);    // output [object FormData]
-    
-
+    // 1. value - 2. key
     formData.forEach((value, key) => {
-        
         const hasBrackets = key.includes('[');
         const keys = key.split('[').map((element, index) => element.replace(']', ''));
 
-        console.log(keys)   // Output: [defects, truckTractor, brakes]
-
         if (hasBrackets) {
-            keys.forEach((value, key) => {
-                console.log(`the value ${value}`); // Output "defects" "truckTractor" "brakes"
-                // console.log(`key length: ${key.length}`);   // undefined
+            keys.forEach((element, index) => {
             })
         }
+
     })
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -87,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (submitInspectionBtn) {
         submitInspectionBtn.addEventListener('click', async () => {
             const raw = readFormData();
-            alert('hello world - come back later')
+            // alert('hello world - come back later')
             console.log(`sib: ${raw}`); // Output - Undefined
         })
     }
