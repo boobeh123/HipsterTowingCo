@@ -40,28 +40,56 @@ function closeModal() {
  * mechanicDate <input>     String "" intentionally left blank to print/sign irl
  * driverDate <input>       String "" same as above
 
+* 0 We create two varibles, formData instantiates the FormData object using the new keyword. We create an empty object using literal notation
 * 1. We iterate through the form submitted by the user. Logging the value returns:
-2/17/2026 1234567 true 1234567 true Hello world <empty string> <empty string>
+    * 2/17/2026 1234567 true 1234567 true Hello world <empty string> <empty string>
 * 2. We iterate through the form submitted by the user. Logging the key reurns:
-date truckTractorNo defects[truckTractor][steering]* trailerNo defects[trailer][brakes]* remarks mechanicDate driverDate
-* defects is an object and we are using bracket notation to access the object 
+    * date truckTractorNo defects[truckTractor][steering]^ trailerNo defects[trailer][brakes]^ remarks mechanicDate driverDate
+        * ^defects is an object and we are using bracket notation to access the object 
+* 3. We create a variable that uses the array method includes() to search the current key for a open bracket '['
+* 4. We create a variable that uses the array methods split(), map(), replace() on the current key
+    * 3 & 4 are solely used when the defects <input> contains value(s)
+* 5. We determine if the current key contains an open bracket
+    * a. When the current key does contain an open bracket: see #6
+        * We drill further into the object, (e.g FormData object -> defects object -> truckTractor/Trailer object(s)) and iterate further
+    * b. Otherwise we access the userInspection object using bracket notation & the index(key), and add the element(value) to the userInspection object
+
+* 6. When the current key does contain an open bracket we iterate further by drilling into the object
+    * As we iterate through keys, logging (2) the key & (3) hasBracket variables returns:
+        * Output: date false, truckTractorNo false, defects[truckTractor][Steering] true, etc..
+    * The keys variable (4) has a few moving parts and below is the behavior of logging each individual part
+        * Logging key.split('[') returns an array of strings:
+            * Output: ['defects', 'truckTractorNo]', 'Steering]'] Take notice of the ending brackets ']'
+        * Logging key.split('[').map((element, index) => console.log(element))^ returns individual strings with ']' still there
+            * ^HOWEVER, replacing console.log(element) with element.replace(']', ''), returns an array of strings
+                *  Output: ['defects', 'truckTractorNo', 'Steering'] Take notice that ']' is replaced with an empty string
+7.
 ***************************************************************/
 function readFormData() {
+    // 0
     const formData = new FormData(form);
-    const data = {};
+    const userInspection = {};
     
     // 1. value - 2. key
     formData.forEach((value, key) => {
+        // 3. hasBracket - 4. keys
         const hasBrackets = key.includes('[');
         const keys = key.split('[').map((element, index) => element.replace(']', ''));
-
+        
+        // 5a
         if (hasBrackets) {
-            keys.forEach((element, index) => {
+            // 6
+            keys.forEach((a, b) => {
+                // 7 todo
             })
+        } else {
+            // 5b
+            console.log(`Added ${value} to user's inspection`)
+            userInspection[key] = value;
         }
 
     })
-
+    return userInspection
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -70,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitInspectionBtn = document.querySelector('#submitInspectionBtn');
     const cancelInspetionBtn = document.querySelector('#cancelInspectionBtn')
 
-    // Modal behavior 39-66
+    // Modal behavior start
     if (inspectionBtn) {
         inspectionBtn.addEventListener('click', openModal);
     }
@@ -101,5 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`sib: ${raw}`); // Output - Undefined
         })
     }
+    // Modal behavior end
     
 })
