@@ -63,7 +63,24 @@ function closeModal() {
         * Logging key.split('[').map((element, index) => console.log(element))^ returns individual strings with ']' still there
             * ^HOWEVER, replacing console.log(element) with element.replace(']', ''), returns an array of strings
                 *  Output: ['defects', 'truckTractorNo', 'Steering'] Take notice that ']' is replaced with an empty string
-7.
+
+7. We create two variables, one contains an expression that compares the current index to the number of elements within the array of strings
+8. We determine if we are at the last element within the array
+* a. If we are at the last element: We determine if the value (1) contains a boolean or an empty string
+* We add the value to the user's inspection
+* b. Otherwise, we are not at the last element: We need to create an empty object and: 
+* c. We go deeper into the object until we reach the last element
+9. We return an object and, (containing the value of every <input> from the form) pass it into validateAndSanitize() as an argument
+
+10. Additional explanation: We create a variable which points at the current element, at the start of the object
+    * examples: START: pointingAt -> {} userInspection object 
+    * ITERATE: currentValue = defects -> not the last element:
+        * Create an object -> userInspection object { defects: {} <- pointingAt }
+    * ITERATE: currentValue = truckTractor -> not the last element: 
+        * Create an object -> userInspection object { defects: { truckTractor: {} <- pointingAt } }
+    * ITERATE: currentValue = Steering -> the last element
+        * Store the value using bracket notation -> pointingAt['Steering'] = true
+    * userInspection object: { defects: { truckTractor: { Steering: true } } }
 ***************************************************************/
 function readFormData() {
     // 0
@@ -78,9 +95,32 @@ function readFormData() {
         
         // 5a
         if (hasBrackets) {
+            // 10
+            let pointingAt = userInspection;
             // 6
-            keys.forEach((a, b) => {
-                // 7 todo
+            keys.forEach((currentValue, index) => {
+                // 7
+                const theLastValue = (index === keys.length - 1)
+                // 8a 
+                if (theLastValue) {
+                    if (value === 'true') {
+                        pointingAt[currentValue] = true;
+                    } else if (value === '') {
+                        pointingAt[currentValue] = null;
+                    } else {
+                        pointingAt[currentValue] = value;
+                    }
+                    console.log(`Added defect ${currentValue} to user's inspection`)
+                } else {
+                    // 8b
+                    if (!pointingAt[currentValue]) {
+                        console.log(`Created a new object for ${pointingAt[currentValue]}`)
+                        pointingAt[currentValue] = {};
+                    }
+                    // 8c
+                    pointingAt = pointingAt[currentValue];
+                }
+
             })
         } else {
             // 5b
@@ -90,6 +130,10 @@ function readFormData() {
 
     })
     return userInspection
+}
+
+function validateAndSanitize(userInspectionObject) {
+    alert('hello world');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -124,9 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (submitInspectionBtn) {
         submitInspectionBtn.addEventListener('click', async () => {
-            const raw = readFormData();
-            // alert('hello world - come back later')
-            console.log(`sib: ${raw}`); // Output - Undefined
+            const userInspectionObject = readFormData();
+            const data = validateAndSanitize(userInspectionObject);
         })
     }
     // Modal behavior end
