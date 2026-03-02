@@ -11,9 +11,9 @@ function openModal() {
     }
     overlay.classList.add('is-open');
 
-    // if (truckTractorNoInputField) {
-        // truckTractorNoInputField.focus();
-    // }
+    if (truckTractorNoInputField) {
+        truckTractorNoInputField.focus();
+    }
 
 }
 
@@ -139,7 +139,7 @@ function readFormData() {
  * Returns: This function returns a string.
  * Examples: 
  * If we are given:                 should return:
- * '<img src="#" onerror=alert(1)'  'img src# onerroralert1'
+ * '<img src="#" onerror=alert(1)'  'img src=# onerror=alert(1)'
  * "'; DROP TABLE users; --"        '; DROP TABLE users; --'
  * '     hello `world`     '        'hello world'
  * 'C:\Program Files\'              'C:Program Files'
@@ -182,8 +182,68 @@ function sanitizeText(string) {
     return sanitized.trim();
 }
 
+/**************************************************************
+ * validateAndSanitize()
+ * This function takes the current object-argument, sanitizes the property-values, then creates a new object using the same property names with sanitized property-values
+ * Parameters: This function takes in one parameter.
+ * Returns: This function returns an object.
+ * Examples: 
+ * If we are given:                 should return:
+ * {                                {
+  "date": "3/1/2026",               "date": "3/1/2026",
+  "truckTractorNo": "<12\345'67>",  "truckTractorNo": "1234567",
+  "defects": {                      "defects": {
+    "truckTractor": {                 "truckTractor": {
+      "airCompressor": true,            "airCompressor": true,
+      "springs": true,                  "springs": true,
+      "mirrors": true                   "mirrors": true
+}                                   }
+  },                                  },
+  "trailerNo": "C:\Program Files\", "trailerNo": "C:Program Files",
+  "remarks": "",                    "remarks": "",
+  "mechanicDate": "",               "mechanicDate": "",
+  "driverDate": ""                  "driverDate": ""
+}                                   }
+
+* This function takes in one parameter, and it is an object.
+
+* I declare a variable which calls the sanitizeText() function
+    * I pass in the truckTractorNo property-value from our object-argument
+* I determine if the user submitted a truck-tractor number in their form
+    * If there's no input, the input field on the modal is focused with the focus() method & I return null
+
+* I create an object using literal notation
+    * I use the (...) spread operator to iterate through the object-argument
+        * The spread operator copies property & property-values from the object-argument into the new object
+    * I assign new property-values which are sanitized by sanitizeText()
+* I return a new object with sanitized property values
+***************************************************************/
+
 function validateAndSanitize(userInspectionObject) {
-    const truckNumber = sanitizeText(userInspectionObject);
+    const truckNo = sanitizeText(userInspectionObject.truckTractorNo);
+    
+    if (!truckNo) {
+        const truckTractorNoInputField = document.querySelector('#truckTractorNo');
+        if (truckTractorNoInputField) {
+            truckTractorNoInputField.focus();
+            return null;
+        }
+    }
+    
+    let sanitizedUserInspectionObject = {
+        ...userInspectionObject,
+        truckTractorNo: truckNo,
+        trailerNo: sanitizeText(userInspectionObject.trailerNo),
+        remarks: sanitizeText(userInspectionObject.remarks),
+        mechanicDate: sanitizeText(userInspectionObject.mechanicDate),
+        driverDate: sanitizeText(userInspectionObject.driverDate)
+    }
+
+    return sanitizedUserInspectionObject;
+}
+
+async function generateDVIRPDF(sanitizedUserInspectionObject) {
+    alert('hello world');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -219,7 +279,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (submitInspectionBtn) {
         submitInspectionBtn.addEventListener('click', async () => {
             const userInspectionObject = readFormData();
-            const data = validateAndSanitize(userInspectionObject);
+            const sanitizedUserInspectionObject = validateAndSanitize(userInspectionObject);
+            if (!sanitizedUserInspectionObject) return;
+
+            // todo 
         })
     }
     // Modal behavior end
