@@ -132,8 +132,58 @@ function readFormData() {
     return userInspection
 }
 
+/**************************************************************
+ * sanitizeText()
+ * When a guest submits a form, this function iterates through the input(s) to remove characters that are used in XSS attacks.
+ * Parameters: This function takes in one parameter.
+ * Returns: This function returns a string.
+ * Examples: 
+ * If we are given:                 should return:
+ * '<img src="#" onerror=alert(1)'  'img src# onerroralert1'
+ * "'; DROP TABLE users; --"        '; DROP TABLE users; --'
+ * '     hello `world`     '        'hello world'
+ * 'C:\Program Files\'              'C:Program Files'
+
+* This function takes in one parameter, and it is a string.
+    * We want to declare a variable containing an array of characters used in Cross-site scripting attacks.
+    * We want to iterate through the string-argument.
+    * We want to compare the current letter against the array of characters.
+
+* I declare two variables:
+    * sanitized contains a blank string which will used to concatenate letters.
+    * arrayOfStrings will be used to compare each letter from the string-argument to a set of characters.
+* I check the user's input by using the typeof operator and the strict equality operator.
+    * typeof determines if the argument passed in is a string.
+        * I iterate through the string-argument using a for loop, which will be used to compare each individual letter in the argument.
+            * I use the includes() method on the arrayOfStrings and pass in the current letter
+                * I determine if the current letter is not character by using the (!) NOT operator:
+                    * If the current letter is NOT a character, 
+                        * I use the (+=) addition assignment operator to concatenate the current letter to the variable containing a blank string.
+    * Otherwise the argument does not evaluate as a string, and we return an empty string.
+* I use the trim() method on the variable containing a concatenated string and return the result.
+    * Trim removes whitespace from both the start & end of a string.
+***************************************************************/
+
+function sanitizeText(string) {
+    let sanitized = '';
+    let arrayOfStrings = ['<', '>', '"', '`', "'", '\\'];
+
+    if (typeof string === 'string') {
+
+        for (let i = 0; i < string.length; i++) {
+            if (!arrayOfStrings.includes(string[i])) {
+                sanitized += string[i];
+            }
+        }
+
+    } else {
+        return '';
+    }
+    return sanitized.trim();
+}
+
 function validateAndSanitize(userInspectionObject) {
-    alert('hello world');
+    const truckNumber = sanitizeText(userInspectionObject);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
