@@ -33,6 +33,26 @@ I envision that this application has potential to become something with a global
 
 ## Version History 
 ---------------------------------------------------------------------------------------------------------------------------
+# 🛠️ pretriq Patch 1.6.008
+📅 **Release Date:** March 1st, 2026
+
+
+## 📢 Developer's Notes
+
+- I completed my refactor of `sanitizeText` and it successfully removes characters used in XSS attacks on our `<input>` elements
+  - The method I used was in an 8kyu Code Wars kata 
+    - Take a peek into my private repo ![codewars](/string-cleaning.png)
+- I completed my refactor of `validateAndSanitize`. It returns the user's inspection report as an Object, with a few property-values overwritten with sanitized strings
+- There are a few more functions for me to refactor before guest inspection functionality is back
+
+- Goals to reach:
+  [ ] Guest inspection functionality 
+  [ ] Review semantics & ARIA within HTML
+  [ ] Review styles 
+  [ ] Review partials
+    [ ] Review the semantics & ARIA for all partials used on home route
+  [ ] Build out the sections I removed from home route
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.007
 📅 **Release Date:** February 18th, 2026
 
