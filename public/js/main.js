@@ -242,8 +242,34 @@ function validateAndSanitize(userInspectionObject) {
     return sanitizedUserInspectionObject;
 }
 
+/**************************************************************
+ * generateDVIRPDF()
+ * This function takes in the sanitized object and returns an (instance of jsPDF class) object
+ * Parameters: This function takes in one parameter.
+ * Returns: This function returns an object.
+ * Examples: 
+ * If we are given:                 should return:
+ * {
+  "date": "3/5/2026",
+  "truckTractorNo": "1234567",
+  "defects": {
+    "truckTractor": {
+      "steering": true,
+      "brakes": true,
+      "safetyEquipment": true
+    }
+  },
+  "trailerNo": "",
+  "remarks": "",
+  "mechanicDate": "",
+  "driverDate": "",
+  "id": "1772771025543",
+  "createdAt": "2026-03-06T04:23:45.543Z"
+}
+
+***************************************************************/
 async function generateDVIRPDF(sanitizedUserInspectionObject) {
-    alert('hello world');
+    console.log(sanitizedUserInspectionObject);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -276,13 +302,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
     
+    // When submitInspectionBtn button is clicked, add an id & createdAt property with dot notation
     if (submitInspectionBtn) {
         submitInspectionBtn.addEventListener('click', async () => {
+            // Iterate through the inputs & generate an object
             const userInspectionObject = readFormData();
+            // Mutate the strings on the object and create a new object
             const sanitizedUserInspectionObject = validateAndSanitize(userInspectionObject);
+            // If an object is not sanitized & validated, stop
             if (!sanitizedUserInspectionObject) return;
 
-            // todo 
+            // Use dot notation to create metadata
+            sanitizedUserInspectionObject.id = Date.now().toString();
+            sanitizedUserInspectionObject.createdAt = new Date().toISOString();
+
+            closeModal();
+
+            // Variable will store PDF
+            let userInspectionReport = null;
+            try {
+                // Call generateDVIRPDF and pass (sanitized w/ metadata) object as an argument
+                userInspectionReport = await generateDVIRPDF(sanitizedUserInspectionObject);
+            } catch {
+                return;
+            }
+          
+            // Display popup 
         })
     }
     // Modal behavior end
