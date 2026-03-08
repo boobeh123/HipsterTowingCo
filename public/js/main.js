@@ -249,7 +249,7 @@ function validateAndSanitize(userInspectionObject) {
  * Returns: This function returns an object.
  * Examples: 
  * If we are given:                 should return:
- * {
+ * {                                {Promise<jsPDF>} - A promise that resolves to a jsPDF object
   "date": "3/5/2026",
   "truckTractorNo": "1234567",
   "defects": {
@@ -267,9 +267,47 @@ function validateAndSanitize(userInspectionObject) {
   "createdAt": "2026-03-06T04:23:45.543Z"
 }
 
+* 0. generateDVIRPDF uses an async function because we need to load an image before adding to it
+* Script tag loads the jspdf object (views/partials/footer.ejs - line 43)
+    * 1. I destructure the jsPDF property from the jspdf object 
+
+* 2. I create a variable which instantiates the jsPDF class using the new keyword, and pass in the arguments to create the document 
+(parameters: https://artskydj.github.io/jsPDF/docs/jsPDF.html)
+
+* 3. I create a variable which instatiates the HTMLImageElement class using the new keyword, and set the src attribute 
+* 4a. I use the await keyword to allow the code to wait until the Promise is settled
+* 4b. I use constructor syntax to create the promise object
+* 4c. The executor assigns resolve onto the onload property before our image is loaded
+* 4d. The executor assigns reject onto the onerror property before our image is loaded
+* 5. I use jsPDF's addImage() method, and pass in the parameters to use an image as a template
+(parameters: https://artskydj.github.io/jsPDF/docs/module-addImage.html)
 ***************************************************************/
+// 0
 async function generateDVIRPDF(sanitizedUserInspectionObject) {
-    console.log(sanitizedUserInspectionObject);
+    // 1
+    const { jsPDF } = jspdf;
+
+    // 2
+    const driverVehicleInspectionReport = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'letter',
+      })
+
+    // 3
+    const imageOfDVIR = new Image();
+    imageOfDVIR.src = '/imgs/dvir-template.png';
+    // 4a       4b
+    await new Promise((resolve, reject) => {
+        // 4c
+        imageOfDVIR.onload = resolve;
+        // 4d
+        imageOfDVIR.onerror = () => reject(new Error('Unable to load the image.'));
+    })
+    // 5
+    driverVehicleInspectionReport.addImage(imageOfDVIR, 'PNG', 0, 0, 216, 280);
+    driverVehicleInspectionReport.save('test.pdf');
+    // todo
 }
 
 document.addEventListener('DOMContentLoaded', () => {
