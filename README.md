@@ -32,6 +32,24 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.009
+📅 **Release Date:** March 28th, 2026
+
+
+## 📢 Developer's Notes
+
+- I completed my refactor of `generateDVIRPDF` and it successfully marks up the of Driver's Vehicle Inspection Report image & displays the result
+  - I will need to add a popup which displays the download button & allows the download
+
+- Goals to reach:
+  * [X] Guest inspection functionality (partial)
+    * [ ] Display popup window to download
+  * [ ] Review semantics & ARIA within HTML
+  * [ ] Review styles 
+  * [ ] Review partials
+  * [ ] Review the semantics & ARIA for all partials used on home route
+  * [ ] Build out the sections I removed from home route
+
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.008
 📅 **Release Date:** March 1st, 2026
@@ -46,12 +64,12 @@ I envision that this application has potential to become something with a global
 - There are a few more functions for me to refactor before guest inspection functionality is back
 
 - Goals to reach:
-  [ ] Guest inspection functionality 
-  [ ] Review semantics & ARIA within HTML
-  [ ] Review styles 
-  [ ] Review partials
-    [ ] Review the semantics & ARIA for all partials used on home route
-  [ ] Build out the sections I removed from home route
+  * [ ] Guest inspection functionality 
+  * [ ] Review semantics & ARIA within HTML
+  * [ ] Review styles 
+  * [ ] Review partials
+  * [ ] Review the semantics & ARIA for all partials used on home route
+  * [ ] Build out the sections I removed from home route
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.007
 📅 **Release Date:** February 18th, 2026
