@@ -243,6 +243,18 @@ function validateAndSanitize(userInspectionObject) {
 }
 
 /**************************************************************
+ * decodeHTMLEntities
+ * This function takes in the string from sanitizedUserInspectionObject.remarks, 
+ * decodes any HTML entities ("&amp;"" -> "&") into a detached <textarea> element, and returns the string
+ * There is no XSS risk because the detached element is never inserted into the live DOM.
+***************************************************************/
+function decodeHTMLEntities(remarks) {
+    const textArea = document.createElement('textarea');
+    textArea.innerHTML = remarks;
+    return textArea.value;
+}
+
+/**************************************************************
  * generateDVIRPDF()
  * This function takes in the sanitized object and returns an (instance of jsPDF class) object
  * Parameters: This function takes in one parameter.
@@ -281,6 +293,17 @@ function validateAndSanitize(userInspectionObject) {
 * 4d. The executor assigns reject onto the onerror property before our image is loaded
 * 5. I use jsPDF's addImage() method, and pass in the parameters to use an image as a template
 (parameters: https://artskydj.github.io/jsPDF/docs/module-addImage.html)
+* 6. Set the font styling
+* 7. Populates the date, truckTractorNo, and trailerNo from the argument as a string. If the field is empty, display an empty string
+    * X / Y coordinates are given to mark where the strings will be populated
+* 8. A function that stamps an 'X' when the user input evaluates as true, on given coordinates
+* 9. I use optional chaining to determine if the sanitizedUserInspectionObject contains any true property-values within the defects property
+* 10. I call the xMark function to populate an 'X' on given coordinates
+* 11. Converts string 'true' to boolean, checkboxes stay as strings. readFormData returns string 'true' for checkboxes.
+* 12. I determine if the input field(s) for driver/mechanic date contains a value, and populate the value as a string
+    * This is different from the date from step 7. These dates exist near the bottom of the Driver's Vehicle Inspection Report
+* 13. I determine if sanitizedUserInspectionObject.remarks type is a string
+    * If it is a string, I call the decodeHTMLEntities function and pass the string in as an argument
 ***************************************************************/
 // 0
 async function generateDVIRPDF(sanitizedUserInspectionObject) {
@@ -306,8 +329,96 @@ async function generateDVIRPDF(sanitizedUserInspectionObject) {
     })
     // 5
     driverVehicleInspectionReport.addImage(imageOfDVIR, 'PNG', 0, 0, 216, 280);
-    driverVehicleInspectionReport.save('test.pdf');
-    // todo
+    // 6
+    driverVehicleInspectionReport.setTextColor(0, 0, 0);
+    driverVehicleInspectionReport.setFontSize(11);
+    // 7 
+    driverVehicleInspectionReport.text(String(sanitizedUserInspectionObject.date || ''), 30, 41);
+    driverVehicleInspectionReport.text(String(sanitizedUserInspectionObject.truckTractorNo || ''), 60, 50);
+    driverVehicleInspectionReport.text(String(sanitizedUserInspectionObject.trailerNo || ''), 55, 150);
+    // 8
+    const xMark = (checked, x, y) => {
+        if (checked === true) {
+            driverVehicleInspectionReport.text('X', x, y);
+        } 
+    };
+    // 9
+    const truckTractor = sanitizedUserInspectionObject.defects?.truckTractor || {};
+    const truckTrailer = sanitizedUserInspectionObject.defects?.trailer || {};
+
+    // 10 
+    xMark(truckTractor.airCompressor, 13, 58);
+    xMark(truckTractor.airLines, 13, 63);
+    xMark(truckTractor.battery, 13, 68);
+    xMark(truckTractor.brakeAccessories, 13, 73);
+    xMark(truckTractor.brakes, 13, 79);
+    xMark(truckTractor.carburetor, 13, 84);
+    xMark(truckTractor.clutch, 13, 90);
+    xMark(truckTractor.defroster, 13, 95);
+    xMark(truckTractor.driveLine, 13, 100);
+    xMark(truckTractor.engine, 13, 105);
+    xMark(truckTractor.fifthWheel, 13, 110);
+    xMark(truckTractor.frontAxle, 13, 115);
+    xMark(truckTractor.fuelTanks, 13, 120);
+    xMark(truckTractor.heater, 13, 126);
+    xMark(truckTractor.horn, 78, 58);
+    xMark(truckTractor.lights, 78, 63);
+    xMark(truckTractor.mirrors, 78, 84);
+    xMark(truckTractor.muffler, 78, 90);
+    xMark(truckTractor.oilPressure, 78, 95);
+    xMark(truckTractor.onBoardRecorder, 78, 100);
+    xMark(truckTractor.radiator, 78, 105);
+    xMark(truckTractor.rearEnd, 78, 110);
+    xMark(truckTractor.reflectors, 78, 115);
+    xMark(truckTractor.safetyEquipment, 78, 120);
+    xMark(truckTractor.springs, 143, 57);
+    xMark(truckTractor.starter, 143, 62);
+    xMark(truckTractor.steering, 143, 68);
+    xMark(truckTractor.tachograph, 143, 74);
+    xMark(truckTractor.tires, 143, 79);
+    xMark(truckTractor.transmission, 143, 84);
+    xMark(truckTractor.wheels, 143, 89);
+    xMark(truckTractor.windows, 143, 94);
+    xMark(truckTractor.windshieldWipers, 143, 100);
+    xMark(truckTractor.other, 143, 105);
+    xMark(truckTrailer.brakeConnections, 13, 156);
+    xMark(truckTrailer.brakes, 13, 162);
+    xMark(truckTrailer.couplingChains, 13, 167);
+    xMark(truckTrailer.couplingPin, 13, 172);
+    xMark(truckTrailer.doors, 13, 177);
+    xMark(truckTrailer.hitch, 78, 156);
+    xMark(truckTrailer.landingGear, 78, 162);
+    xMark(truckTrailer.lightsAll, 78, 167);
+    xMark(truckTrailer.roof, 78, 172);
+    xMark(truckTrailer.springs, 78, 177);
+    xMark(truckTrailer.tarpaulin, 143, 155);
+    xMark(truckTrailer.tires, 143, 161);
+    xMark(truckTrailer.wheels, 143, 166);
+    xMark(truckTrailer.other, 143, 171);
+
+    // 11
+    const isTrue = value => value === true || value === 'true';
+    xMark(isTrue(sanitizedUserInspectionObject.conditionSatisfactory), 13, 224);
+    xMark(isTrue(sanitizedUserInspectionObject.defectsCorrected), 13, 241);
+    xMark(isTrue(sanitizedUserInspectionObject.defectsNotCorrected), 13, 249);
+
+    // 12
+    if (sanitizedUserInspectionObject.mechanicDate) {
+        driverVehicleInspectionReport.text(String(sanitizedUserInspectionObject.mechanicDate), 165, 257);
+    }
+    if (sanitizedUserInspectionObject.driverDate) {
+        driverVehicleInspectionReport.text(String(sanitizedUserInspectionObject.driverDate), 165, 266);
+    }
+
+    // 13
+    const remarksRaw = typeof sanitizedUserInspectionObject.remarks === 'string' ? decodeHTMLEntities(sanitizedUserInspectionObject.remarks) : '';
+    const remarksLines = driverVehicleInspectionReport.splitTextToSize(remarksRaw, 160);
+    if (remarksLines.length > 0) {
+        driverVehicleInspectionReport.text(remarksLines, 30, 190);
+    }
+
+    window.open(driverVehicleInspectionReport.output('bloburl'));
+    return driverVehicleInspectionReport;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
