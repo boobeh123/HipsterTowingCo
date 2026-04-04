@@ -2,27 +2,49 @@ const overlay = document.querySelector('#inspectionOverlay');
 const form = document.querySelector('#inspectionForm');
 
 function openModal() {
+    if (!overlay) return;
+
     const dateField = document.querySelector('#date');
     const truckTractorNoInputField = document.querySelector('#truckTractorNo');
 
     if (dateField) {
         const todaysDate = new Date();
-        dateField.value = `${todaysDate.getMonth() + 1}/${todaysDate.getDate()}/${todaysDate.getFullYear()}`;   // Month/Day/Year
+        dateField.value = `${todaysDate.getMonth() + 1}/${todaysDate.getDate()}/${todaysDate.getFullYear()}`; // Month/Day/Year
     }
+
     overlay.classList.add('is-open');
+    overlay.removeAttribute('aria-hidden');
+    document.body.classList.add('has-modal-open');
 
     if (truckTractorNoInputField) {
         truckTractorNoInputField.focus();
     }
-
 }
 
 function closeModal() {
+    if (!overlay) return;
+
     overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('has-modal-open');
 
     if (form) {
         form.reset();
     }
+}
+
+function showModalFlash(message) {
+    const banner = document.getElementById('modalFlashError');
+    const msg = document.getElementById('modalFlashErrorMsg');
+    if (!banner || !msg) return;
+
+    msg.textContent = message;
+    banner.hidden = false;
+}
+
+function clearModalFlash() {
+    const banner = document.getElementById('modalFlashError');
+    if (banner) banner.hidden = true;
 }
 
 /**************************************************************
@@ -225,7 +247,13 @@ function validateAndSanitize(userInspectionObject) {
     if (!truckNo) {
         const truckTractorNoInputField = document.querySelector('#truckTractorNo');
         if (truckTractorNoInputField) {
+            showModalFlash('Truck / Tractor No. is required before generating a PDF.');
             truckTractorNoInputField.focus();
+            field.classList.add('input--error');
+            field.addEventListener('input', () => {
+                field.classList.remove('input--error');
+                clearModalFlash(); // ← clears as soon as they start typing
+            }, { once: true });
             return null;
         }
     }
@@ -421,8 +449,158 @@ async function generateDVIRPDF(sanitizedUserInspectionObject) {
     return driverVehicleInspectionReport;
 }
 
+/**
+ * Hero canvas: floating "p" / "q" letters that bounce inside the hero (pretriq brand nod).
+ * Skipped when the canvas is missing or the user prefers reduced motion.
+ */
+function initHeroLetterBounceCanvas() {
+    const canvas = document.getElementById('hero-particles');
+    const hero = document.querySelector('.hero');
+    if (!canvas || !hero) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const letterChars = ['p', 'q'];
+    /** Same palette as the legacy hero canvas */
+    const palette = ['#66bb6a', '#42a5f5', '#ffd600'];
+    const letterCount = 12;
+    const letters = [];
+    let widthCss = 1;
+    let heightCss = 1;
+    let rafId = 0;
+    let lastTs = 0;
+    let running = true;
+
+    function measureGlyph(char, fontSize) {
+        ctx.font = `700 ${fontSize}px Lato, Roboto, system-ui, sans-serif`;
+        const m = ctx.measureText(char);
+        const ascent = m.actualBoundingBoxAscent ?? fontSize * 0.72;
+        const descent = m.actualBoundingBoxDescent ?? fontSize * 0.28;
+        const w = m.width;
+        return { w, ascent, descent, fontSize };
+    }
+
+    function clampLetter(L) {
+        const { w, ascent, descent } = measureGlyph(L.char, L.fontSize);
+        const top = L.y - ascent;
+        const bottom = L.y + descent;
+        if (L.x < 0) L.x = 0;
+        if (L.x + w > widthCss) L.x = widthCss - w;
+        if (top < 0) L.y = ascent;
+        if (bottom > heightCss) L.y = heightCss - descent;
+    }
+
+    function spawnLetters() {
+        letters.length = 0;
+        for (let i = 0; i < letterCount; i++) {
+            const char = letterChars[i % 2];
+            const fontSize = 26 + Math.random() * 34;
+            const { w, ascent, descent } = measureGlyph(char, fontSize);
+            const speed = 55 + Math.random() * 75;
+            const angle = Math.random() * Math.PI * 2;
+            letters.push({
+                char,
+                fontSize,
+                color: palette[Math.floor(Math.random() * palette.length)],
+                alpha: 0.15 + Math.random() * 0.4,
+                x: Math.random() * Math.max(1, widthCss - w),
+                y: ascent + Math.random() * Math.max(1, heightCss - ascent - descent),
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+            });
+        }
+    }
+
+    function resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const rect = hero.getBoundingClientRect();
+        widthCss = Math.max(1, rect.width);
+        heightCss = Math.max(1, rect.height);
+        canvas.width = Math.floor(widthCss * dpr);
+        canvas.height = Math.floor(heightCss * dpr);
+        canvas.style.width = `${widthCss}px`;
+        canvas.style.height = `${heightCss}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        letters.forEach(clampLetter);
+    }
+
+    function bounce(L) {
+        const { w, ascent, descent } = measureGlyph(L.char, L.fontSize);
+        const left = L.x;
+        const right = L.x + w;
+        const top = L.y - ascent;
+        const bottom = L.y + descent;
+
+        if (left < 0) {
+            L.x = 0;
+            L.vx = Math.abs(L.vx);
+        } else if (right > widthCss) {
+            L.x = widthCss - w;
+            L.vx = -Math.abs(L.vx);
+        }
+
+        if (top < 0) {
+            L.y = ascent;
+            L.vy = Math.abs(L.vy);
+        } else if (bottom > heightCss) {
+            L.y = heightCss - descent;
+            L.vy = -Math.abs(L.vy);
+        }
+    }
+
+    function frame(ts) {
+        if (!running) return;
+        if (!lastTs) lastTs = ts;
+        const dt = Math.min((ts - lastTs) / 1000, 0.064);
+        lastTs = ts;
+
+        ctx.clearRect(0, 0, widthCss, heightCss);
+
+        for (const L of letters) {
+            L.x += L.vx * dt;
+            L.y += L.vy * dt;
+            bounce(L);
+
+            ctx.save();
+            ctx.globalAlpha = L.alpha;
+            ctx.font = `700 ${L.fontSize}px Lato, Roboto, system-ui, sans-serif`;
+            ctx.fillStyle = L.color;
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillText(L.char, L.x, L.y);
+            ctx.restore();
+        }
+
+        rafId = requestAnimationFrame(frame);
+    }
+
+    resize();
+    spawnLetters();
+
+    const ro = new ResizeObserver(() => {
+        resize();
+    });
+    ro.observe(hero);
+
+    rafId = requestAnimationFrame(frame);
+
+    window.addEventListener('pagehide', () => {
+        running = false;
+        cancelAnimationFrame(rafId);
+        ro.disconnect();
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    
+    const yearEl = document.getElementById('current-year');
+    if (yearEl) {
+        yearEl.textContent = String(new Date().getFullYear());
+    }
+
     const inspectionBtn = document.querySelector('#startInspectionBtn');
     const submitInspectionBtn = document.querySelector('#submitInspectionBtn');
     const cancelInspetionBtn = document.querySelector('#cancelInspectionBtn')
@@ -446,10 +624,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && overlay.classList.contains('is-open')) {
+        if (event.key === 'Escape' && overlay && overlay.classList.contains('is-open')) {
             closeModal();
         }
-    })
+    });
     
     // When submitInspectionBtn button is clicked, add an id & createdAt property with dot notation
     if (submitInspectionBtn) {
@@ -480,5 +658,6 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
     // Modal behavior end
-    
-})
+
+    initHeroLetterBounceCanvas();
+});
