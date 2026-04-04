@@ -1,162 +1,230 @@
-<div id="inspectionOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
-    <div class="custom-modal" id="inspectionModal">
-        <div class="modal-clip" aria-hidden="true"></div>
-        <div class="modal-header">
-            <h2 id="modal-heading">Driver's Vehicle Inspection Report</h2>
-            <p>Check ANY defective item and give details under "Remarks."</p>
-        </div>
-        <div class="modal-body">
-            <form id="inspectionForm" novalidate>
-                <div class="form-row">
-                    <div class="form-field">
+<!-- Pre-trip Inspection Modal -->
+<div
+    id="inspectionOverlay"
+    class="inspection-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-heading"
+    aria-hidden="true"
+>
+    <div id="inspectionModal" class="inspection-dialog">
+        <div class="inspection-dialog__accent" aria-hidden="true"></div>
+
+        <header class="inspection-dialog__header">
+            <h2 id="modal-heading" class="inspection-dialog__title">Driver's Vehicle Inspection Report</h2>
+            <p class="inspection-dialog__subtitle">Check ANY defective item and give details under "Remarks."</p>
+        </header>
+
+        <div class="inspection-dialog__body">
+            <div id="modalFlashError" class="modal-flash modal-flash--error" role="alert" aria-live="assertive" hidden>
+                <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                <span id="modalFlashErrorMsg"></span>
+            </div>
+            <form id="inspectionForm" novalidate aria-labelledby="modal-heading">
+                <div class="inspection-field-row">
+                    <div class="inspection-field">
                         <label for="date">Date</label>
-                        <input type="text" id="date" name="date" readonly aria-readonly="true" />
+                        <input id="date" name="date" type="text" readonly aria-readonly="true" />
                     </div>
-                    <div class="form-field">
+                    <div class="inspection-field">
                         <label for="truckTractorNo">
-                            Truck / Tractor No.<span class="required-star" aria-hidden="true">*</span>
+                            Truck / Tractor No.<span class="inspection-required" aria-hidden="true">*</span>
                         </label>
-                        <input type="text" id="truckTractorNo" name="truckTractorNo" required autocomplete="off" placeholder="USDOT #" aria-required="true"/>
+                        <input
+                            type="text"
+                            id="truckTractorNo"
+                            name="truckTractorNo"
+                            required
+                            autocomplete="off"
+                            placeholder="USDOT #"
+                            aria-required="true"
+                        />
                     </div>
                 </div>
-                <div class="form-section">
-                    <h3 class="form-section-title">Truck / Tractor Defects</h3>
-                    <div class="checklist" role="group" aria-label="Truck and tractor defect items">
-                        <label><input type="checkbox" name="defects[truckTractor][airCompressor]"  value="true"><span>Air Compressor</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][horn]"            value="true"><span>Horn</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][springs]"         value="true"><span>Springs</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][airLines]"        value="true"><span>Air Lines</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][lights]"          value="true"><span>Lights</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][starter]"         value="true"><span>Starter</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][battery]"         value="true"><span>Battery</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][mirrors]"         value="true"><span>Mirrors</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][steering]"        value="true"><span>Steering</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][brakeAccessories]" value="true"><span>Brake Accessories</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][muffler]"         value="true"><span>Muffler</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][tachograph]"      value="true"><span>Tachograph</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][brakes]"          value="true"><span>Brakes</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][oilPressure]"     value="true"><span>Oil Pressure</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][tires]"           value="true"><span>Tires</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][carburetor]"      value="true"><span>Carburetor</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][onBoardRecorder]" value="true"><span>On-Board Recorder</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][transmission]"    value="true"><span>Transmission</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][clutch]"          value="true"><span>Clutch</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][radiator]"        value="true"><span>Radiator</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][wheels]"          value="true"><span>Wheels</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][defroster]"       value="true"><span>Defroster</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][rearEnd]"         value="true"><span>Rear End</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][windows]"         value="true"><span>Windows</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][driveLine]"       value="true"><span>Drive Line</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][reflectors]"      value="true"><span>Reflectors</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][windshieldWipers]" value="true"><span>Windshield Wipers</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][engine]"          value="true"><span>Engine</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][safetyEquipment]" value="true"><span>Safety Equipment</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][other]"           value="true"><span>Other</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][fifthWheel]"      value="true"><span>Fifth Wheel</span></label>
-                        <label></label><label></label>
-                        <label><input type="checkbox" name="defects[truckTractor][frontAxle]"       value="true"><span>Front Axle</span></label>
-                        <label></label><label></label>
-                        <label><input type="checkbox" name="defects[truckTractor][fuelTanks]"       value="true"><span>Fuel Tanks</span></label>
-                        <label></label><label></label>
-                        <label><input type="checkbox" name="defects[truckTractor][heater]"          value="true"><span>Heater</span></label>
-                        <label></label><label></label>
+
+                <section class="inspection-section" aria-labelledby="defects-tractor-heading">
+                    <h3 id="defects-tractor-heading" class="inspection-section__title">Truck / Tractor Defects</h3>
+                    <div class="inspection-checklist" role="group" aria-label="Truck and tractor defect items">
+                        <label><input type="checkbox" name="defects[truckTractor][airCompressor]" value="true" /><span>Air Compressor</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][horn]" value="true" /><span>Horn</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][springs]" value="true" /><span>Springs</span></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][airLines]" value="true" /><span>Air Lines</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][lights]" value="true" /><span>Lights</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][starter]" value="true" /><span>Starter</span></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][battery]" value="true" /><span>Battery</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][mirrors]" value="true" /><span>Mirrors</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][steering]" value="true" /><span>Steering</span></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][brakeAccessories]" value="true" /><span>Brake Accessories</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][muffler]" value="true" /><span>Muffler</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][tachograph]" value="true" /><span>Tachograph</span></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][brakes]" value="true" /><span>Brakes</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][oilPressure]" value="true" /><span>Oil Pressure</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][tires]" value="true" /><span>Tires</span></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][carburetor]" value="true" /><span>Carburetor</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][onBoardRecorder]" value="true" /><span>On-Board Recorder</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][transmission]" value="true" /><span>Transmission</span></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][clutch]" value="true" /><span>Clutch</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][radiator]" value="true" /><span>Radiator</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][wheels]" value="true" /><span>Wheels</span></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][defroster]" value="true" /><span>Defroster</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][rearEnd]" value="true" /><span>Rear End</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][windows]" value="true" /><span>Windows</span></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][driveLine]" value="true" /><span>Drive Line</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][reflectors]" value="true" /><span>Reflectors</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][windshieldWipers]" value="true" /><span>Windshield Wipers</span></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][engine]" value="true" /><span>Engine</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][safetyEquipment]" value="true" /><span>Safety Equipment</span></label>
+                        <label><input type="checkbox" name="defects[truckTractor][other]" value="true" /><span>Other</span></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][fifthWheel]" value="true" /><span>Fifth Wheel</span></label>
+                        <label></label>
+                        <label></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][frontAxle]" value="true" /><span>Front Axle</span></label>
+                        <label></label>
+                        <label></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][fuelTanks]" value="true" /><span>Fuel Tanks</span></label>
+                        <label></label>
+                        <label></label>
+
+                        <label><input type="checkbox" name="defects[truckTractor][heater]" value="true" /><span>Heater</span></label>
+                        <label></label>
+                        <label></label>
                     </div>
-                </div>
-                <hr class="form-divider" />
-                <div class="form-section">
-                    <div style="display:flex; align-items:baseline; gap:1.5rem; margin-bottom:.85rem;">
-                        <h3 class="form-section-title" style="margin-bottom:0; flex:1;">Trailer(s) Defects</h3>
-                        <div class="form-field" style="max-width:180px; min-width:120px; margin-bottom:0;">
+                </section>
+
+                <hr class="inspection-divider" />
+
+                <section class="inspection-section" aria-labelledby="defects-trailer-heading">
+                    <div class="inspection-trailer-head">
+                        <h3 id="defects-trailer-heading" class="inspection-section__title">Trailer(s) Defects</h3>
+                        <div class="inspection-field inspection-field--trailer-no">
                             <label for="trailerNo">Trailer No(s).</label>
                             <input type="text" id="trailerNo" name="trailerNo" autocomplete="off" />
                         </div>
                     </div>
-                    <div class="checklist" role="group" aria-label="Trailer defect items">
-                        <label><input type="checkbox" name="defects[trailer][brakeConnections]" value="true"><span>Brake Connections</span></label>
-                        <label><input type="checkbox" name="defects[trailer][hitch]"            value="true"><span>Hitch</span></label>
-                        <label><input type="checkbox" name="defects[trailer][tarpaulin]"        value="true"><span>Tarpaulin</span></label>
-                        <label><input type="checkbox" name="defects[trailer][brakes]"           value="true"><span>Brakes</span></label>
-                        <label><input type="checkbox" name="defects[trailer][landingGear]"      value="true"><span>Landing Gear</span></label>
-                        <label><input type="checkbox" name="defects[trailer][tires]"            value="true"><span>Tires</span></label>
-                        <label><input type="checkbox" name="defects[trailer][couplingChains]"   value="true"><span>Coupling Chains</span></label>
-                        <label><input type="checkbox" name="defects[trailer][lightsAll]"        value="true"><span>Lights – All</span></label>
-                        <label><input type="checkbox" name="defects[trailer][wheels]"           value="true"><span>Wheels</span></label>
-                        <label><input type="checkbox" name="defects[trailer][couplingPin]"      value="true"><span>Coupling (King) Pin</span></label>
-                        <label><input type="checkbox" name="defects[trailer][roof]"             value="true"><span>Roof</span></label>
-                        <label><input type="checkbox" name="defects[trailer][other]"            value="true"><span>Other</span></label>
-                        <label><input type="checkbox" name="defects[trailer][doors]"            value="true"><span>Doors</span></label>
-                        <label><input type="checkbox" name="defects[trailer][springs]"          value="true"><span>Springs</span></label>
+
+                    <div class="inspection-checklist" role="group" aria-label="Trailer defect items">
+                        <label><input type="checkbox" name="defects[trailer][brakeConnections]" value="true" /><span>Brake Connections</span></label>
+                        <label><input type="checkbox" name="defects[trailer][hitch]" value="true" /><span>Hitch</span></label>
+                        <label><input type="checkbox" name="defects[trailer][tarpaulin]" value="true" /><span>Tarpaulin</span></label>
+
+                        <label><input type="checkbox" name="defects[trailer][brakes]" value="true" /><span>Brakes</span></label>
+                        <label><input type="checkbox" name="defects[trailer][landingGear]" value="true" /><span>Landing Gear</span></label>
+                        <label><input type="checkbox" name="defects[trailer][tires]" value="true" /><span>Tires</span></label>
+
+                        <label><input type="checkbox" name="defects[trailer][couplingChains]" value="true" /><span>Coupling Chains</span></label>
+                        <label><input type="checkbox" name="defects[trailer][lightsAll]" value="true" /><span>Lights – All</span></label>
+                        <label><input type="checkbox" name="defects[trailer][wheels]" value="true" /><span>Wheels</span></label>
+
+                        <label><input type="checkbox" name="defects[trailer][couplingPin]" value="true" /><span>Coupling (King) Pin</span></label>
+                        <label><input type="checkbox" name="defects[trailer][roof]" value="true" /><span>Roof</span></label>
+                        <label><input type="checkbox" name="defects[trailer][other]" value="true" /><span>Other</span></label>
+
+                        <label><input type="checkbox" name="defects[trailer][doors]" value="true" /><span>Doors</span></label>
+                        <label><input type="checkbox" name="defects[trailer][springs]" value="true" /><span>Springs</span></label>
                         <label></label>
                     </div>
-                </div>
-                <hr class="form-divider" />
-                <div class="form-section">
-                    <h3 class="form-section-title">Remarks</h3>
-                    <div class="form-field">
+                </section>
+
+                <hr class="inspection-divider" />
+
+                <section class="inspection-section" aria-labelledby="remarks-heading">
+                    <h3 id="remarks-heading" class="inspection-section__title">Remarks</h3>
+                    <div class="inspection-field">
                         <label for="remarks">Details / Notes</label>
                         <textarea id="remarks" name="remarks" rows="3" placeholder="Describe any defects or notes here…"></textarea>
                     </div>
-                </div>
-                <hr class="form-divider" />
-                <div class="form-section">
-                    <h3 class="form-section-title">Condition &amp; Certification</h3>
-                    <label class="condition-check">
-                        <input type="checkbox" name="conditionSatisfactory" value="true">
+                </section>
+
+                <hr class="inspection-divider" />
+
+                <section class="inspection-section" aria-labelledby="condition-heading">
+                    <h3 id="condition-heading" class="inspection-section__title">Condition &amp; Certification</h3>
+
+                    <label class="inspection-condition">
+                        <input type="checkbox" name="conditionSatisfactory" value="true" />
                         <span>Condition of the above vehicle is satisfactory</span>
                     </label>
-                    <div style="margin-top:.85rem;">
-                        <span class="sig-label">Driver's Signature</span>
-                        <div class="sig-line" aria-hidden="true"></div>
+
+                    <div class="inspection-sig-block">
+                        <span class="inspection-sig-block__label">Driver's Signature</span>
+                        <div class="inspection-sig-line" aria-hidden="true"></div>
                     </div>
-                    <label class="condition-check">
-                        <input type="checkbox" name="defectsCorrected" value="true">
+
+                    <label class="inspection-condition">
+                        <input type="checkbox" name="defectsCorrected" value="true" />
                         <span>Above Defects Corrected</span>
                     </label>
-                    <label class="condition-check">
-                        <input type="checkbox" name="defectsNotCorrected" value="true">
+
+                    <label class="inspection-condition">
+                        <input type="checkbox" name="defectsNotCorrected" value="true" />
                         <span>Above Defects Need NOT Be Corrected For Safe Operation Of Vehicle</span>
                     </label>
-                    <div class="sig-row" style="margin-top:.85rem;">
-                        <div>
-                            <span class="sig-label">Mechanic's Signature</span>
-                            <div class="sig-line" aria-hidden="true"></div>
+
+                    <div class="inspection-sig-grid">
+                        <div class="inspection-sig-block">
+                            <span class="inspection-sig-block__label">Mechanic's Signature</span>
+                            <div class="inspection-sig-line" aria-hidden="true"></div>
                         </div>
-                        <div class="form-field date-field">
+                        <div class="inspection-field inspection-field--date">
                             <label for="mechanicDate">Date</label>
                             <input type="text" id="mechanicDate" name="mechanicDate" autocomplete="off" />
                         </div>
                     </div>
-                    <div class="sig-row">
-                        <div>
-                            <span class="sig-label">Driver's Signature (acknowledgment)</span>
-                            <div class="sig-line" aria-hidden="true"></div>
+
+                    <div class="inspection-sig-grid">
+                        <div class="inspection-sig-block">
+                            <span class="inspection-sig-block__label">Driver's Signature (acknowledgment)</span>
+                            <div class="inspection-sig-line" aria-hidden="true"></div>
                         </div>
-                        <div class="form-field date-field">
+                        <div class="inspection-field inspection-field--date">
                             <label for="driverDate">Date</label>
                             <input type="text" id="driverDate" name="driverDate" autocomplete="off" />
                         </div>
                     </div>
-                </div>
+                </section>
             </form>
         </div>
-        <div class="modal-footer">
-            <button type="button" id="cancelInspectionBtn" class="btn btn-ghost btn-sm">Cancel</button>
-            <button type="button" id="submitInspectionBtn" class="btn btn-primary btn-sm">Generate PDF &rarr;</button>
-        </div>
+
+        <footer class="inspection-dialog__footer">
+            <button type="button" id="cancelInspectionBtn" class="btn btn--secondary">Cancel</button>
+            <button type="button" id="submitInspectionBtn" class="btn btn--primary btn--modal-submit">
+                Generate PDF <span aria-hidden="true">&rarr;</span>
+            </button>
+        </footer>
     </div>
 </div>
-<div id="result-overlay" role="dialog" aria-modal="true" aria-labelledby="result-heading">
-    <div class="result-card">
-        <div class="result-icon" aria-hidden="true">✓</div>
-        <h3 id="result-heading">Inspection report generated!</h3>
-        <p>Your inspection reported has been created successfully. Guest inspections <strong>are not saved to our server</strong> - please download the PDF to keep your document. <strong>Consider creating an account to store future documents and access your inspection history.</strong></p>
-        <div class="result-actions">
-            <button id="downloadPdfBtn" class="btn btn-success btn-sm">
-                &#8595;&nbsp; Download PDF
-            </button>
-            <button id="closeResultBtn" class="btn btn-ghost btn-sm">
-                Close
-            </button>
+
+<!-- Result popup (hidden until opened via JS) -->
+<div
+    id="result-overlay"
+    class="result-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="result-heading"
+    aria-hidden="true"
+>
+    <div class="result-dialog">
+        <div class="result-dialog__icon" aria-hidden="true">✓</div>
+        <h3 id="result-heading" class="result-dialog__title">Inspection report generated!</h3>
+        <p class="result-dialog__text">
+            Your inspection reported has been created successfully. Guest inspections <strong>are not saved to our server</strong> — please download the PDF to keep your document.
+            <strong>Consider creating an account to store future documents and access your inspection history.</strong>
+        </p>
+        <div class="result-dialog__actions">
+            <button type="button" id="downloadPdfBtn" class="btn btn--primary">&#8595;&nbsp; Download PDF</button>
+            <button type="button" id="closeResultBtn" class="btn btn--secondary">Close</button>
         </div>
     </div>
 </div>
