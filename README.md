@@ -32,6 +32,26 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.010
+📅 **Release Date:** April 4th, 2026
+
+
+## 📢 Developer's Notes - Frontend stuff
+
+- The Inspection Modal can now be seen on mobile viewports better
+- Canvas particles added back in
+- Refactored styles
+
+- Goals to reach:
+  * [X] Guest inspection functionality (partial)
+    * [ ] Display popup window to download
+  * [ ] Review semantics & ARIA within HTML
+  * [X] Review styles 
+  * [ ] Review partials
+  * [ ] Review the semantics & ARIA for all partials used on home route
+  * [ ] Build out the sections I removed from home route
+
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.009
 📅 **Release Date:** March 28th, 2026
 
