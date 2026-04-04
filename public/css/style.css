@@ -504,7 +504,7 @@ body.has-modal-open {
 }
 
 .inspection-dialog__accent {
-  height: 6px;
+  height: 12px;
   flex-shrink: 0;
   background: linear-gradient(90deg, var(--color-hero-slab-b), var(--color-primary));
   border-radius: var(--radius-md) var(--radius-md) 0 0;
