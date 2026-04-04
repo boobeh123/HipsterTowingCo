@@ -1,23 +1,45 @@
 <%- include('./partials/head.ejs') %>
 <%- include('./partials/header.ejs') %>
-<!-- todo: flash.ejs -->
+<%- include('./partials/flash.ejs') %>
 <%- include('./partials/inspectionModal.ejs') %>
-    <main class="index-main">
-        <section class="hero-section row valign-wrapper" role="region" aria-labelledby="hero-heading">
-            <div class="hero-canvas-container">
-                <canvas id="hero-particles"></canvas>
-              </div>
-            <div class="col s12 m6 hero-text">
-                <h1 id="hero-heading">Thanks for your interest in <strong class="text-primary green-text">pretriq</strong></h1>
-                <p>Digital pretrip inspections is under maintenance. Partial functionality is available to users. Full functionality will be restored soon.</p>
-                <div class="animated-button-container">
-                <!-- <h1 id="hero-heading">Streamline your <strong class="text-primary green-text">Driver's Vehicle Inspection Report</strong></h1> -->
-                <!-- <p>Conduct your FMCSA pre-trip digitally. Use cloud storage to log defects, keep record of remarks, and get your documents on-demand on our easy-to-use platform.</p> -->
-                    <button id="startInspectionBtn" class="btn waves-effect waves-light green lighten-1 animated-button" aria-haspopup="dialog" aria-label="Start a new pretrip report">&#9654;&nbsp; Start pretrip</button>
-                </div>
+
+    <main id="main-content" class="page-home" tabindex="-1">
+        <section class="hero" aria-labelledby="hero-heading">
+            <div class="hero__canvas" aria-hidden="true">
+                <canvas id="hero-particles" width="300" height="150"></canvas>
             </div>
-            <div class="col s12 m6 hero-image center-align">
-                <img src="/imgs/hero.jpg" alt="Digital truck with inspection dashboard" class="responsive-img hero-img" tabindex="0" />
+            <div class="hero__inner">
+                <div class="hero__copy">
+                    <h1 id="hero-heading" class="hero__title">
+                        Welcome to <strong class="hero__brand">pretriq</strong>
+                    </h1>
+                    <p class="hero__lead">
+                        Partial functionality is available to users. Full functionality will be restored soon. Digital pretrip inspections is under maintenance. 
+                    </p>
+                    <div class="hero__actions">
+                        <div class="animated-button-container">
+                            <button
+                                type="button"
+                                id="startInspectionBtn"
+                                class="btn btn--primary animated-button"
+                                aria-haspopup="dialog"
+                                aria-label="Start a new pretrip report"
+                            >
+                                <span class="btn__icon" aria-hidden="true">&#9654;</span>
+                                Start pretrip
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero__media">
+                    <img
+                        src="/imgs/hero.webp"
+                        alt="Digital truck with inspection dashboard"
+                        class="hero__image"
+                        decoding="async"
+                    />
+                </div>
             </div>
         </section>
     </main>
