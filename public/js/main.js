@@ -1,5 +1,11 @@
 const overlay = document.querySelector('#inspectionOverlay');
 const form = document.querySelector('#inspectionForm');
+const resultOverlay = document.querySelector('#result-overlay');
+const downloadPdfBtn = document.querySelector('#downloadPdfBtn');
+const closeResultBtn = document.querySelector('#closeResultBtn');
+
+// Holds the most recently generated jsPDF doc so the download button can access it
+let currentInspectionReport = null;
 
 function openModal() {
     if (!overlay) return;
@@ -45,6 +51,27 @@ function showModalFlash(message) {
 function clearModalFlash() {
     const banner = document.getElementById('modalFlashError');
     if (banner) banner.hidden = true;
+}
+
+function openResultOverlay() {
+    if (!resultOverlay) return;
+
+    resultOverlay.classList.add('is-open');
+    resultOverlay.removeAttribute('aria-hidden');
+    document.body.classList.add('has-modal-open');
+
+    if (closeResultBtn) {
+        closeResultBtn.focus();
+    }
+}
+
+function closeResultOverlay() {
+    if (!resultOverlay) return;
+
+    resultOverlay.classList.remove('is-open');
+    resultOverlay.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('has-modal-open');
+    currentInspectionReport = null;
 }
 
 /**************************************************************
@@ -249,10 +276,10 @@ function validateAndSanitize(userInspectionObject) {
         if (truckTractorNoInputField) {
             showModalFlash('Truck / Tractor No. is required before generating a PDF.');
             truckTractorNoInputField.focus();
-            field.classList.add('input--error');
-            field.addEventListener('input', () => {
-                field.classList.remove('input--error');
-                clearModalFlash(); // ← clears as soon as they start typing
+            truckTractorNoInputField.classList.add('input--error');
+            truckTractorNoInputField.addEventListener('input', () => {
+                truckTractorNoInputField.classList.remove('input--error');
+                clearModalFlash();
             }, { once: true });
             return null;
         }
@@ -445,7 +472,6 @@ async function generateDVIRPDF(sanitizedUserInspectionObject) {
         driverVehicleInspectionReport.text(remarksLines, 30, 190);
     }
 
-    window.open(driverVehicleInspectionReport.output('bloburl'));
     return driverVehicleInspectionReport;
 }
 
@@ -653,10 +679,37 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch {
                 return;
             }
-          
-            // Display popup 
+
+            // Store doc at module scope so downloadPdfBtn can access it, then show the result overlay
+            currentInspectionReport = userInspectionReport;
+            openResultOverlay();
         })
     }
+
+    if (downloadPdfBtn) {
+        downloadPdfBtn.addEventListener('click', () => {
+            if (!currentInspectionReport) return;
+            currentInspectionReport.save('pretriq-inspection.pdf');
+        });
+    }
+
+    if (closeResultBtn) {
+        closeResultBtn.addEventListener('click', closeResultOverlay);
+    }
+
+    if (resultOverlay) {
+        resultOverlay.addEventListener('click', (event) => {
+            if (event.target === resultOverlay) {
+                closeResultOverlay();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && resultOverlay && resultOverlay.classList.contains('is-open')) {
+            closeResultOverlay();
+        }
+    });
     // Modal behavior end
 
     initHeroLetterBounceCanvas();
