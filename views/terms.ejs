@@ -1,62 +1,343 @@
-<%- include('partials/header') %>
-<main class="container" id="terms-main" role="main" aria-label="Terms of Use main content" style="max-width: 900px; margin: 2rem auto; padding: 2rem 1rem; background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(24,90,157,0.08);">
-  <header role="banner" aria-label="Terms of Use header">
-    <h1 style="font-size:2.2rem; font-weight:800; margin-bottom:1.5rem;">Terms of Use</h1>
-    <p>Effective date: <strong><%= new Date().getFullYear() %></strong></p>
-  </header>
-  <section aria-labelledby="terms-intro" style="margin-top:2rem;">
-    <h2 id="terms-intro">1. Acceptance of Terms</h2>
-    <p>By accessing or using pretriq ("we", "us", or "our") and its services, you agree to be bound by these Terms of Use and all applicable laws and regulations. If you do not agree, please do not use our platform.</p>
-  </section>
-  <section aria-labelledby="terms-eligibility" style="margin-top:2rem;">
-    <h2 id="terms-eligibility">2. Eligibility</h2>
-    <p>You must be at least 18 years old or have the legal capacity to enter into these Terms. By using pretriq, you represent and warrant that you meet these requirements.</p>
-  </section>
-  <section aria-labelledby="terms-account" style="margin-top:2rem;">
-    <h2 id="terms-account">3. Account Registration & Security</h2>
-    <ul>
-      <li>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.</li>
-      <li>You agree to provide accurate, current, and complete information during registration and to update it as needed.</li>
-      <li>We reserve the right to suspend or terminate your account if you violate these Terms or provide false information.</li>
-    </ul>
-  </section>
-  <section aria-labelledby="terms-use" style="margin-top:2rem;">
-    <h2 id="terms-use">4. Acceptable Use</h2>
-    <ul>
-      <li>You agree to use pretriq only for lawful purposes and in accordance with these Terms.</li>
-      <li>You will not use the platform to transmit any harmful, offensive, or unlawful content, or to attempt to gain unauthorized access to any part of the service.</li>
-      <li>You will not misuse, disrupt, or attempt to interfere with the integrity or performance of the platform.</li>
-    </ul>
-  </section>
-  <section aria-labelledby="terms-intellectual" style="margin-top:2rem;">
-    <h2 id="terms-intellectual">5. Intellectual Property</h2>
-    <ul>
-      <li>All content, trademarks, logos, and software on pretriq are the property of Pretriq or its licensors and are protected by copyright and other laws.</li>
-      <li>You may not copy, modify, distribute, sell, or lease any part of our platform or its content without our prior written consent.</li>
-    </ul>
-  </section>
-  <section aria-labelledby="terms-disclaimer" style="margin-top:2rem;">
-    <h2 id="terms-disclaimer">6. Disclaimers</h2>
-    <ul>
-      <li>pretriq is provided on an "as is" and "as available" basis. We make no warranties, express or implied, regarding the platform's operation, accuracy, or reliability.</li>
-      <li>We do not guarantee that the platform will be error-free, secure, or uninterrupted.</li>
-    </ul>
-  </section>
-  <section aria-labelledby="terms-liability" style="margin-top:2rem;">
-    <h2 id="terms-liability">7. Limitation of Liability</h2>
-    <p>To the fullest extent permitted by law, pretriq and its affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, arising out of or related to your use of the platform.</p>
-  </section>
-  <section aria-labelledby="terms-termination" style="margin-top:2rem;">
-    <h2 id="terms-termination">8. Termination</h2>
-    <p>We reserve the right to suspend or terminate your access to pretriq at any time, with or without notice, for conduct that we believe violates these Terms or is harmful to other users or the platform.</p>
-  </section>
-  <section aria-labelledby="terms-changes" style="margin-top:2rem;">
-    <h2 id="terms-changes">9. Changes to Terms</h2>
-    <p>We may update these Terms of Use from time to time. We will notify users of significant changes by posting the new terms on this page and updating the effective date above. Continued use of the platform after changes constitutes acceptance of the new terms.</p>
-  </section>
-  <section aria-labelledby="terms-contact" style="margin-top:2rem;">
-    <h2 id="terms-contact">10. Contact Us</h2>
-    <p>If you have any questions about these Terms of Use, please contact us at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a>.</p>
-  </section>
+<%- include('./partials/head.ejs') %>
+<%- include('./partials/header.ejs') %>
+
+<main id="main-content" class="legalDoc" tabindex="-1" aria-labelledby="legalDoc-title">
+
+    <div class="legalDoc__inner">
+
+        <!-- Sidebar TOC -->
+        <aside class="legalDoc__toc" aria-label="Table of contents">
+            <p class="legalDoc__tocLabel">On this page</p>
+            <nav aria-label="Terms and conditions sections">
+                <ol class="legalDoc__tocList">
+                    <li><a href="#s1"  class="legalDoc__tocLink">Our services</a></li>
+                    <li><a href="#s2"  class="legalDoc__tocLink">Intellectual property rights</a></li>
+                    <li><a href="#s3"  class="legalDoc__tocLink">User representations</a></li>
+                    <li><a href="#s4"  class="legalDoc__tocLink">User registration</a></li>
+                    <li><a href="#s5"  class="legalDoc__tocLink">Prohibited activities</a></li>
+                    <li><a href="#s6"  class="legalDoc__tocLink">User generated contributions</a></li>
+                    <li><a href="#s7"  class="legalDoc__tocLink">Contribution license</a></li>
+                    <li><a href="#s8"  class="legalDoc__tocLink">Guidelines for reviews</a></li>
+                    <li><a href="#s9"  class="legalDoc__tocLink">Third-party websites and content</a></li>
+                    <li><a href="#s10" class="legalDoc__tocLink">Services management</a></li>
+                    <li><a href="#s11" class="legalDoc__tocLink">Privacy policy</a></li>
+                    <li><a href="#s12" class="legalDoc__tocLink">Copyright infringements</a></li>
+                    <li><a href="#s13" class="legalDoc__tocLink">Term and termination</a></li>
+                    <li><a href="#s14" class="legalDoc__tocLink">Modifications and interruptions</a></li>
+                    <li><a href="#s15" class="legalDoc__tocLink">Governing law</a></li>
+                    <li><a href="#s16" class="legalDoc__tocLink">Dispute resolution</a></li>
+                    <li><a href="#s17" class="legalDoc__tocLink">Corrections</a></li>
+                    <li><a href="#s18" class="legalDoc__tocLink">Disclaimer</a></li>
+                    <li><a href="#s19" class="legalDoc__tocLink">Limitations of liability</a></li>
+                    <li><a href="#s20" class="legalDoc__tocLink">Indemnification</a></li>
+                    <li><a href="#s21" class="legalDoc__tocLink">User data</a></li>
+                    <li><a href="#s22" class="legalDoc__tocLink">Electronic communications</a></li>
+                    <li><a href="#s23" class="legalDoc__tocLink">California users and residents</a></li>
+                    <li><a href="#s24" class="legalDoc__tocLink">Miscellaneous</a></li>
+                    <li><a href="#s25" class="legalDoc__tocLink">Contact us</a></li>
+                </ol>
+            </nav>
+        </aside>
+
+        <!-- Document body -->
+        <div class="legalDoc__body">
+
+            <header class="legalDoc__header">
+                <p class="legalDoc__eyebrow">Legal</p>
+                <h1 id="legalDoc-title" class="legalDoc__title">Terms and Conditions</h1>
+                <p class="legalDoc__meta">Last updated <time datetime="2026-06-16">June 16, 2026</time></p>
+            </header>
+
+            <div class="legalDoc__intro">
+                <p>We are <strong>BTA WEB DEVELOPMENT LLC</strong> ("Company," "we," "us," "our"), a company registered in Hawaii, United States at 91-1004 Mana'Opa'a St, Ewa Beach, HI 96706.</p>
+                <p>We operate the website <a href="https://pretriq.com">https://pretriq.com</a> (the "Site"), as well as any other related products and services that refer or link to these legal terms (collectively, the "Services") — a web application that provides a solution to conduct pre-trip inspections digitally.</p>
+                <p>You can contact us by phone at <a href="tel:+18082921752">(+1) 808-292-1752</a>, by email at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a>, or by mail to 91-1004 Mana'Opa'a St, Ewa Beach, HI 96706, United States.</p>
+                <p>These Legal Terms constitute a legally binding agreement between you and BTA WEB DEVELOPMENT LLC concerning your access to and use of the Services. <strong>You agree that by accessing the Services, you have read, understood, and agreed to be bound by all of these Legal Terms. If you do not agree with all of these Legal Terms, then you are expressly prohibited from using the Services and you must discontinue use immediately.</strong></p>
+                <p>We will provide you with prior notice of any scheduled changes to the Services you are using. The modified Legal Terms will become effective upon posting or notifying you by email. By continuing to use the Services after the effective date of any changes, you agree to be bound by the modified terms.</p>
+                <p>The Services are intended for users who are at least 18 years old. Persons under the age of 18 are not permitted to use or register for the Services.</p>
+                <p>We recommend that you print a copy of these Legal Terms for your records.</p>
+            </div>
+
+            <section id="s1" class="legalDoc__section" aria-labelledby="s1-heading">
+                <h2 id="s1-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">1.</span>
+                    Our services
+                </h2>
+                <p>The information provided when using the Services is not intended for distribution to or use by any person or entity in any jurisdiction or country where such distribution or use would be contrary to law or regulation or which would subject us to any registration requirement within such jurisdiction or country. Those persons who choose to access the Services from other locations do so on their own initiative and are solely responsible for compliance with local laws, if and to the extent local laws are applicable.</p>
+                <p>The Services are not tailored to comply with industry-specific regulations (HIPAA, FISMA, etc.), so if your interactions would be subjected to such laws, you may not use the Services. You may not use the Services in a way that would violate the Gramm-Leach-Bliley Act (GLBA).</p>
+            </section>
+
+            <section id="s2" class="legalDoc__section" aria-labelledby="s2-heading">
+                <h2 id="s2-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">2.</span>
+                    Intellectual property rights
+                </h2>
+                <h3 class="legalDoc__subheading">Our intellectual property</h3>
+                <p>We are the owner or the licensee of all intellectual property rights in our Services, including all source code, databases, functionality, software, website designs, audio, video, text, photographs, and graphics in the Services (collectively, the "Content"), as well as the trademarks, service marks, and logos contained therein (the "Marks").</p>
+                <p>Our Content and Marks are protected by copyright and trademark laws and treaties in the United States and around the world. The Content and Marks are provided in or through the Services "AS IS" for your personal, non-commercial use or internal business purpose only.</p>
+                <h3 class="legalDoc__subheading">Your use of our services</h3>
+                <p>Subject to your compliance with these Legal Terms, we grant you a non-exclusive, non-transferable, revocable license to access the Services and download or print a copy of any portion of the Content to which you have properly gained access, solely for your personal, non-commercial use or internal business purpose.</p>
+                <p>Except as set out in this section, no part of the Services and no Content or Marks may be copied, reproduced, aggregated, republished, uploaded, posted, publicly displayed, encoded, translated, transmitted, distributed, sold, licensed, or otherwise exploited for any commercial purpose whatsoever, without our express prior written permission.</p>
+                <p>Any breach of these Intellectual Property Rights will constitute a material breach of our Legal Terms and your right to use our Services will terminate immediately.</p>
+                <h3 class="legalDoc__subheading">Your submissions and contributions</h3>
+                <p>By directly sending us any question, comment, suggestion, idea, feedback, or other information about the Services ("Submissions"), you agree to assign to us all intellectual property rights in such Submission. You agree that we shall own this Submission and be entitled to its unrestricted use and dissemination for any lawful purpose, without acknowledgment or compensation to you.</p>
+                <p>When you post Contributions, you grant us an unrestricted, unlimited, irrevocable, perpetual, non-exclusive, transferable, royalty-free, fully-paid, worldwide right and license to use, copy, reproduce, distribute, sell, publish, broadcast, store, publicly perform, publicly display, reformat, translate, and exploit your Contributions for any purpose. You are solely responsible for your Submissions and/or Contributions and you expressly agree to reimburse us for any and all losses that we may suffer because of your breach of this section, any third party's intellectual property rights, or applicable law.</p>
+            </section>
+
+            <section id="s3" class="legalDoc__section" aria-labelledby="s3-heading">
+                <h2 id="s3-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">3.</span>
+                    User representations
+                </h2>
+                <p>By using the Services, you represent and warrant that:</p>
+                <ul class="legalDoc__list">
+                    <li>All registration information you submit will be true, accurate, current, and complete</li>
+                    <li>You will maintain the accuracy of such information and promptly update it as necessary</li>
+                    <li>You have the legal capacity and you agree to comply with these Legal Terms</li>
+                    <li>You are not a minor in the jurisdiction in which you reside</li>
+                    <li>You will not access the Services through automated or non-human means, whether through a bot, script, or otherwise</li>
+                    <li>You will not use the Services for any illegal or unauthorized purpose</li>
+                    <li>Your use of the Services will not violate any applicable law or regulation</li>
+                </ul>
+                <p>If you provide any information that is untrue, inaccurate, not current, or incomplete, we have the right to suspend or terminate your account and refuse any and all current or future use of the Services.</p>
+            </section>
+
+            <section id="s4" class="legalDoc__section" aria-labelledby="s4-heading">
+                <h2 id="s4-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">4.</span>
+                    User registration
+                </h2>
+                <p>You may be required to register to use the Services. You agree to keep your password confidential and will be responsible for all use of your account and password. We reserve the right to remove, reclaim, or change a username you select if we determine, in our sole discretion, that such username is inappropriate, obscene, or otherwise objectionable.</p>
+            </section>
+
+            <section id="s5" class="legalDoc__section" aria-labelledby="s5-heading">
+                <h2 id="s5-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">5.</span>
+                    Prohibited activities
+                </h2>
+                <p>You may not access or use the Services for any purpose other than that for which we make the Services available. As a user of the Services, you agree not to:</p>
+                <ul class="legalDoc__list">
+                    <li>Systematically retrieve data or other content from the Services to create or compile a collection, compilation, database, or directory without written permission from us</li>
+                    <li>Trick, defraud, or mislead us and other users, especially in any attempt to learn sensitive account information such as user passwords</li>
+                    <li>Circumvent, disable, or otherwise interfere with security-related features of the Services</li>
+                    <li>Disparage, tarnish, or otherwise harm, in our opinion, us and/or the Services</li>
+                    <li>Use any information obtained from the Services in order to harass, abuse, or harm another person</li>
+                    <li>Make improper use of our support services or submit false reports of abuse or misconduct</li>
+                    <li>Use the Services in a manner inconsistent with any applicable laws or regulations</li>
+                    <li>Engage in unauthorized framing of or linking to the Services</li>
+                    <li>Upload or transmit viruses, Trojan horses, or other material that interferes with any party's uninterrupted use and enjoyment of the Services</li>
+                    <li>Engage in any automated use of the system, such as using scripts to send comments or messages, or using data mining, robots, or similar data gathering tools</li>
+                    <li>Delete the copyright or other proprietary rights notice from any Content</li>
+                    <li>Attempt to impersonate another user or person or use the username of another user</li>
+                    <li>Interfere with, disrupt, or create an undue burden on the Services or the networks or services connected to the Services</li>
+                    <li>Harass, annoy, intimidate, or threaten any of our employees or agents engaged in providing any portion of the Services to you</li>
+                    <li>Attempt to bypass any measures of the Services designed to prevent or restrict access to the Services</li>
+                    <li>Copy or adapt the Services' software, including but not limited to Flash, PHP, HTML, JavaScript, or other code</li>
+                    <li>Except as permitted by applicable law, decipher, decompile, disassemble, or reverse engineer any of the software comprising or making up a part of the Services</li>
+                    <li>Use the Services as part of any effort to compete with us or otherwise use the Services and/or the Content for any revenue-generating endeavor or commercial enterprise</li>
+                    <li>Sell or otherwise transfer your profile</li>
+                </ul>
+            </section>
+
+            <section id="s6" class="legalDoc__section" aria-labelledby="s6-heading">
+                <h2 id="s6-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">6.</span>
+                    User generated contributions
+                </h2>
+                <p>The Services may invite you to chat, contribute to, or participate in blogs, message boards, online forums, and other functionality, and may provide you with the opportunity to create, submit, post, display, transmit, perform, publish, distribute, or broadcast content and materials to us or on the Services, including but not limited to text, writings, video, audio, photographs, graphics, comments, suggestions, or personal information or other material (collectively, "Contributions"). Contributions may be viewable by other users of the Services and through third-party websites.</p>
+                <p>When you create or make available any Contributions, you thereby represent and warrant that your Contributions are not false, inaccurate, or misleading; are not obscene, lewd, harassing, libelous, or otherwise objectionable; do not violate any applicable law, regulation, or rule; and do not violate the privacy or publicity rights of any third party.</p>
+            </section>
+
+            <section id="s7" class="legalDoc__section" aria-labelledby="s7-heading">
+                <h2 id="s7-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">7.</span>
+                    Contribution license
+                </h2>
+                <p>By posting your Contributions to any part of the Services, you automatically grant to us an unrestricted, unlimited, irrevocable, perpetual, non-exclusive, transferable, royalty-free, fully-paid, worldwide right and license to host, use, copy, reproduce, disclose, sell, resell, publish, broadcast, retitle, archive, store, cache, publicly perform, publicly display, reformat, translate, transmit, excerpt, and distribute such Contributions for any purpose, commercial, advertising, or otherwise.</p>
+                <p>We do not assert any ownership over your Contributions. You retain full ownership of all of your Contributions and any intellectual property rights or other proprietary rights associated with your Contributions. We are not liable for any statements or representations in your Contributions provided by you in any area on the Services.</p>
+                <p>We have the right, in our sole and absolute discretion, to edit, redact, re-categorize, pre-screen, or delete any Contributions at any time and for any reason, without notice. We have no obligation to monitor your Contributions.</p>
+            </section>
+
+            <section id="s8" class="legalDoc__section" aria-labelledby="s8-heading">
+                <h2 id="s8-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">8.</span>
+                    Guidelines for reviews
+                </h2>
+                <p>We may provide you areas on the Services to leave reviews or ratings. When posting a review, you must comply with the following criteria:</p>
+                <ul class="legalDoc__list">
+                    <li>You should have firsthand experience with the person/entity being reviewed</li>
+                    <li>Your reviews should not contain offensive profanity, or abusive, racist, offensive, or hateful language</li>
+                    <li>Your reviews should not contain discriminatory references based on religion, race, gender, national origin, age, marital status, sexual orientation, or disability</li>
+                    <li>Your reviews should not contain references to illegal activity</li>
+                    <li>You should not be affiliated with competitors if posting negative reviews</li>
+                    <li>You may not post any false or misleading statements</li>
+                    <li>You may not organize a campaign encouraging others to post reviews, whether positive or negative</li>
+                </ul>
+                <p>We may accept, reject, or remove reviews in our sole discretion. Reviews are not endorsed by us, and do not necessarily represent our opinions or the views of any of our affiliates or partners. We do not assume liability for any review or for any claims, liabilities, or losses resulting from any review.</p>
+            </section>
+
+            <section id="s9" class="legalDoc__section" aria-labelledby="s9-heading">
+                <h2 id="s9-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">9.</span>
+                    Third-party websites and content
+                </h2>
+                <p>The Services may contain links to other websites ("Third-Party Websites") as well as articles, photographs, text, graphics, designs, music, sound, video, information, applications, software, and other content belonging to or originating from third parties ("Third-Party Content"). Such Third-Party Websites and Third-Party Content are not investigated, monitored, or checked for accuracy, appropriateness, or completeness by us, and we are not responsible for any Third-Party Websites accessed through the Services or any Third-Party Content posted on, available through, or installed from the Services.</p>
+                <p>If you decide to leave the Services and access any Third-Party Websites, you do so at your own risk, and you should be aware these Legal Terms no longer govern. We do not endorse the products or services offered on Third-Party Websites and you shall hold us blameless from any harm caused by your purchase of such products or services.</p>
+            </section>
+
+            <section id="s10" class="legalDoc__section" aria-labelledby="s10-heading">
+                <h2 id="s10-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">10.</span>
+                    Services management
+                </h2>
+                <p>We reserve the right, but not the obligation, to: monitor the Services for violations of these Legal Terms; take appropriate legal action against anyone who violates the law or these Legal Terms; in our sole discretion and without limitation, refuse, restrict access to, limit the availability of, or disable any of your Contributions or any portion thereof; and otherwise manage the Services in a manner designed to protect our rights and property and to facilitate the proper functioning of the Services.</p>
+            </section>
+
+            <section id="s11" class="legalDoc__section" aria-labelledby="s11-heading">
+                <h2 id="s11-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">11.</span>
+                    Privacy policy
+                </h2>
+                <p>We care about data privacy and security. Please review our <a href="/privacy">Privacy Policy</a>. By using the Services, you agree to be bound by our Privacy Policy, which is incorporated into these Legal Terms.</p>
+                <p>Please be advised the Services are hosted in the United States. If you access the Services from any other region of the world with laws governing personal data collection, use, or disclosure that differ from applicable laws in the United States, then through your continued use of the Services, you are transferring your data to the United States, and you expressly consent to have your data transferred to and processed in the United States.</p>
+            </section>
+
+            <section id="s12" class="legalDoc__section" aria-labelledby="s12-heading">
+                <h2 id="s12-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">12.</span>
+                    Copyright infringements
+                </h2>
+                <p>We respect the intellectual property rights of others. If you believe that any material available on or through the Services infringes upon any copyright you own or control, please immediately notify us using the contact information provided below (a "Notification"). A copy of your Notification will be sent to the person who posted or stored the material addressed in the Notification. Please be advised that pursuant to applicable law you may be held liable for damages if you make material misrepresentations in a Notification.</p>
+            </section>
+
+            <section id="s13" class="legalDoc__section" aria-labelledby="s13-heading">
+                <h2 id="s13-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">13.</span>
+                    Term and termination
+                </h2>
+                <p>These Legal Terms shall remain in full force and effect while you use the Services. We reserve the right to, in our sole discretion and without notice or liability, deny access to and use of the Services to any person for any reason or for no reason, including without limitation for breach of any representation, warranty, or covenant contained in these Legal Terms or of any applicable law or regulation. We may terminate your use or participation in the Services or delete your account and any content or information that you posted at any time, without warning, in our sole discretion.</p>
+                <p>If we terminate or suspend your account for any reason, you are prohibited from registering and creating a new account under your name, a fake or borrowed name, or the name of any third party. In addition to terminating or suspending your account, we reserve the right to take appropriate legal action, including without limitation pursuing civil, criminal, and injunctive redress.</p>
+            </section>
+
+            <section id="s14" class="legalDoc__section" aria-labelledby="s14-heading">
+                <h2 id="s14-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">14.</span>
+                    Modifications and interruptions
+                </h2>
+                <p>We reserve the right to change, modify, or remove the contents of the Services at any time or for any reason at our sole discretion without notice. We have no obligation to update any information on our Services.</p>
+                <p>We cannot guarantee the Services will be available at all times. We may experience hardware, software, or other problems or need to perform maintenance related to the Services, resulting in interruptions, delays, or errors. We reserve the right to change, revise, update, suspend, discontinue, or otherwise modify the Services at any time or for any reason without notice to you. Nothing in these Legal Terms will be construed to obligate us to maintain and support the Services or to supply any corrections, updates, or releases in connection therewith.</p>
+            </section>
+
+            <section id="s15" class="legalDoc__section" aria-labelledby="s15-heading">
+                <h2 id="s15-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">15.</span>
+                    Governing law
+                </h2>
+                <p>These Legal Terms and your use of the Services are governed by and construed in accordance with the laws of the State of Hawaii applicable to agreements made and to be entirely performed within the State of Hawaii, without regard to its conflict of law principles.</p>
+            </section>
+
+            <section id="s16" class="legalDoc__section" aria-labelledby="s16-heading">
+                <h2 id="s16-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">16.</span>
+                    Dispute resolution
+                </h2>
+                <h3 class="legalDoc__subheading">Informal negotiations</h3>
+                <p>To expedite resolution and control the cost of any dispute, controversy, or claim related to these Legal Terms (each a "Dispute"), the Parties agree to first attempt to negotiate any Dispute informally for at least thirty (30) days before initiating arbitration. Such informal negotiations commence upon written notice from one Party to the other Party.</p>
+                <h3 class="legalDoc__subheading">Binding arbitration</h3>
+                <p>If the Parties are unable to resolve a Dispute through informal negotiations, the Dispute will be finally and exclusively resolved by binding arbitration. <strong>You understand that without this provision, you would have the right to sue in court and have a jury trial.</strong> The arbitration shall be commenced and conducted under the Commercial Arbitration Rules of the American Arbitration Association ("AAA"). The arbitration will take place in HI, Hawaii, except as otherwise required by the applicable AAA rules or applicable law.</p>
+                <h3 class="legalDoc__subheading">Restrictions</h3>
+                <p>The Parties agree that any arbitration shall be limited to the Dispute between the Parties individually. To the full extent permitted by law: no arbitration shall be joined with any other proceeding; there is no right or authority for any Dispute to be arbitrated on a class-action basis; and there is no right or authority for any Dispute to be brought in a purported representative capacity on behalf of the general public or any other persons.</p>
+                <h3 class="legalDoc__subheading">Exceptions</h3>
+                <p>The Parties agree that the following Disputes are not subject to the above provisions concerning informal negotiations and binding arbitration: any Disputes seeking to enforce or protect, or concerning the validity of, any of the intellectual property rights of a Party; any Dispute related to allegations of theft, piracy, invasion of privacy, or unauthorized use; and any claim for injunctive relief.</p>
+            </section>
+
+            <section id="s17" class="legalDoc__section" aria-labelledby="s17-heading">
+                <h2 id="s17-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">17.</span>
+                    Corrections
+                </h2>
+                <p>There may be information on the Services that contains typographical errors, inaccuracies, or omissions, including descriptions, pricing, availability, and various other information. We reserve the right to correct any errors, inaccuracies, or omissions and to change or update the information on the Services at any time, without prior notice.</p>
+            </section>
+
+            <section id="s18" class="legalDoc__section" aria-labelledby="s18-heading">
+                <h2 id="s18-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">18.</span>
+                    Disclaimer
+                </h2>
+                <p class="legalDoc__legalBlock">The Services are provided on an as-is and as-available basis. You agree that your use of the Services will be at your sole risk. To the fullest extent permitted by law, we disclaim all warranties, express or implied, in connection with the Services and your use thereof, including, without limitation, the implied warranties of merchantability, fitness for a particular purpose, and non-infringement. We make no warranties or representations about the accuracy or completeness of the Services' content and we will assume no liability or responsibility for any errors, mistakes, or inaccuracies of content and materials; personal injury or property damage resulting from your access to and use of the Services; any unauthorized access to or use of our secure servers and/or any personal information stored therein; any interruption or cessation of transmission to or from the Services; any bugs, viruses, Trojan horses, or the like which may be transmitted to or through the Services by any third party; and/or any errors or omissions in any content and materials.</p>
+            </section>
+
+            <section id="s19" class="legalDoc__section" aria-labelledby="s19-heading">
+                <h2 id="s19-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">19.</span>
+                    Limitations of liability
+                </h2>
+                <p class="legalDoc__legalBlock">In no event will we or our directors, employees, or agents be liable to you or any third party for any direct, indirect, consequential, exemplary, incidental, special, or punitive damages, including lost profit, lost revenue, loss of data, or other damages arising from your use of the Services, even if we have been advised of the possibility of such damages.</p>
+            </section>
+
+            <section id="s20" class="legalDoc__section" aria-labelledby="s20-heading">
+                <h2 id="s20-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">20.</span>
+                    Indemnification
+                </h2>
+                <p>You agree to defend, indemnify, and hold us harmless, including our subsidiaries, affiliates, and all of our respective officers, agents, partners, and employees, from and against any loss, damage, liability, claim, or demand, including reasonable attorneys' fees and expenses, made by any third party due to or arising out of: your Contributions; use of the Services; breach of these Legal Terms; any breach of your representations and warranties set forth in these Legal Terms; your violation of the rights of a third party, including but not limited to intellectual property rights; or any overt harmful act toward any other user of the Services.</p>
+            </section>
+
+            <section id="s21" class="legalDoc__section" aria-labelledby="s21-heading">
+                <h2 id="s21-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">21.</span>
+                    User data
+                </h2>
+                <p>We will maintain certain data that you transmit to the Services for the purpose of managing the performance of the Services, as well as data relating to your use of the Services. Although we perform regular routine backups of data, you are solely responsible for all data that you transmit or that relates to any activity you have undertaken using the Services. You agree that we shall have no liability to you for any loss or corruption of any such data, and you hereby waive any right of action against us arising from any such loss or corruption of such data.</p>
+            </section>
+
+            <section id="s22" class="legalDoc__section" aria-labelledby="s22-heading">
+                <h2 id="s22-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">22.</span>
+                    Electronic communications, transactions, and signatures
+                </h2>
+                <p>Visiting the Services, sending us emails, and completing online forms constitute electronic communications. You consent to receive electronic communications, and you agree that all agreements, notices, disclosures, and other communications we provide to you electronically, via email and on the Services, satisfy any legal requirement that such communication be in writing.</p>
+                <p>You hereby agree to the use of electronic signatures, contracts, orders, and other records, and to electronic delivery of notices, policies, and records of transactions initiated or completed by us or via the Services. You hereby waive any rights or requirements under any statutes, regulations, rules, ordinances, or other laws in any jurisdiction which require an original signature or delivery or retention of non-electronic records.</p>
+            </section>
+
+            <section id="s23" class="legalDoc__section" aria-labelledby="s23-heading">
+                <h2 id="s23-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">23.</span>
+                    California users and residents
+                </h2>
+                <p>If any complaint with us is not satisfactorily resolved, you can contact the Complaint Assistance Unit of the Division of Consumer Services of the California Department of Consumer Affairs in writing at 1625 North Market Blvd., Suite N 112, Sacramento, California 95834 or by telephone at (800) 952-5210 or (916) 445-1254.</p>
+            </section>
+
+            <section id="s24" class="legalDoc__section" aria-labelledby="s24-heading">
+                <h2 id="s24-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">24.</span>
+                    Miscellaneous
+                </h2>
+                <p>These Legal Terms and any policies or operating rules posted by us on the Services constitute the entire agreement and understanding between you and us. Our failure to exercise or enforce any right or provision of these Legal Terms shall not operate as a waiver of such right or provision. These Legal Terms operate to the fullest extent permissible by law.</p>
+                <p>We may assign any or all of our rights and obligations to others at any time. We shall not be responsible or liable for any loss, damage, delay, or failure to act caused by any cause beyond our reasonable control. If any provision or part of a provision of these Legal Terms is determined to be unlawful, void, or unenforceable, that provision is deemed severable from these Legal Terms and does not affect the validity and enforceability of any remaining provisions.</p>
+                <p>There is no joint venture, partnership, employment, or agency relationship created between you and us as a result of these Legal Terms or use of the Services. You agree that these Legal Terms will not be construed against us by virtue of having drafted them.</p>
+            </section>
+
+            <section id="s25" class="legalDoc__section" aria-labelledby="s25-heading">
+                <h2 id="s25-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">25.</span>
+                    Contact us
+                </h2>
+                <p>In order to resolve a complaint regarding the Services or to receive further information regarding use of the Services, please contact us at:</p>
+                <address class="legalDoc__address">
+                    BTA WEB DEVELOPMENT LLC<br>
+                    91-1004 Mana'Opa'a St<br>
+                    Ewa Beach, HI 96706<br>
+                    United States<br>
+                    Phone: <a href="tel:+18082921752">(+1) 808-292-1752</a><br>
+                    <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a>
+                </address>
+                <p class="legalDoc__generator">This Terms and Conditions was created using <a href="https://termly.io/products/terms-and-conditions-generator/" target="_blank" rel="noopener noreferrer">Termly's Terms and Conditions Generator</a>.</p>
+            </section>
+
+        </div>
+    </div>
+
 </main>
-<%- include('partials/footer') %>
+
+<%- include('./partials/footer.ejs') %>
