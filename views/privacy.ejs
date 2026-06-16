@@ -1,64 +1,279 @@
-<%- include('partials/header') %>
-<main class="container" id="privacy-main" role="main" aria-label="Privacy Policy main content" style="max-width: 900px; margin: 2rem auto; padding: 2rem 1rem; background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(24,90,157,0.08);">
-  <header role="banner" aria-label="Privacy Policy header">
-    <h1 style="font-size:2.2rem; font-weight:800; margin-bottom:1.5rem;">Privacy Policy</h1>
-    <p>Effective date: <strong><%= new Date().getFullYear() %></strong></p>
-  </header>
-  <section aria-labelledby="privacy-intro" style="margin-top:2rem;">
-    <h2 id="privacy-intro">1. Introduction</h2>
-    <p>pretriq ("we", "us", or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect your information when you use our digital FMCSA pre-trip inspection platform, including our website and related services.</p>
-  </section>
-  <section aria-labelledby="privacy-collect" style="margin-top:2rem;">
-    <h2 id="privacy-collect">2. Information We Collect</h2>
-    <ul>
-      <li><strong>Account Information:</strong> When you create an account, we collect your email address, password, and optional profile image. (See <a href="https://github.com/boobeh123/HipsterTowingCo/tree/main/models" target="_blank">User model</a>)</li>
-      <li><strong>Inspection Data:</strong> When you submit inspection reports, we collect vehicle/trailer USDOT numbers, defects, remarks, and related inspection details. (See <a href="https://github.com/boobeh123/HipsterTowingCo/tree/main/models" target="_blank">Inspection(Todo.js) model</a>)</li>
-      <li><strong>Contact Information:</strong> When you contact us, we collect your name, email, subject, and message. (See <a href="https://github.com/boobeh123/HipsterTowingCo/tree/main/models" target="_blank">Contact model</a>)</li>
-      <li><strong>Usage Data:</strong> We use Google Analytics to collect anonymized usage data, such as pages visited, device/browser info, and general location (city/country). This data is not linked to your account.</li>
-      <li><strong>Local Storage:</strong> For guest users, we may store inspection data temporarily in your browser's localStorage to enhance your experience. This inspection data is not transmitted to our servers.</li>
-    </ul>
-  </section>
-  <section aria-labelledby="privacy-use" style="margin-top:2rem;">
-    <h2 id="privacy-use">3. How We Use Your Information</h2>
-    <ul>
-      <li>To provide and improve our services, including user authentication, inspection management, and customer support.</li>
-      <li>To communicate with you about your account, inspection reports, or contact requests.</li>
-      <li>To analyze usage and improve our platform (using Google Analytics).</li>
-      <li>To comply with legal obligations and protect our users and platform.</li>
-    </ul>
-  </section>
-  <section aria-labelledby="privacy-sharing" style="margin-top:2rem;">
-    <h2 id="privacy-sharing">4. Data Sharing & Disclosure</h2>
-    <ul>
-      <li>We do <strong>not</strong> sell or rent your personal information to third parties.</li>
-      <li>We may share data with trusted service providers (e.g., email delivery, analytics) who are contractually obligated to protect your data.</li>
-      <li>We may disclose information if required by law or to protect our rights, users, or platform.</li>
-    </ul>
-  </section>
-  <section aria-labelledby="privacy-security" style="margin-top:2rem;">
-    <h2 id="privacy-security">5. Data Security & Retention</h2>
-    <ul>
-      <li>We use industry-standard security measures to protect your data, which includes encryption.</li>
-      <li>Inspection and account data is retained as long as your account is active or as needed to provide our services. Contact messages are retained for customer support and legal compliance.</li>
-      <li>Guest inspection data stored in localStorage is only on your device and can be cleared at any time by you.</li>
-    </ul>
-  </section>
-  <section aria-labelledby="privacy-rights" style="margin-top:2rem;">
-    <h2 id="privacy-rights">6. Your Rights & Choices</h2>
-    <ul>
-      <li>You may access, update, or delete your account information at any time by logging into your profile.</li>
-      <li>You may request deletion of your inspection or contact data by emailing us (see below).</li>
-      <li>You can opt out of Google Analytics tracking via browser settings or plugins.</li>
-      <li>For questions or requests, contact us at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a>.</li>
-    </ul>
-  </section>
-  <section aria-labelledby="privacy-changes" style="margin-top:2rem;">
-    <h2 id="privacy-changes">7. Changes to This Policy</h2>
-    <p>We may update this Privacy Policy from time to time. We will notify users of significant changes by posting the new policy on this page and updating the effective date above.</p>
-  </section>
-  <section aria-labelledby="privacy-contact" style="margin-top:2rem;">
-    <h2 id="privacy-contact">8. Contact Us</h2>
-    <p>If you have any questions about this Privacy Policy or your data, please contact us at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a>.</p>
-  </section>
+<%- include('./partials/head.ejs') %>
+<%- include('./partials/header.ejs') %>
+
+<main id="main-content" class="legalDoc" tabindex="-1" aria-labelledby="legalDoc-title">
+
+    <div class="legalDoc__inner">
+
+        <!-- Sidebar TOC -->
+        <aside class="legalDoc__toc" aria-label="Table of contents">
+            <p class="legalDoc__tocLabel">On this page</p>
+            <nav aria-label="Privacy policy sections">
+                <ol class="legalDoc__tocList">
+                    <li><a href="#s1" class="legalDoc__tocLink">What information do we collect?</a></li>
+                    <li><a href="#s2" class="legalDoc__tocLink">How do we process your information?</a></li>
+                    <li><a href="#s3" class="legalDoc__tocLink">What legal bases do we rely on?</a></li>
+                    <li><a href="#s4" class="legalDoc__tocLink">When and with whom do we share your information?</a></li>
+                    <li><a href="#s5" class="legalDoc__tocLink">Do we use cookies and tracking technologies?</a></li>
+                    <li><a href="#s6" class="legalDoc__tocLink">How long do we keep your information?</a></li>
+                    <li><a href="#s7" class="legalDoc__tocLink">How do we keep your information safe?</a></li>
+                    <li><a href="#s8" class="legalDoc__tocLink">Do we collect information from minors?</a></li>
+                    <li><a href="#s9" class="legalDoc__tocLink">What are your privacy rights?</a></li>
+                    <li><a href="#s10" class="legalDoc__tocLink">Controls for Do-Not-Track features</a></li>
+                    <li><a href="#s11" class="legalDoc__tocLink">Do US residents have specific privacy rights?</a></li>
+                    <li><a href="#s12" class="legalDoc__tocLink">Do we make updates to this notice?</a></li>
+                    <li><a href="#s13" class="legalDoc__tocLink">How can you contact us?</a></li>
+                    <li><a href="#s14" class="legalDoc__tocLink">How can you review, update, or delete your data?</a></li>
+                </ol>
+            </nav>
+        </aside>
+
+        <!-- Document body -->
+        <div class="legalDoc__body">
+
+            <header class="legalDoc__header">
+                <p class="legalDoc__eyebrow">Legal</p>
+                <h1 id="legalDoc-title" class="legalDoc__title">Privacy Policy</h1>
+                <p class="legalDoc__meta">Last updated <time datetime="2026-06-16">June 16, 2026</time></p>
+            </header>
+
+            <div class="legalDoc__intro">
+                <p>This Privacy Notice for <strong>BTA WEB DEVELOPMENT LLC</strong> ("we," "us," or "our") describes how and why we might access, collect, store, use, and/or share ("process") your personal information when you use our services ("Services"), including when you:</p>
+                <ul class="legalDoc__list">
+                    <li>Visit our website at <a href="https://pretriq.com">https://pretriq.com</a> or any website of ours that links to this Privacy Notice</li>
+                    <li>Use pretriq — a web application that provides a solution to conduct pre-trip inspections digitally</li>
+                    <li>Engage with us in other related ways, including any marketing or events</li>
+                </ul>
+                <p><strong>Questions or concerns?</strong> Reading this Privacy Notice will help you understand your privacy rights and choices. If you do not agree with our policies and practices, please do not use our Services. If you still have any questions or concerns, please contact us at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a>.</p>
+            </div>
+
+            <div class="legalDoc__summary">
+                <h2 class="legalDoc__summaryTitle">Summary of key points</h2>
+                <dl class="legalDoc__summaryList">
+                    <div class="legalDoc__summaryItem">
+                        <dt>What personal information do we process?</dt>
+                        <dd>When you visit, use, or navigate our Services, we may process personal information depending on how you interact with us, the choices you make, and the products and features you use.</dd>
+                    </div>
+                    <div class="legalDoc__summaryItem">
+                        <dt>Do we process any sensitive personal information?</dt>
+                        <dd>We do not process sensitive personal information.</dd>
+                    </div>
+                    <div class="legalDoc__summaryItem">
+                        <dt>Do we collect any information from third parties?</dt>
+                        <dd>We do not collect any information from third parties.</dd>
+                    </div>
+                    <div class="legalDoc__summaryItem">
+                        <dt>How do we process your information?</dt>
+                        <dd>We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law.</dd>
+                    </div>
+                    <div class="legalDoc__summaryItem">
+                        <dt>How do we keep your information safe?</dt>
+                        <dd>We have organizational and technical processes in place to protect your personal information. However, no electronic transmission over the internet can be guaranteed to be 100% secure.</dd>
+                    </div>
+                    <div class="legalDoc__summaryItem">
+                        <dt>What are your rights?</dt>
+                        <dd>Depending on where you are located, the applicable privacy law may give you certain rights regarding your personal information.</dd>
+                    </div>
+                    <div class="legalDoc__summaryItem">
+                        <dt>How do you exercise your rights?</dt>
+                        <dd>The easiest way is by submitting a data subject access request or by contacting us directly. We will consider and act upon any request in accordance with applicable data protection laws.</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <section id="s1" class="legalDoc__section" aria-labelledby="s1-heading">
+                <h2 id="s1-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">1.</span>
+                    What information do we collect?
+                </h2>
+                <h3 class="legalDoc__subheading">Personal information you disclose to us</h3>
+                <p class="legalDoc__inShort"><strong>In short:</strong> We collect personal information that you provide to us.</p>
+                <p>We collect personal information that you voluntarily provide to us when you register on the Services, express an interest in obtaining information about us or our products and Services, when you participate in activities on the Services, or otherwise when you contact us.</p>
+                <p>The personal information we collect may include:</p>
+                <ul class="legalDoc__list">
+                    <li>Email addresses</li>
+                    <li>Usernames</li>
+                    <li>Passwords</li>
+                </ul>
+                <p><strong>Sensitive information.</strong> We do not process sensitive information.</p>
+                <p><strong>Payment data.</strong> We may collect data necessary to process your payment if you choose to make purchases, such as your payment instrument number and associated security code. All payment data is handled and stored by PayPal. You may find their privacy notice at <a href="https://www.paypal.com/us/legalhub/paypal/privacy-full" target="_blank" rel="noopener noreferrer">paypal.com</a>.</p>
+                <p>All personal information that you provide to us must be true, complete, and accurate, and you must notify us of any changes to such personal information.</p>
+
+                <h3 class="legalDoc__subheading">Information automatically collected</h3>
+                <p class="legalDoc__inShort"><strong>In short:</strong> Some information — such as your IP address and browser and device characteristics — is collected automatically when you visit our Services.</p>
+                <p>We automatically collect certain information when you visit, use, or navigate the Services. This information does not reveal your specific identity but may include device and usage information. The information we collect includes:</p>
+                <ul class="legalDoc__list">
+                    <li><strong>Log and usage data.</strong> Service-related, diagnostic, usage, and performance information our servers automatically collect when you access or use our Services, including your IP address, device information, browser type, and activity in the Services.</li>
+                    <li><strong>Device data.</strong> Information about your computer, phone, tablet, or other device you use to access the Services, including your IP address, device and application identification numbers, location, browser type, hardware model, Internet service provider and/or mobile carrier, operating system, and system configuration information.</li>
+                </ul>
+            </section>
+
+            <section id="s2" class="legalDoc__section" aria-labelledby="s2-heading">
+                <h2 id="s2-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">2.</span>
+                    How do we process your information?
+                </h2>
+                <p class="legalDoc__inShort"><strong>In short:</strong> We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law.</p>
+                <p>We process your personal information for a variety of reasons, depending on how you interact with our Services, including:</p>
+                <ul class="legalDoc__list">
+                    <li><strong>To facilitate account creation and authentication and otherwise manage user accounts.</strong> We may process your information so you can create and log in to your account, as well as keep your account in working order.</li>
+                    <li><strong>To save or protect an individual's vital interest.</strong> We may process your information when necessary to save or protect an individual's vital interest, such as to prevent harm.</li>
+                </ul>
+            </section>
+
+            <section id="s3" class="legalDoc__section" aria-labelledby="s3-heading">
+                <h2 id="s3-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">3.</span>
+                    What legal bases do we rely on to process your information?
+                </h2>
+                <p class="legalDoc__inShort"><strong>In short:</strong> We only process your personal information when we believe it is necessary and we have a valid legal reason to do so under applicable law.</p>
+                <p><strong>If you are located in the EU or UK,</strong> the GDPR and UK GDPR require us to explain the valid legal bases we rely on. We may rely on the following:</p>
+                <ul class="legalDoc__list">
+                    <li><strong>Consent.</strong> We may process your information if you have given us permission to use it for a specific purpose. You can withdraw your consent at any time.</li>
+                    <li><strong>Legal obligations.</strong> We may process your information where we believe it is necessary for compliance with our legal obligations, such as to cooperate with a law enforcement body or regulatory agency.</li>
+                    <li><strong>Vital interests.</strong> We may process your information where we believe it is necessary to protect your vital interests or the vital interests of a third party.</li>
+                </ul>
+                <p><strong>If you are located in Canada,</strong> we may process your information if you have given us specific permission (express consent) or in situations where your permission can be inferred (implied consent). You can withdraw your consent at any time.</p>
+            </section>
+
+            <section id="s4" class="legalDoc__section" aria-labelledby="s4-heading">
+                <h2 id="s4-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">4.</span>
+                    When and with whom do we share your personal information?
+                </h2>
+                <p class="legalDoc__inShort"><strong>In short:</strong> We may share information in specific situations described in this section and/or with the following third parties.</p>
+                <p>We may need to share your personal information in the following situations:</p>
+                <ul class="legalDoc__list">
+                    <li><strong>Business transfers.</strong> We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.</li>
+                </ul>
+            </section>
+
+            <section id="s5" class="legalDoc__section" aria-labelledby="s5-heading">
+                <h2 id="s5-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">5.</span>
+                    Do we use cookies and other tracking technologies?
+                </h2>
+                <p class="legalDoc__inShort"><strong>In short:</strong> We may use cookies and other tracking technologies to collect and store your information.</p>
+                <p>We may use cookies and similar tracking technologies (like web beacons and pixels) to gather information when you interact with our Services. Some online tracking technologies help us maintain the security of our Services and your account, prevent crashes, fix bugs, save your preferences, and assist with basic site functions.</p>
+                <p>We also permit third parties and service providers to use online tracking technologies on our Services for analytics and advertising. To the extent these technologies are deemed a "sale" or "sharing" under applicable US state laws, you can opt out as described in section 11.</p>
+                <h3 class="legalDoc__subheading">Google Analytics</h3>
+                <p>We may share your information with Google Analytics to track and analyze the use of the Services. To opt out of being tracked by Google Analytics across the Services, visit <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">tools.google.com/dlpage/gaoptout</a>. For more information on Google's privacy practices, please visit the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy &amp; Terms page</a>.</p>
+            </section>
+
+            <section id="s6" class="legalDoc__section" aria-labelledby="s6-heading">
+                <h2 id="s6-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">6.</span>
+                    How long do we keep your information?
+                </h2>
+                <p class="legalDoc__inShort"><strong>In short:</strong> We keep your information for as long as necessary to fulfill the purposes outlined in this Privacy Notice unless otherwise required by law.</p>
+                <p>We will only keep your personal information for as long as it is necessary for the purposes set out in this Privacy Notice, unless a longer retention period is required or permitted by law. No purpose in this notice will require us keeping your personal information for longer than the period of time in which users have an account with us.</p>
+                <p>When we have no ongoing legitimate business need to process your personal information, we will either delete or anonymize such information, or securely store your personal information and isolate it from any further processing until deletion is possible.</p>
+            </section>
+
+            <section id="s7" class="legalDoc__section" aria-labelledby="s7-heading">
+                <h2 id="s7-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">7.</span>
+                    How do we keep your information safe?
+                </h2>
+                <p class="legalDoc__inShort"><strong>In short:</strong> We aim to protect your personal information through a system of organizational and technical security measures.</p>
+                <p>We have implemented appropriate and reasonable technical and organizational security measures designed to protect the security of any personal information we process. However, no electronic transmission over the Internet or information storage technology can be guaranteed to be 100% secure. Although we will do our best to protect your personal information, transmission of personal information to and from our Services is at your own risk. You should only access the Services within a secure environment.</p>
+            </section>
+
+            <section id="s8" class="legalDoc__section" aria-labelledby="s8-heading">
+                <h2 id="s8-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">8.</span>
+                    Do we collect information from minors?
+                </h2>
+                <p class="legalDoc__inShort"><strong>In short:</strong> We do not knowingly collect data from or market to children under 18 years of age.</p>
+                <p>We do not knowingly collect, solicit data from, or market to children under 18 years of age, nor do we knowingly sell such personal information. By using the Services, you represent that you are at least 18 years of age or that you are the parent or guardian of a minor and consent to such minor dependent's use of the Services.</p>
+                <p>If we learn that personal information from users less than 18 years of age has been collected, we will deactivate the account and take reasonable measures to promptly delete such data from our records. If you become aware of any data we may have collected from children under age 18, please contact us at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a>.</p>
+            </section>
+
+            <section id="s9" class="legalDoc__section" aria-labelledby="s9-heading">
+                <h2 id="s9-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">9.</span>
+                    What are your privacy rights?
+                </h2>
+                <p class="legalDoc__inShort"><strong>In short:</strong> Depending on your state of residence in the US or your region, you have rights that allow you greater access to and control over your personal information.</p>
+                <p>In some regions (like the EEA, UK, Switzerland, and Canada), you have certain rights under applicable data protection laws. These may include the right to request access and obtain a copy of your personal information, to request rectification or erasure, to restrict the processing of your personal information, and if applicable, to data portability.</p>
+                <p><strong>Withdrawing your consent:</strong> If we are relying on your consent to process your personal information, you have the right to withdraw your consent at any time by contacting us using the contact details provided in section 13.</p>
+                <p><strong>Opting out of marketing communications:</strong> You can unsubscribe from our marketing and promotional communications at any time by emailing "STOP" or "UNSUBSCRIBE" or by contacting us using the details provided in section 13.</p>
+                <h3 class="legalDoc__subheading">Account information</h3>
+                <p>If you would at any time like to review or change the information in your account or terminate your account, you can log in to your account settings and update your user account, or contact us using the contact information provided.</p>
+                <p>Upon your request to terminate your account, we will deactivate or delete your account and information from our active databases. However, we may retain some information in our files to prevent fraud, troubleshoot problems, assist with any investigations, or comply with applicable legal requirements.</p>
+                <p>If you have questions or comments about your privacy rights, you may email us at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a>.</p>
+            </section>
+
+            <section id="s10" class="legalDoc__section" aria-labelledby="s10-heading">
+                <h2 id="s10-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">10.</span>
+                    Controls for Do-Not-Track features
+                </h2>
+                <p>Most web browsers and some mobile operating systems include a Do-Not-Track ("DNT") feature you can activate to signal your privacy preference not to have data about your online browsing activities monitored and collected. At this stage, no uniform technology standard for recognizing and implementing DNT signals has been finalized. As such, we do not currently respond to DNT browser signals or any other mechanism that automatically communicates your choice not to be tracked online.</p>
+                <p>California law requires us to let you know how we respond to web browser DNT signals. Because there currently is not an industry or legal standard for recognizing or honoring DNT signals, we do not respond to them at this time.</p>
+            </section>
+
+            <section id="s11" class="legalDoc__section" aria-labelledby="s11-heading">
+                <h2 id="s11-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">11.</span>
+                    Do United States residents have specific privacy rights?
+                </h2>
+                <p class="legalDoc__inShort"><strong>In short:</strong> If you are a resident of California, Colorado, Connecticut, Delaware, Florida, Indiana, Iowa, Kentucky, Maryland, Minnesota, Montana, Nebraska, New Hampshire, New Jersey, Oregon, Rhode Island, Tennessee, Texas, Utah, or Virginia, you may have specific rights regarding your personal information.</p>
+                <h3 class="legalDoc__subheading">Categories of personal information we collect</h3>
+                <p>In the past twelve (12) months, we have not collected personal information in any of the following categories: identifiers, personal information as defined in the California Customer Records statute, protected classification characteristics, commercial information, biometric information, internet or network activity, geolocation data, audio/electronic/sensory information, professional or employment-related information, education information, inferences from collected personal information, or sensitive personal information.</p>
+                <h3 class="legalDoc__subheading">Your rights</h3>
+                <ul class="legalDoc__list">
+                    <li>Right to know whether or not we are processing your personal data</li>
+                    <li>Right to access your personal data</li>
+                    <li>Right to correct inaccuracies in your personal data</li>
+                    <li>Right to request the deletion of your personal data</li>
+                    <li>Right to obtain a copy of the personal data you previously shared with us</li>
+                    <li>Right to non-discrimination for exercising your rights</li>
+                    <li>Right to opt out of the processing of your personal data if it is used for targeted advertising, the sale of personal data, or profiling</li>
+                </ul>
+                <h3 class="legalDoc__subheading">How to exercise your rights</h3>
+                <p>To exercise these rights, you can contact us by emailing us at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a> or by visiting <a href="https://bobbyasakawa.com/#contact" target="_blank" rel="noopener noreferrer">bobbyasakawa.com/#contact</a>.</p>
+                <p><strong>Request verification:</strong> Upon receiving your request, we will need to verify your identity to determine you are the same person about whom we have the information in our system.</p>
+                <p><strong>Appeals:</strong> Under certain US state data protection laws, if we decline to take action regarding your request, you may appeal our decision by emailing us at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a>. If your appeal is denied, you may submit a complaint to your state attorney general.</p>
+                <p><strong>California "Shine The Light" law:</strong> California Civil Code Section 1798.83 permits our users who are California residents to request, once a year and free of charge, information about categories of personal information (if any) we disclosed to third parties for direct marketing purposes. To make such a request, please use the contact details provided in section 13.</p>
+            </section>
+
+            <section id="s12" class="legalDoc__section" aria-labelledby="s12-heading">
+                <h2 id="s12-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">12.</span>
+                    Do we make updates to this notice?
+                </h2>
+                <p class="legalDoc__inShort"><strong>In short:</strong> Yes, we will update this notice as necessary to stay compliant with relevant laws.</p>
+                <p>We may update this Privacy Notice from time to time. The updated version will be indicated by an updated "Revised" date at the top of this Privacy Notice. If we make material changes to this Privacy Notice, we may notify you either by prominently posting a notice of such changes or by directly sending you a notification. We encourage you to review this Privacy Notice frequently to be informed of how we are protecting your information.</p>
+            </section>
+
+            <section id="s13" class="legalDoc__section" aria-labelledby="s13-heading">
+                <h2 id="s13-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">13.</span>
+                    How can you contact us about this notice?
+                </h2>
+                <p>If you have questions or comments about this notice, you may email us at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a> or contact us by post at:</p>
+                <address class="legalDoc__address">
+                    BTA WEB DEVELOPMENT LLC<br>
+                    91-1004 Mana'Opa'a St<br>
+                    Ewa Beach, HI 96706<br>
+                    United States
+                </address>
+            </section>
+
+            <section id="s14" class="legalDoc__section" aria-labelledby="s14-heading">
+                <h2 id="s14-heading" class="legalDoc__sectionHeading">
+                    <span class="legalDoc__sectionNum" aria-hidden="true">14.</span>
+                    How can you review, update, or delete the data we collect from you?
+                </h2>
+                <p>Based on the applicable laws of your country or state of residence in the US, you may have the right to request access to the personal information we collect from you, details about how we have processed it, correct inaccuracies, or delete your personal information. You may also have the right to withdraw your consent to our processing of your personal information.</p>
+                <p>To request to review, update, or delete your personal information, please email us at <a href="mailto:boobeh321@gmail.com">boobeh321@gmail.com</a>.</p>
+                <p class="legalDoc__generator">This Privacy Policy was created using <a href="https://termly.io/products/privacy-policy-generator/" target="_blank" rel="noopener noreferrer">Termly's Privacy Policy Generator</a>.</p>
+            </section>
+
+        </div>
+    </div>
+
 </main>
-<%- include('partials/footer') %>
+
+<%- include('./partials/footer.ejs') %>
