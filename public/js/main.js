@@ -2,6 +2,7 @@ const overlay = document.querySelector('#inspectionOverlay');
 const form = document.querySelector('#inspectionForm');
 const resultOverlay = document.querySelector('#result-overlay');
 const downloadPdfBtn = document.querySelector('#downloadPdfBtn');
+const viewPdfBtn = document.querySelector('#viewPdfBtn');
 const closeResultBtn = document.querySelector('#closeResultBtn');
 
 // Holds the most recently generated jsPDF doc so the download button can access it
@@ -72,6 +73,33 @@ function closeResultOverlay() {
     resultOverlay.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('has-modal-open');
     currentInspectionReport = null;
+}
+
+/**************************************************************
+ * viewPDF()
+ * Opens the generated PDF for the user to view without downloading.
+ * Desktop: uses output('bloburl') and opens in a new tab via window.open()
+ * Mobile/iOS Safari: blob URLs in window.open() are unreliable, so we fall back
+ * to output('datauristring') and create a temporary <a> element with target="_blank"
+ * Parameters: This function takes in no parameters.
+ * Returns: This function returns nothing.
+ ***************************************************************/
+function viewPDF() {
+    if (!currentInspectionReport) return;
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        const dataUri = currentInspectionReport.output('datauristring');
+        const tempLink = document.createElement('a');
+        tempLink.href = dataUri;
+        tempLink.target = '_blank';
+        tempLink.rel = 'noopener noreferrer';
+        tempLink.click();
+    } else {
+        const blobUrl = currentInspectionReport.output('bloburl');
+        window.open(blobUrl, '_blank', 'noopener,noreferrer');
+    }
 }
 
 /**************************************************************
@@ -691,6 +719,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!currentInspectionReport) return;
             currentInspectionReport.save('pretriq-inspection.pdf');
         });
+    }
+
+    if (viewPdfBtn) {
+        viewPdfBtn.addEventListener('click', viewPDF);
     }
 
     if (closeResultBtn) {
