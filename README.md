@@ -36,12 +36,16 @@ I envision that this application has potential to become something with a global
 📅 **Release Date:** June 17th, 2026
 
 ## 📢 Developer's Notes - Unit Test refactor
-
-- Added test suites for `/routes/main.js` - 10 test suites pass
-  - Every test here answers one question: "does this URL call the right controller method?" 
-- Added test suites for `/controllers/auth.js` - 11 test suites pass
-- Added test suites for `/controllers/auth.js` - 10 test suites pass
 - `getLogout()` method now destroys session
+- Added 59 unit test suites (59/59 passing)
+  - Added 10 test suites for `/routes/main.js`
+  - Added 11 test suites for `/controllers/auth.js`
+  - Added 10 test suites for `/model/User.js`
+  - Added 2 test suites for `/controllers/home.js`
+  - Added 2 test suites for `/controllers/privacy.js`
+  - Added 2 test suites for `/controllers/terms.js`
+  - Added 24 test suites for `/public/js/main.js (utils.js)`
+    - ![clientSideJSTests](/passedunittest2.png)
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.011
 📅 **Release Date:** June 16th, 2026
