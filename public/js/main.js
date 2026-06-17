@@ -86,33 +86,9 @@ function closeResultOverlay() {
  ***************************************************************/
 function viewPDF() {
     if (!currentInspectionReport) return;
-
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-    if (isMobile) {
-        // iOS Safari cannot open raw data URIs or blob URLs in a new tab.
-        // The workaround is to open a blank window first (synchronously, so the
-        // browser trusts it as user-initiated), then write an iframe into it.
-        const dataUri = currentInspectionReport.output('datauristring');
-        const newWin = window.open('', '_blank');
-        if (newWin) {
-            newWin.document.write(
-                '<html><head><title>Inspection Report</title></head>' +
-                '<body style="margin:0;padding:0;height:100vh;">' +
-                '<iframe src="' + dataUri + '" ' +
-                'style="width:100%;height:100%;border:none;" ' +
-                'title="Inspection Report"></iframe>' +
-                '</body></html>'
-            );
-            newWin.document.close();
-        } else {
-            // Popup was blocked — fall back to download
-            currentInspectionReport.save('pretriq-inspection.pdf');
-        }
-    } else {
-        const blobUrl = currentInspectionReport.output('bloburl');
-        window.open(blobUrl, '_blank', 'noopener,noreferrer');
-    }
+    
+    const blobUrl = currentInspectionReport.output('bloburl');
+    window.open(blobUrl, '_blank', 'noopener,noreferrer');    
 }
 
 /**************************************************************
