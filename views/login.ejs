@@ -1,31 +1,96 @@
+<%- include('./partials/head.ejs') %>
 <%- include('./partials/header.ejs') %>
-    <main class="login-main">
-        <div class="container firstArea">
-            <section class="container" aria-labelledby="login-welcome-heading">
-                <h3 id="login-welcome-heading">Down for maintenance</h3>
-                <p>Welcome to pretriq</p>
-                <a href="/">Back to Home Page &gt;</a>
-            </section>
+
+<main id="main-content" class="authPage" tabindex="-1" aria-labelledby="authPage-heading">
+
+    <!-- Brand panel -->
+    <div class="authPage__brand" aria-hidden="true">
+        <div class="authPage__brandInner">
+            <svg
+                class="authPage__brandMark"
+                width="96"
+                height="96"
+                viewBox="0 0 64 64"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                focusable="false"
+            >
+                <text
+                    x="8"
+                    y="48"
+                    font-family="Roboto, system-ui, sans-serif"
+                    font-size="48"
+                    font-weight="700"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >q</text>
+                <text
+                    x="32"
+                    y="48"
+                    font-family="Roboto, system-ui, sans-serif"
+                    font-size="48"
+                    font-weight="700"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >p</text>
+            </svg>
+            <p class="authPage__brandName">pretriq</p>
+            <p class="authPage__brandTagline">Your inspection history,<br>ready when you are.</p>
         </div>
-        <div class="container secondArea">
-            <div class="container">
-                <div class="card col hoverable">
-                    <div aria-live="polite">
-                        <%- include('./partials/flash.ejs') %>
-                    </div>
-                    <div class="card-content">
-                        <h4 class="center-align" id="login-heading">Log in to your account</h4>
-                        <form action="/login" method="POST" aria-labelledby="login-heading">
-                            <label for="login-email" class="sr-only">Email address</label>
-                            <input id="login-email" type="email" name="email" placeholder="Email*" autofocus required autocomplete='email' disabled>
-                            <label for="login-password" class="sr-only">Password</label>
-                            <input id="login-password" type="password" name="password" placeholder="Password*" required autocomplete='current-password' disabled>
-                            <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
-                            <p class="center-align">Need an account? <a href='/signup'>Sign Up</a></p>
-                        </form>
-                    </div>
-                </div>
+    </div>
+
+    <!-- Form panel -->
+    <div class="authPage__panel">
+        <div class="authPage__formWrap">
+
+            <div aria-live="polite" aria-atomic="true">
+                <%- include('./partials/flash.ejs') %>
             </div>
+
+            <header class="authPage__formHeader">
+                <h1 id="authPage-heading" class="authPage__title">Log in</h1>
+                <p class="authPage__subtitle">Don't have an account? <a href="/signup">Sign up</a></p>
+            </header>
+
+            <form class="authPage__form" action="/login" method="POST" aria-labelledby="authPage-heading" novalidate>
+
+                <div class="authPage__field">
+                    <label for="login-email" class="authPage__label">Email address</label>
+                    <input
+                        id="login-email"
+                        class="authPage__input"
+                        type="email"
+                        name="email"
+                        autocomplete="email"
+                        required
+                        autofocus
+                    />
+                </div>
+
+                <div class="authPage__field">
+                    <div class="authPage__labelRow">
+                        <label for="login-password" class="authPage__label">Password</label>
+                        <a href="/forgot" class="authPage__forgotLink">Forgot password?</a>
+                    </div>
+                    <input
+                        id="login-password"
+                        class="authPage__input"
+                        type="password"
+                        name="password"
+                        autocomplete="current-password"
+                        required
+                    />
+                </div>
+
+                <button type="submit" class="btn btn--primary authPage__submit">Log in</button>
+
+            </form>
+
         </div>
-    </main>
+    </div>
+
+</main>
+
 <%- include('./partials/footer.ejs') %>
