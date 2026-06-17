@@ -34,7 +34,16 @@
             </svg>
         </a>
         <nav class="site-header__nav" aria-label="Main navigation">
-            <a href="/login" class="btn btn--nav">Log in</a>
+            <% if (user) { %>
+                <div class="site-header__userNav">
+                    <span class="site-header__userEmail" aria-label="Logged in as <%= user.email %>">
+                        <%= user.email %>
+                    </span>
+                    <a href="/logout" class="btn btn--nav">Log out</a>
+                </div>
+            <% } else { %>
+                <a href="/login" class="btn btn--nav">Log in</a>
+            <% } %>
         </nav>
     </div>
 </header>
