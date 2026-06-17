@@ -95,7 +95,9 @@ function viewPDF() {
         tempLink.href = dataUri;
         tempLink.target = '_blank';
         tempLink.rel = 'noopener noreferrer';
+        document.body.appendChild(tempLink);
         tempLink.click();
+        document.body.removeChild(tempLink);
     } else {
         const blobUrl = currentInspectionReport.output('bloburl');
         window.open(blobUrl, '_blank', 'noopener,noreferrer');
