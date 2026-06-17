@@ -735,3 +735,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initHeroLetterBounceCanvas();
 });
+
+/**************************************************************
+ * Flash dismiss
+ * Delegated listener on the flash-stack handles all .flash__close
+ * buttons. Adds is-dismissing class to trigger exit animation,
+ * then removes the element once the animation completes.
+ ***************************************************************/
+const flashStack = document.querySelector('.flash-stack');
+
+if (flashStack) {
+    flashStack.addEventListener('click', (event) => {
+        const closeBtn = event.target.closest('.flash__close');
+        if (!closeBtn) return;
+        const flash = closeBtn.closest('.flash');
+        if (!flash) return;
+        flash.classList.add('is-dismissing');
+        flash.addEventListener('animationend', () => flash.remove(), { once: true });
+    });
+}
