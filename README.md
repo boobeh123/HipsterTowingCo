@@ -46,6 +46,9 @@ I envision that this application has potential to become something with a global
   - Added 2 test suites for `/controllers/terms.js`
   - Added 24 test suites for `/public/js/main.js (utils.js)`
     - ![clientSideJSTests](/passedunittest2.png)
+  
+- Added error handling middleware
+  - I've been using `res.status(500).render('500.ejs')` as a fallback error handler for my controller methods. 
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.011
 📅 **Release Date:** June 16th, 2026
