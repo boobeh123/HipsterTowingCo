@@ -38,10 +38,19 @@ I envision that this application has potential to become something with a global
 ## 📢 Developer's Notes - View PDF button & Auth
 
 - Guest generated inspections now has a "View PDF" button for mobile & desktop
-- Login, Signup, and forgot password GET routes are active
-- Frontend refactored for: `/login` `/signup` `/terms` `/privacy`
-- Login & Signup POST routes are active
-  - No dynamic elements/rendering yet. Logging in/creating account might seem 'frozen'
+- Frontend refactored for: `/login` `/signup` `/terms` `/privacy` `/forgot` routes
+  - Header contains dynamic elements
+- Authentication implemented using `passport.js`'s `localStrategy`
+- Flash partials now render on errors & success messages
+
+- Goals to reach:
+  * [X] Guest inspection functionality (partial)
+    * [x] Display popup window to download
+  * [x] Review semantics & ARIA within HTML
+  * [x] Review styles 
+  * [x] Review partials
+  * [x] Review the semantics & ARIA for all partials used on home route
+  * [ ] Build out the sections I removed from home route
 
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.009
