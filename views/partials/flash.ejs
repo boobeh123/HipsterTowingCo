@@ -1,27 +1,31 @@
-<% if (messages.errors) { %>
-    <% messages.errors.forEach(function(el) { %>
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          M.toast({html: "<%= el.msg.replace(/"/g, '&quot;') %>", classes: 'red'});
-        });
-      </script>
-    <% }) %>
+<div class="flash-stack" aria-live="polite">
+  <% if (success && success.length) { %>
+      <% success.forEach((msg) => { %>
+          <aside class="flash flash-success" role="status">
+              <div class="flash-icon" aria-hidden="true"><i class="fas fa-check-circle"></i></div>
+              <p class="flash-message"><%= msg %></p>
+              <button type="button" class="flash-close" aria-label="Dismiss success message"><i class="fas fa-times" aria-hidden="true"></i></button>
+          </aside>
+      <% }) %>
   <% } %>
-  <% if (messages.info) { %>
-    <% messages.info.forEach(function(el) { %>
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          M.toast({html: "<%= el.msg.replace(/"/g, '&quot;') %>", classes: 'blue'});
-        });
-      </script>
-    <% }) %>
+  
+  <% if (error && error.length) { %>
+      <% error.forEach((msg) => { %>
+          <aside class="flash flash-error" role="alert">
+              <div class="flash-icon" aria-hidden="true"><i class="fas fa-exclamation-circle"></i></div>
+              <p class="flash-message"><%= msg %></p>
+              <button type="button" class="flash-close" aria-label="Dismiss error message"><i class="fas fa-times" aria-hidden="true"></i></button>
+          </aside>
+      <% }) %>
   <% } %>
-  <% if (messages.success) { %>
-    <% messages.success.forEach(function(el) { %>
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          M.toast({html: "<%= el.msg.replace(/"/g, '&quot;') %>", classes: 'green'});
-        });
-      </script>
-    <% }) %>
+  
+  <% if (errors && errors.length) { %>
+      <% errors.forEach((e) => { %>
+          <aside class="flash flash-error" role="alert">
+              <div class="flash-icon" aria-hidden="true"><i class="fas fa-exclamation-circle"></i></div>
+              <p class="flash-message"><%= typeof e === 'string' ? e : e.msg %></p>
+              <button type="button" class="flash-close" aria-label="Dismiss error message"><i class="fas fa-times" aria-hidden="true"></i></button>
+          </aside>
+      <% }) %>
   <% } %>
+</div>
