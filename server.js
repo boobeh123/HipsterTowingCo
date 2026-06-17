@@ -51,14 +51,18 @@ app.use(flash())
 // Flash + request context for all views (must run after session + connect-flash)
 app.use((req, res, next) => {
   try {
-    res.locals.success = req.flash('success')
-    res.locals.errors = req.flash('errors')
-    res.locals.error = req.flash('error')
-    res.locals.info = req.flash('info')
+    res.locals.success = req.flash('success') || []
+    res.locals.errors  = req.flash('errors')  || []
+    res.locals.error   = req.flash('error')   || []
+    res.locals.info    = req.flash('info')    || []
     // res.locals.currentPath = req.originalUrl
-    // res.locals.user = req.user || null
+    res.locals.user = req.user || null
     next()
   } catch (err) {
+    res.locals.success = []
+    res.locals.errors  = []
+    res.locals.error   = []
+    res.locals.info    = []
     next(err)
   }
 })
