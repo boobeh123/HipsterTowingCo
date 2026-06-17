@@ -32,6 +32,17 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.012
+📅 **Release Date:** June 17th, 2026
+
+## 📢 Developer's Notes - Unit Test refactor
+
+- Added test suites for `/routes/main.js` - 10 test suites pass
+  - Every test here answers one question: "does this URL call the right controller method?" 
+- Added test suites for `/controllers/auth.js` - 11 test suites pass
+- Added test suites for `/controllers/auth.js` - 10 test suites pass
+- `getLogout()` method now destroys session
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.011
 📅 **Release Date:** June 16th, 2026
 
