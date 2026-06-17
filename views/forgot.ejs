@@ -1,20 +1,44 @@
+<%- include('./partials/head.ejs') %>
 <%- include('./partials/header.ejs') %>
-    <main class="forgot-main">
-        <div class="container secondArea">
-            <div class="container">
-                <div class="card col hoverable">
-                    <%- include('./partials/flash.ejs') %>
-                    <div class="card-content">
-                        <h4 class="center-align">Reset your password</h4>
-                        <form action="/forgot" method="POST">
-                            <input type="email" name="email" placeholder="Email*" autofocus required autocomplete='email'>
-                            <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
-                            <a class='center-align' href='/login'>Return to Log In</a>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-    </main>
+<main id="main-content" class="authPage authPage--centered" tabindex="-1" aria-labelledby="authPage-heading">
+
+    <div class="authPage__panel">
+        <div class="authPage__formWrap">
+
+            <div aria-live="polite" aria-atomic="true">
+                <%- include('./partials/flash.ejs') %>
+            </div>
+
+            <header class="authPage__formHeader">
+                <h1 id="authPage-heading" class="authPage__title">Reset your password</h1>
+                <p class="authPage__subtitle">Enter the email address linked to your account and we'll send you a reset link.</p>
+            </header>
+
+            <form class="authPage__form" action="/forgot" method="POST" aria-labelledby="authPage-heading" novalidate>
+
+                <div class="authPage__field">
+                    <label for="forgot-email" class="authPage__label">Email address</label>
+                    <input
+                        id="forgot-email"
+                        class="authPage__input"
+                        type="email"
+                        name="email"
+                        autocomplete="email"
+                        required
+                        autofocus
+                    />
+                </div>
+
+                <button type="submit" class="btn btn--primary authPage__submit">Send reset link</button>
+
+                <a href="/login" class="authPage__backLink">&#8592; Back to log in</a>
+
+            </form>
+
+        </div>
+    </div>
+
+</main>
+
 <%- include('./partials/footer.ejs') %>
