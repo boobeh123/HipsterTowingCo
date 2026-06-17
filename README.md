@@ -39,7 +39,9 @@ I envision that this application has potential to become something with a global
 
 - Guest generated inspections now has a "View PDF" button for mobile & desktop
 - Login, Signup, and forgot password GET routes are active
-  - These routes were refactored on the frontend
+- Frontend refactored for: `/login` `/signup` `/terms` `/privacy`
+- Login & Signup POST routes are active
+  - No dynamic elements/rendering yet. Logging in/creating account might seem 'frozen'
 
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.009
