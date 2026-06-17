@@ -36,12 +36,16 @@ module.exports = {
       }
       req.logIn(user, (err) => {
         if (err) { return next(err) }
-        return res.redirect('/')
+        req.flash('success', 'Welcome back.')
+        req.session.save((err) => {
+          if (err) { return next(err) }
+          res.redirect('/')
+        })
       })
     })(req, res, next)
   },
 
-  logout: (req, res, next) => {
+  getLogout: (req, res, next) => {
     req.logout(function(err) {
       if (err) { return next(err) }
       res.redirect('/')
@@ -93,7 +97,11 @@ module.exports = {
 
       req.login(user, function(err) {
         if (err) { return next(err) }
-        res.redirect('/')
+        req.flash('success', 'Account created. Welcome to pretriq.')
+        req.session.save((err) => {
+          if (err) { return next(err) }
+          res.redirect('/')
+        })
       })
     } catch(err) {
       return next(err)
