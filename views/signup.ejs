@@ -1,40 +1,122 @@
+<%- include('./partials/head.ejs') %>
 <%- include('./partials/header.ejs') %>
-    <main class="signup-main">
-        <div class="container firstArea">
-            <section class="container" aria-labelledby="signup-welcome-heading">
-                <h3 id="signup-welcome-heading">Down for maintenance</h3>
-                <p>Welcome to pretriq</p>
-                <a href="/">Back to Home Page &gt;</a>
-            </section>
+
+<main id="main-content" class="authPage" tabindex="-1" aria-labelledby="authPage-heading">
+
+    <!-- Brand panel -->
+    <div class="authPage__brand" aria-hidden="true">
+        <div class="authPage__brandInner">
+            <svg
+                class="authPage__brandMark"
+                width="96"
+                height="96"
+                viewBox="0 0 64 64"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                focusable="false"
+            >
+                <text
+                    x="8"
+                    y="48"
+                    font-family="Roboto, system-ui, sans-serif"
+                    font-size="48"
+                    font-weight="700"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >q</text>
+                <text
+                    x="32"
+                    y="48"
+                    font-family="Roboto, system-ui, sans-serif"
+                    font-size="48"
+                    font-weight="700"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >p</text>
+            </svg>
+            <p class="authPage__brandName">pretriq</p>
+            <p class="authPage__brandTagline">Start your digital<br>paper trail today.</p>
         </div>
-        <div class="container secondArea">
-            <div class="container">
-                <div class="card col hoverable">
-                    <div aria-live="polite">
-                        <%- include('./partials/flash.ejs') %>
-                    </div>
-                    <div class="card-content">
-                        <h4 class="center-align" id="signup-heading">Create an account</h4>
-                        <form action="/signup" method="POST" aria-labelledby="signup-heading">
-                            <label for="signup-email" class="sr-only">Email address</label>
-                            <input id="signup-email" type="email" name="email" placeholder="Email*" autofocus autocomplete="email" required disabled>
-                            <label for="signup-password" class="sr-only">Password</label>
-                            <input id="signup-password" type="password" name="password" placeholder="Password*" autocomplete="new-password" minlength="8" required disabled>
-                            <label for="signup-confirmPassword" class="sr-only">Confirm Password</label>
-                            <input id="signup-confirmPassword" type="password" name="confirmPassword" placeholder="Confirm Password*" autocomplete="new-password" minlength="8" required style="margin-bottom: 0.5rem !important;" disabled>
-                            <label for="signup-terms" class="center-align" style="display:block; margin-top:1rem;">
-                                <input id="signup-terms" name="terms" type="checkbox" class="filled-in" required aria-required="true" disabled/>
-                                <span style="margin-bottom: .75rem;">
-                                  I agree to the
-                                  <a href="/terms" target="_blank" rel="noopener" aria-label="Read our Terms of Use">Terms of Use</a>
-                                </span>
-                            </label>
-                            <button type="submit" class="btn waves-effect waves-light green lighten-1 hoverable">Submit</button>
-                            <p class="center-align">Already have an account? <a href='/login'>Sign In</a></p>
-                        </form>
-                    </div>
-                </div>
+    </div>
+
+    <!-- Form panel -->
+    <div class="authPage__panel">
+        <div class="authPage__formWrap">
+
+            <div aria-live="polite" aria-atomic="true">
+                <%- include('./partials/flash.ejs') %>
             </div>
+
+            <header class="authPage__formHeader">
+                <h1 id="authPage-heading" class="authPage__title">Create an account</h1>
+                <p class="authPage__subtitle">Already have an account? <a href="/login">Log in</a></p>
+            </header>
+
+            <form class="authPage__form" action="/signup" method="POST" aria-labelledby="authPage-heading" novalidate>
+
+                <div class="authPage__field">
+                    <label for="signup-email" class="authPage__label">Email address</label>
+                    <input
+                        id="signup-email"
+                        class="authPage__input"
+                        type="email"
+                        name="email"
+                        autocomplete="email"
+                        required
+                        autofocus
+                    />
+                </div>
+
+                <div class="authPage__field">
+                    <label for="signup-password" class="authPage__label">Password</label>
+                    <input
+                        id="signup-password"
+                        class="authPage__input"
+                        type="password"
+                        name="password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    />
+                </div>
+
+                <div class="authPage__field">
+                    <label for="signup-confirmPassword" class="authPage__label">Confirm password</label>
+                    <input
+                        id="signup-confirmPassword"
+                        class="authPage__input"
+                        type="password"
+                        name="confirmPassword"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    />
+                </div>
+
+                <label class="authPage__terms">
+                    <input
+                        id="signup-terms"
+                        class="authPage__termsCheckbox"
+                        type="checkbox"
+                        name="terms"
+                        required
+                        aria-required="true"
+                    />
+                    <span class="authPage__termsText">
+                        I agree to the
+                        <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</a>
+                    </span>
+                </label>
+
+                <button type="submit" class="btn btn--primary authPage__submit">Create account</button>
+
+            </form>
+
         </div>
-    </main>
+    </div>
+
+</main>
+
 <%- include('./partials/footer.ejs') %>
