@@ -10,6 +10,7 @@ const MongoStore = require('connect-mongo').default
 const passport = require('passport')
 const flash = require('connect-flash')
 const mainRoutes = require('./routes/main')
+const errorHandler = require('./middleware/errorHandler')
 // const todoRoutes = require('./routes/todos')
 // const profileRoutes = require('./routes/profile')
 // const contactRoutes = require('./routes/contact');
@@ -67,13 +68,13 @@ app.use((req, res, next) => {
   }
 })
 
-// Allow moment to be used in templating engine
-app.locals.moment = require('moment')
-
 app.use('/', mainRoutes)
 // app.use('/todos', todoRoutes)
 // app.use('/profile', profileRoutes)
 // app.use('/contact', contactRoutes);
+
+// Central error handler
+app.use(errorHandler)
 
 app.listen(process.env.PORT, () => {
   console.log('Server is running, you better catch it!')
