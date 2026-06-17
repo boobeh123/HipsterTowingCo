@@ -4,16 +4,14 @@ const User = require('../models/User')
 
 module.exports = {
 
-  getLogin: async (req, res) => {
+  getLogin: async (req, res, next) => {
     try {
       if (req.user) {
         return res.redirect('/')
-      } else {
-        res.render('login.ejs')
       }
+      res.render('login.ejs')
     } catch(err) {
-      console.error(err)
-      res.status(500).render('500.ejs')
+      next(err)
     }
   },
 
@@ -24,7 +22,10 @@ module.exports = {
 
     if (validationErrors.length) {
       req.flash('errors', validationErrors)
-      return res.redirect('/login')
+      return req.session.save((err) => {
+        if (err) { return next(err) }
+        res.redirect('/login')
+      })
     }
     req.body.email = validator.normalizeEmail(req.body.email, { gmail_remove_dots: false })
 
@@ -32,7 +33,10 @@ module.exports = {
       if (err) { return next(err) }
       if (!user) {
         req.flash('errors', [{ msg: info.message || 'Incorrect email or password.' }])
-        return res.redirect('/login')
+        return req.session.save((err) => {
+          if (err) { return next(err) }
+          res.redirect('/login')
+        })
       }
       req.logIn(user, (err) => {
         if (err) { return next(err) }
@@ -47,24 +51,22 @@ module.exports = {
 
   getLogout: (req, res, next) => {
     req.logout(function(err) {
+      if (err) { return next(err) }
+      req.session.destroy(function(err) {
         if (err) { return next(err) }
-        req.session.destroy(function(err) {
-            if (err) { return next(err) }
-            res.redirect('/')
-        })
+        res.redirect('/')
+      })
     })
-},
+  },
 
-  getSignup: async (req, res) => {
+  getSignup: async (req, res, next) => {
     try {
       if (req.user) {
         return res.redirect('/')
-      } else {
-        res.render('signup.ejs')
       }
+      res.render('signup.ejs')
     } catch(err) {
-      console.error(err)
-      res.status(500).render('500.ejs')
+      next(err)
     }
   },
 
@@ -76,7 +78,10 @@ module.exports = {
 
     if (validationErrors.length) {
       req.flash('errors', validationErrors)
-      return res.redirect('/signup')
+      return req.session.save((err) => {
+        if (err) { return next(err) }
+        res.redirect('/signup')
+      })
     }
     req.body.email = validator.normalizeEmail(req.body.email, { gmail_remove_dots: false })
 
@@ -84,7 +89,10 @@ module.exports = {
       const existingUser = await User.findOne({ email: req.body.email })
       if (existingUser) {
         req.flash('errors', [{ msg: 'An account with that email address already exists.' }])
-        return res.redirect('/signup')
+        return req.session.save((err) => {
+          if (err) { return next(err) }
+          res.redirect('/signup')
+        })
       }
 
       const user = new User({
