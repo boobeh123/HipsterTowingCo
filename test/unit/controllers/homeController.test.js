@@ -2,20 +2,34 @@ const homeController = require('../../../controllers/home');
 
 describe('homeController.getIndex', () => {
   let req, res;
+
   beforeEach(() => {
-    req = { isAuthenticated: jest.fn() };
-    res = { render: jest.fn(), redirect: jest.fn() };
+    req = {};
+    res = {
+      render: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    };
   });
 
-  it('should redirect to /todos if authenticated', () => {
-    req.isAuthenticated.mockReturnValue(true);
-    homeController.getIndex(req, res);
-    expect(res.redirect).toHaveBeenCalledWith('/todos');
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('should render index.ejs if not authenticated', () => {
-    req.isAuthenticated.mockReturnValue(false);
-    homeController.getIndex(req, res);
+  it('should render index.ejs', async () => {
+    await homeController.getIndex(req, res);
+
     expect(res.render).toHaveBeenCalledWith('index.ejs');
   });
-}); 
+
+  it('should render 500.ejs if res.render throws', async () => {
+    // First call throws, second call (500.ejs) should succeed
+    res.render
+      .mockImplementationOnce(() => { throw new Error('render failed') })
+      .mockImplementationOnce(() => {});
+
+    await homeController.getIndex(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.render).toHaveBeenCalledWith('500.ejs');
+  });
+});
