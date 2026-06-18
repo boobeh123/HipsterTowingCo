@@ -699,6 +699,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Store doc at module scope so downloadPdfBtn can access it, then show the result overlay
             currentInspectionReport = userInspectionReport;
+
+            // Use Fetch API to send POST request to /inspections/count route before popup modal displays
+            // The home controller listens for POST requests on this route to increase a database-stored-variable by 1
+            fetch('/inspections/count', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            }).catch(() => {});
+
             openResultOverlay();
         })
     }
