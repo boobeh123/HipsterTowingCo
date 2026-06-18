@@ -1,213 +1,192 @@
-const User = require('../models/User')
-const validator = require('validator')
 const crypto = require('crypto')
-const passport = require('passport')
-const nodemailer = require('nodemailer')
-const async = require('async')
-const { createTransporter } = require('../utils/mailer');
-
+const validator = require('validator')
+const User = require('../models/User')
+const { createTransporter } = require('../utils/mailer')
 
 module.exports = {
-    getPasswordReset: (req,res)=>{
-        if (req.isAuthenticated()) {
-            res.redirect('/todos')
-          } else {
+
+    getPasswordReset: async (req, res, next) => {
+        try {
+            if (req.user) {
+                return res.redirect('/')
+            }
             res.render('forgot.ejs')
-          }
+        } catch(err) {
+            next(err)
+        }
     },
-    postPasswordReset: async (req, res) => {
-        if (req.isAuthenticated()) {
-            return res.redirect('/todos');
-        }
 
-        const validationErrors = [];
-        if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
-        if (validationErrors.length) {
-            req.flash('errors', validationErrors);
-            return res.redirect('/forgot');
-        }
+    postPasswordReset: async (req, res, next) => {
+        try {
+            if (req.user) {
+                return res.redirect('/')
+            }
 
-        async.waterfall([
-            function (done) {
-                crypto.randomBytes(20, function (err, buf) {
-                    if (err) return done(err);
-                    var token = buf.toString('hex');
-                    done(null, token);
-                });
-            },
-            function (token, done) {
-                User.findOne({ email: req.body.email }, function (err, user) {
-                    if (err) return done(err);
-                    const errors = [];
-                    if (!user) {
-                        errors.push({ msg: "No account with that email address exists." });
-                        req.flash('errors', errors);
-                        return res.redirect('/forgot');
-                    }
-                    user.resetPasswordToken = token;
-                    user.resetPasswordExpires = Date.now() + 3600000;
-                    user.save(function (err) {
-                        done(err, token, user);
-                    });
-                });
-            },
-            function (token, user, done) {
-                const transporter = createTransporter();
-                const mailOptions = {
-                    from: process.env.EMAILNAME,
-                    to: user.email,
-                    subject: 'pretriq - Password Reset Instructions',
-                    html: `
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
+            const validationErrors = []
+            if (!validator.isEmail(req.body.email)) {
+                validationErrors.push({ msg: 'Please enter a valid email address.' })
+            }
+            if (validationErrors.length) {
+                req.flash('errors', validationErrors)
+                return req.session.save((err) => {
+                    if (err) { return next(err) }
+                    res.redirect('/forgot')
+                })
+            }
+
+            // Resolve base URL — prefer explicit env var over Host header
+            // x-forwarded-proto is set by Railway in production
+            const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http'
+            const baseUrl = process.env.BASE_URL || `${protocol}://${req.headers.host}`
+
+            // Generate a secure random token
+            const buf = await new Promise((resolve, reject) => {
+                crypto.randomBytes(20, (err, buf) => {
+                    if (err) return reject(err)
+                    resolve(buf)
+                })
+            })
+            const token = buf.toString('hex')
+
+            // Find user and assign token
+            const user = await User.findOne({ email: req.body.email })
+            if (!user) {
+                req.flash('errors', [{ msg: 'No account with that email address exists.' }])
+                return req.session.save((err) => {
+                    if (err) { return next(err) }
+                    res.redirect('/forgot')
+                })
+            }
+
+            user.resetPasswordToken = token
+            user.resetPasswordExpires = Date.now() + 3600000 // 1 hour
+            await user.save()
+
+            // Send reset email
+            const transporter = createTransporter()
+            const mailOptions = {
+                from: process.env.EMAILNAME,
+                to: user.email,
+                subject: 'pretriq - Password Reset Instructions',
+                html: `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <title>pretriq - Password Reset</title>
                         <style>
-                            body {
-                            background: #f5f7fa;
-                            margin: 0;
-                            padding: 0;
-                            font-family: 'Roboto', Arial, sans-serif;
-                            }
-                            .email-container {
-                            max-width: 480px;
-                            margin: 2rem auto;
-                            background: #fff;
-                            border-radius: 12px;
-                            box-shadow: 0 4px 24px rgba(102,126,234,0.10);
-                            padding: 2rem 1.5rem;
-                            }
-                            .header {
-                            color: #185a9d;
-                            font-size: 1.5rem;
-                            font-weight: 700;
-                            margin-bottom: 1rem;
-                            text-align: center;
-                            }
-                            .content {
-                            color: #333;
-                            font-size: 1.1rem;
-                            margin-bottom: 1.5rem;
-                            }
-                            .message {
-                            background: #f1f8e9;
-                            border-left: 4px solid #43cea2;
-                            padding: 1rem;
-                            margin: 1.5rem 0;
-                            font-style: italic;
-                            color: #2e7d32;
-                            }
-                            .footer {
-                            color: #888;
-                            font-size: 0.95rem;
-                            text-align: center;
-                            margin-top: 2rem;
-                            }
+                            body { background: #f5f7fa; margin: 0; padding: 0; font-family: 'Roboto', Arial, sans-serif; }
+                            .email-container { max-width: 480px; margin: 2rem auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(102,126,234,0.10); padding: 2rem 1.5rem; }
+                            .header { color: #185a9d; font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; text-align: center; }
+                            .content { color: #333; font-size: 1.1rem; margin-bottom: 1.5rem; }
+                            .footer { color: #888; font-size: 0.95rem; text-align: center; margin-top: 2rem; }
                             @media only screen and (max-width: 600px) {
-                            .email-container {
-                                padding: 1rem 0.5rem;
-                            }
-                            .header {
-                                font-size: 1.2rem;
-                            }
-                            .content {
-                                font-size: 1rem;
-                            }
+                                .email-container { padding: 1rem 0.5rem; }
+                                .header { font-size: 1.2rem; }
+                                .content { font-size: 1rem; }
                             }
                         </style>
-                        </head>
-                        <body>
-                              <div class="email-container">
-        <div class="header">pretriq - Password Reset Instructions</div>
-        <div class="content">
-          Hello,<br>
-          <p>You are receiving this email because you (or someone else) requested a password reset for your pretriq account.
-          
-          To reset your password, please click the link below or paste it into your browser: <br><br>
-          
-          <p style="padding: 1rem; border-bottom: 1px solid black; border-top: 1px solid black;"><a href="http://${req.headers.host}/reset/${token}">http://${req.headers.host}/reset/${token}<a/><p>
-          <br><br>
-          If you did not request this, you can safely ignore this email and your password will remain unchanged.</p>
-        </div>
-        <div class="footer">
-            Best regards,<br>
-            The pretriq Team<br>
-            <a href="https://pretriq.com" style="color:#185a9d;text-decoration:none;">pretriq.com</a>
-        </div>
-        <div style="margin-top:2rem; text-align:center;">
-            <a href="https://x.com/boobeh123" style="margin:0 8px; display:inline-block;" title="X" target="_blank">
-            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="X" width="28" height="28" style="vertical-align:middle; border-radius:50%;">
-        </a>
-        <a href="https://github.com/boobeh123/" style="margin:0 8px; display:inline-block;" title="GitHub" target="_blank">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/github.svg" alt="GitHub" width="28" height="28" style="vertical-align:middle; border-radius:50%;">
-        </a>
-        <a href="https://bobby-asakawa.netlify.app/" style="margin:0 8px; display:inline-block;" title="Portfolio" target="_blank">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/internetarchive.svg" alt="Portfolio" width="28" height="28" style="vertical-align:middle; border-radius:50%;">
-        </a>
-      </div>
-      </div>
-    </body>
-    </html>
-    `
-                };
-                transporter.sendMail(mailOptions, function (err) {
-                    let info = [];
-                    if (err) {
-                        info.push({ msg: 'There was an error sending the email. Please try again later.' });
-                        req.flash('info', info);
-                        return res.redirect('/forgot');
-                    }
-                    info.push({ msg: 'An e-mail has been sent to ' + user.email + ' with further instructions.' });
-                    req.flash('info', info);
-                    done(null, 'done');
-                });
+                    </head>
+                    <body>
+                        <div class="email-container">
+                            <div class="header">pretriq &mdash; Password Reset</div>
+                            <div class="content">
+                                <p>You are receiving this email because a password reset was requested for your pretriq account.</p>
+                                <p>Click the link below or paste it into your browser to reset your password. This link expires in <strong>1 hour</strong>.</p>
+                                <p style="padding: 1rem; border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; word-break: break-all;">
+                                    <a href="${baseUrl}/reset/${token}">${baseUrl}/reset/${token}</a>
+                                </p>
+                                <p>If you did not request this, you can safely ignore this email and your password will remain unchanged.</p>
+                            </div>
+                            <div class="footer">
+                                The pretriq Team &mdash;
+                                <a href="https://pretriq.com" style="color:#185a9d; text-decoration:none;">pretriq.com</a>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                `
             }
-        ], function (err) {
-            if (err) console.error(err);
-            res.redirect('/forgot');
-        });
+
+            await transporter.sendMail(mailOptions)
+
+            req.flash('info', [{ msg: `A reset link has been sent to ${user.email}. It expires in 1 hour.` }])
+            req.session.save((err) => {
+                if (err) { return next(err) }
+                res.redirect('/forgot')
+            })
+
+        } catch(err) {
+            next(err)
+        }
     },
-    getRecoverPassword: async (req,res)=>{
-        if (req.isAuthenticated()) {
-            res.redirect('/todos')
-          } else {
-            res.render('recover.ejs', {token: req.params.token})
-          }
+
+    getRecoverPassword: async (req, res, next) => {
+        try {
+            if (req.user) {
+                return res.redirect('/')
+            }
+            res.render('recover.ejs', { token: req.params.token })
+        } catch(err) {
+            next(err)
+        }
     },
-    postRecoverPassword: async (req,res)=>{
-        if (req.isAuthenticated()) {
-            res.redirect('/todos')
-        } else {
+
+    postRecoverPassword: async (req, res, next) => {
+        try {
+            if (req.user) {
+                return res.redirect('/')
+            }
+
             const validationErrors = []
-            if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push({ msg: 'Password must be at least 8 characters long' })
-            if (req.body.password !== req.body.confirmPassword) validationErrors.push({ msg: 'Passwords do not match' })
+            if (!validator.isLength(req.body.password, { min: 5 })) {
+                validationErrors.push({ msg: 'Password must be at least 5 characters long.' })
+            }
+            if (req.body.password !== req.body.confirmPassword) {
+                validationErrors.push({ msg: 'Passwords do not match.' })
+            }
             if (validationErrors.length) {
                 req.flash('errors', validationErrors)
+                return req.session.save((err) => {
+                    if (err) { return next(err) }
+                    res.redirect('back')
+                })
             }
-            async.waterfall([
-                function (done) {
-                    User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function (err, user) {
-                        if (!user) {
-                            req.flash('info', { msg: 'Password reset token is invalid or has expired.' });
-                            return res.redirect('back');
-                        }
-                        if (req.body.password === req.body.confirmPassword) {
-                            user.password = req.body.password;
-                            user.resetPasswordToken = undefined;
-                            user.resetPasswordExpires = undefined;
-                            user.save(function (err) {
-                                req.logIn(user, function (err) {
-                                    done(err, user);
-                                });
-                            });
-                        }
-                    });
-                },
-            ], function (err) {
-                res.redirect('/todos');
+
+            // Find user by valid, unexpired token
+            const user = await User.findOne({
+                resetPasswordToken: req.params.token,
+                resetPasswordExpires: { $gt: Date.now() }
             })
+
+            if (!user) {
+                req.flash('errors', [{ msg: 'Password reset token is invalid or has expired.' }])
+                return req.session.save((err) => {
+                    if (err) { return next(err) }
+                    res.redirect('/forgot')
+                })
+            }
+
+            // Set new password and clear token fields
+            user.password = req.body.password
+            user.resetPasswordToken = undefined
+            user.resetPasswordExpires = undefined
+            await user.save()
+
+            // Log the user in automatically after reset
+            req.login(user, function(err) {
+                if (err) { return next(err) }
+                req.flash('success', 'Your password has been updated.')
+                req.session.save((err) => {
+                    if (err) { return next(err) }
+                    res.redirect('/')
+                })
+            })
+
+        } catch(err) {
+            next(err)
         }
     }
+
 }
