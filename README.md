@@ -32,6 +32,13 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.013
+📅 **Release Date:** June 18th, 2026
+
+## 📢 Developer's Notes - 
+
+- The (Counter) dynamic rendered data now displays within the inspection modal vs on the hero
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.012
 📅 **Release Date:** June 17th, 2026
 
@@ -49,6 +56,11 @@ I envision that this application has potential to become something with a global
   
 - Added error handling middleware
   - I've been using `res.status(500).render('500.ejs')` as a fallback error handler for my controller methods. 
+- Added the Counter schema, `/inspections/count` route. Updated home controller & client-side javascript for the submit inspection button
+  - The Counter schema has a `value` property with a default value of `0`
+  - Clicking the "Generate" button now uses the `fetch` API to send requests to the `/inspections/count` route. This occurs before the pop-up containing the view/download button renders
+  - The home controller listens for `POST` requests and increments the `value` property by `+1` when invoked
+  - This dynamic data is rendered within `index.ejs` for guest & registered users to see
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.011
 📅 **Release Date:** June 16th, 2026
