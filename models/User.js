@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
     required: true,
     lowercase: true,
     trim: true 
-},
+  },
   name: { 
     type: String,
     required: false,
@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
-},
+  },
   image: { 
     type: String,
     default: ''
@@ -29,8 +29,8 @@ const UserSchema = new mongoose.Schema({
   cloudinaryId: { 
     type: String 
   },
-  // resetPasswordToken: String,
-  // resetPasswordExpires: Date,
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
   // lastLogin: {
   //   type: Date,
   //   default: Date.now
