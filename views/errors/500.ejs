@@ -1,8 +1,19 @@
+<%- include('../partials/head.ejs') %>
 <%- include('../partials/header.ejs') %>
-<main id="error-fh" class="container center-align">
-  <h1>500</h1>
-  <h2>Server Error</h2>
-  <p>Something went wrong on our end. Please try again later.</p>
-  <a href="/todos" class="btn waves-effect waves-light green hoverable" aria-label="Return to dashboard">Back to Dashboard</a>
+
+<main id="main-content" class="errorPage" tabindex="-1" aria-labelledby="errorPage-heading">
+    <div class="errorPage__inner">
+
+        <div class="errorPage__code" aria-hidden="true">500</div>
+
+        <div class="errorPage__content">
+            <p class="errorPage__eyebrow">Server error</p>
+            <h1 id="errorPage-heading" class="errorPage__title">Something went wrong on our end.</h1>
+            <p class="errorPage__body">The server ran into an unexpected problem. This isn't anything you did — try returning to the home page. If it keeps happening, the issue will be looked into.</p>
+            <a href="/" class="btn btn--primary errorPage__cta">Return to home</a>
+        </div>
+
+    </div>
 </main>
+
 <%- include('../partials/footer.ejs') %>
