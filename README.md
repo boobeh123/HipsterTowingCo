@@ -43,6 +43,7 @@ I envision that this application has potential to become something with a global
 - Updated `errorHandler` 
 - Password reset functionality implemented
 - Updated tests
+- Encrypt `token` from password reset before storing into MongoDB
 
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.012
