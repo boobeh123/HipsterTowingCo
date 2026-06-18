@@ -35,9 +35,15 @@ I envision that this application has potential to become something with a global
 # 🛠️ pretriq Patch 1.6.013
 📅 **Release Date:** June 18th, 2026
 
-## 📢 Developer's Notes - 
+## 📢 Developer's Notes - Optimizing further
 
-- The (Counter) dynamic rendered data now displays within the inspection modal vs on the hero
+- The dynamic rendered data now displays on the inspection modal overlay
+- Refactored frontend on `500.ejs` & `404.ejs`
+- Added a 404 handler
+- Updated `errorHandler` 
+- Password reset functionality implemented
+- Updated tests
+
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.012
 📅 **Release Date:** June 17th, 2026
