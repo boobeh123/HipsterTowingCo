@@ -58,7 +58,11 @@ module.exports = {
                 })
             }
 
-            user.resetPasswordToken = token
+            // Hash the token before storing — raw token only lives in the email link.
+            // If the database is ever compromised, hashed tokens cannot be used directly.
+            const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+
+            user.resetPasswordToken = hashedToken
             user.resetPasswordExpires = Date.now() + 3600000 // 1 hour
             await user.save()
 
@@ -154,9 +158,12 @@ module.exports = {
                 })
             }
 
+            // Hash the incoming token to match against the stored hash
+            const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
+
             // Find user by valid, unexpired token
             const user = await User.findOne({
-                resetPasswordToken: req.params.token,
+                resetPasswordToken: hashedToken,
                 resetPasswordExpires: { $gt: Date.now() }
             })
 
