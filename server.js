@@ -73,7 +73,12 @@ app.use('/', mainRoutes)
 // app.use('/profile', profileRoutes)
 // app.use('/contact', contactRoutes);
 
-// Central error handler
+// 404 handler — catches any request that didn't match a route above
+app.use((req, res) => {
+  res.status(404).render('errors/404.ejs')
+})
+
+// Central error handler — must be last -> routes -> 404 handler - > error handler
 app.use(errorHandler)
 
 app.listen(process.env.PORT, () => {
