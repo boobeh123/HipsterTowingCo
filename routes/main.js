@@ -8,6 +8,7 @@ const termController = require('../controllers/terms')
 
 
 router.get('/', homeController.getIndex)
+router.post('/inspections/count', homeController.postInspectionCount)
 router.get('/login', authController.getLogin)
 router.post('/login', authController.postLogin)
 router.get('/logout', authController.getLogout)
