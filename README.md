@@ -44,6 +44,10 @@ I envision that this application has potential to become something with a global
 - Password reset functionality implemented
 - Updated tests
 - Encrypt `token` from password reset before storing into MongoDB
+  - The property containing the hashed `token`'s value will be set as `undefined` (deleted) on two conditions:
+    - The 1 hour date window from `resetPasswordExpires` is met
+    - The user changes their password & the value sets itself as `undefined`
+    - Here are some images demonstrating the `token` being hashed as a 64-character hex string & the property+property-value `undefining` itself
 
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.012
@@ -333,7 +337,7 @@ Outgoing emails (pretriq to user)
   
   Here's the keep it simple version:
   
-  ![GUF](/GuestUserFlow4.png)
+  ![GUF](/imagesgit/GuestUserFlow4.png)
 
 ---------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------
@@ -350,7 +354,7 @@ Outgoing emails (pretriq to user)
 
 <img src="/public/imgs/dvir-template-grid.png"  width="600">
 <img src="/public/imgs/dvir-jspdf-fill.png"  width="600">
-![confetti](/confetti.gif)
+![confetti](/imagesgit/confetti.gif)
 
 
 ---------------------------------------------------------------------------------------------------------------------------
@@ -367,7 +371,7 @@ Outgoing emails (pretriq to user)
 - I added my social media links if any users want to give feedback on how to improve the app or bring bugs to my attention
 
 I picked the logo that looked like eyes
-![logos](logoimage.png)
+![logos](/imagesgit/logoimage.png)
 
 
 ---------------------------------------------------------------------------------------------------------------------------
@@ -402,9 +406,9 @@ Well. There's still so much I want to build for this project, so stay tuned
 
 I'd solve one thing and three more thing would arise. I rage quit.
 Here are some images of my Guest-User-Flow:
-![first](GuestUserFlow.png)
-![second](GuestUserFlow2.png)
-![third](GuestUserFlow3.png)
+![first](/imagesgit/GuestUserFlow.png)
+![second](/imagesgit/GuestUserFlow2.png)
+![third](/imagesgit/GuestUserFlow3.png)
 
 ---------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------
