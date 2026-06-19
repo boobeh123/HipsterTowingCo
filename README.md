@@ -4,8 +4,8 @@ A full-stack web application that conducts pretrips digitally & overlays the dat
 Deployed on Railway: https://pretriq.com/
 
 ## Demo
-![demo](todomvcauthdemo.gif)
-![demo](/PRETRIQDEMO2025.gif)
+![demo](/imagesgit/todomvcauthdemo.gif)
+![demo](/imagesgit/PRETRIQDEMO2025.gif)
 
 ## Optimizations 
 * Style landing page
@@ -48,6 +48,8 @@ I envision that this application has potential to become something with a global
     - The 1 hour date window from `resetPasswordExpires` is met
     - The user changes their password & the value sets itself as `undefined`
     - Here are some images demonstrating the `token` being hashed as a 64-character hex string & the property+property-value `undefining` itself
+    - ![db1](/imagesgit/PRETRIQDEMO2025.gif)
+    - ![db2](/imagesgit/PRETRIQDEMO2025.gif)
 
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.012
@@ -63,7 +65,7 @@ I envision that this application has potential to become something with a global
   - Added 2 test suites for `/controllers/privacy.js`
   - Added 2 test suites for `/controllers/terms.js`
   - Added 24 test suites for `/public/js/main.js (utils.js)`
-    - ![clientSideJSTests](/passedunittest2.png)
+    - ![clientSideJSTests](/imagesgit/passedunittest2.png)
   
 - Added error handling middleware
   - I've been using `res.status(500).render('500.ejs')` as a fallback error handler for my controller methods. 
@@ -121,7 +123,7 @@ I envision that this application has potential to become something with a global
 
 - I completed my refactor of `sanitizeText` and it successfully removes characters used in XSS attacks on our `<input>` elements
   - The method I used was in an 8kyu Code Wars kata 
-    - Take a peek into my private repo ![codewars](/string-cleaning.png)
+    - Take a peek into my private repo ![codewars](/imagesgit/string-cleaning.png)
 - I completed my refactor of `validateAndSanitize`. It returns the user's inspection report as an Object, with a few property-values overwritten with sanitized strings
 - There are a few more functions for me to refactor before guest inspection functionality is back
 
@@ -225,7 +227,7 @@ I envision that this application has potential to become something with a global
 - This project will have less updates unless I receive feedback to implement a feature 
 
 - 7-day Analytics update:
-![analytics2.png](/analytics2.png)
+![analytics2.png](/imagesgit/analytics2.png)
   
 
 ---------------------------------------------------------------------------------------------------------------------------
@@ -251,12 +253,12 @@ I envision that this application has potential to become something with a global
 - pretriq is now production-ready 
 
 Every test suite being tested at once. All tests pass. 🚀<strong>Pretriq is production ready</strong>🚀<br>
-![AllTestsPassed](/AllTestsPassed.png)
+![AllTestsPassed](/imagesgit/AllTestsPassed.png)
 
 All <strong>unit test</strong> pass across controllers, models, routes, middleware, and client-side JavaScript. All <strong>integration tests</strong> pass with (test)database connectivity. All <strong>E2E tests</strong> pass with with (test)database connectivity<br>
-![UnitTestPass](/UnitPass.png)
-![IntegrationTestPass](/IntegrationPass.png)
-![E2ETestPass](E2EPass.png)
+![UnitTestPass](/imagesgit/UnitPass.png)
+![IntegrationTestPass](/imagesgit/IntegrationPass.png)
+![E2ETestPass](/imagesgit/E2EPass.png)
   
 
 ---------------------------------------------------------------------------------------------------------------------------
@@ -276,7 +278,7 @@ All <strong>unit test</strong> pass across controllers, models, routes, middlewa
 - I created a unit tests for every model and every schema
   - Check for validation rules, default values and custom methods
 
-![My first unit test passing!](/passedunittest.png)
+![My first unit test passing!](/imagesgit/passedunittest.png)
   
 
 ---------------------------------------------------------------------------------------------------------------------------
