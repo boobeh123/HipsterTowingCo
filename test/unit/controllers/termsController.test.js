@@ -1,14 +1,12 @@
 const termController = require('../../../controllers/terms');
 
 describe('termController.getTerms', () => {
-  let req, res;
+  let req, res, next;
 
   beforeEach(() => {
     req = {};
-    res = {
-      render: jest.fn(),
-      status: jest.fn().mockReturnThis(),
-    };
+    res = { render: jest.fn() };
+    next = jest.fn();
   });
 
   afterEach(() => {
@@ -16,19 +14,17 @@ describe('termController.getTerms', () => {
   });
 
   it('should render terms.ejs', async () => {
-    await termController.getTerms(req, res);
+    await termController.getTerms(req, res, next);
 
     expect(res.render).toHaveBeenCalledWith('terms.ejs');
   });
 
-  it('should render 500.ejs if res.render throws', async () => {
-    res.render
-      .mockImplementationOnce(() => { throw new Error('render failed') })
-      .mockImplementationOnce(() => {});
+  it('should call next with error if render throws', async () => {
+    res.render.mockImplementation(() => { throw new Error('render failed') });
 
-    await termController.getTerms(req, res);
+    await termController.getTerms(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.render).toHaveBeenCalledWith('500.ejs');
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
+    expect(res.render).toHaveBeenCalledTimes(1);
   });
 });

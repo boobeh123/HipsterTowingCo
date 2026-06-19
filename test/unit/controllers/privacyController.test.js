@@ -1,34 +1,30 @@
 const privacyController = require('../../../controllers/privacy');
 
 describe('privacyController.getPrivacy', () => {
-  let req, res;
+  let req, res, next;
 
   beforeEach(() => {
     req = {};
-    res = {
-      render: jest.fn(),
-      status: jest.fn().mockReturnThis(),
-    };
+    res = { render: jest.fn() };
+    next = jest.fn();
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should render privacy', async () => {
-    await privacyController.getPrivacy(req, res);
+  it('should render privacy.ejs', async () => {
+    await privacyController.getPrivacy(req, res, next);
 
     expect(res.render).toHaveBeenCalledWith('privacy.ejs');
   });
 
-  it('should render 500 if res.render throws', async () => {
-    res.render
-      .mockImplementationOnce(() => { throw new Error('render failed') })
-      .mockImplementationOnce(() => {});
+  it('should call next with error if render throws', async () => {
+    res.render.mockImplementation(() => { throw new Error('render failed') });
 
-    await privacyController.getPrivacy(req, res);
+    await privacyController.getPrivacy(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.render).toHaveBeenCalledWith('500.ejs');
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
+    expect(res.render).toHaveBeenCalledTimes(1);
   });
 });

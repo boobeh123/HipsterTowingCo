@@ -72,7 +72,7 @@ describe('homeController.postInspectionCount', () => {
     expect(Counter.findOneAndUpdate).toHaveBeenCalledWith(
       { name: 'inspectionCount' },
       { $inc: { value: 1 } },
-      { new: true, upsert: true }
+      { returnDocument: 'after', upsert: true }
     );
     expect(res.json).toHaveBeenCalledWith({ count: 43 });
   });

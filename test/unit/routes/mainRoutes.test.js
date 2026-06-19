@@ -7,11 +7,9 @@ const homeController = require('../../../controllers/home');
 const passwordResetController = require('../../../controllers/reset');
 const privacyController = require('../../../controllers/privacy');
 const termController = require('../../../controllers/terms');
+const inspectionController = require('../../../controllers/inspection');
 const mainRoutes = require('../../../routes/main');
 
-// Replace every controller with a lightweight fake.
-// This isolates the route layer — we're testing that the right
-// controller method is called for each URL, not what that method does.
 jest.mock('../../../controllers/auth', () => ({
   getLogin:   jest.fn((req, res) => res.json({ message: 'Login page' })),
   postLogin:  jest.fn((req, res) => res.json({ message: 'Login successful' })),
@@ -21,12 +19,15 @@ jest.mock('../../../controllers/auth', () => ({
 }));
 
 jest.mock('../../../controllers/home', () => ({
-  getIndex: jest.fn((req, res) => res.json({ message: 'Home page' })),
+  getIndex:            jest.fn((req, res) => res.json({ message: 'Home page' })),
+  postInspectionCount: jest.fn((req, res) => res.json({ count: 1 })),
 }));
 
-// revisit when POST /forgot, GET/POST /reset/:token are implemented
 jest.mock('../../../controllers/reset', () => ({
-  getPasswordReset: jest.fn((req, res) => res.json({ message: 'Forgot password page' })),
+  getPasswordReset:    jest.fn((req, res) => res.json({ message: 'Forgot password page' })),
+  postPasswordReset:   jest.fn((req, res) => res.json({ message: 'Password reset email sent' })),
+  getRecoverPassword:  jest.fn((req, res) => res.json({ message: 'Recover password page' })),
+  postRecoverPassword: jest.fn((req, res) => res.json({ message: 'Password recovered' })),
 }));
 
 jest.mock('../../../controllers/privacy', () => ({
@@ -37,12 +38,27 @@ jest.mock('../../../controllers/terms', () => ({
   getTerms: jest.fn((req, res) => res.json({ message: 'Terms page' })),
 }));
 
+jest.mock('../../../controllers/inspection', () => ({
+  postInspection: jest.fn((req, res) => res.status(201).json({ success: true })),
+}));
+
+// Mock ensureAuthApi so we control auth in route tests
+jest.mock('../../../middleware/auth', () => ({
+  ensureAuth:    jest.fn((req, res, next) => next()),
+  ensureAuthApi: jest.fn((req, res, next) => {
+    if (req.headers['x-test-auth'] === 'true') {
+      return next()
+    }
+    res.status(401).json({ error: 'Unauthorised' })
+  }),
+}));
+
+const { ensureAuthApi } = require('../../../middleware/auth');
+
 describe('Main Routes', () => {
   let app;
 
   beforeEach(() => {
-    // Build a minimal Express app for each test.
-    // No real database, no MongoStore — just enough to mount the routes.
     app = express();
     app.use(session({ secret: 'test-secret', resave: false, saveUninitialized: false }));
     app.use(passport.initialize());
@@ -52,7 +68,6 @@ describe('Main Routes', () => {
     app.use('/', mainRoutes);
   });
 
-  // Clear call counts after each test so they don't bleed into the next one.
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -63,6 +78,40 @@ describe('Main Routes', () => {
 
       expect(homeController.getIndex).toHaveBeenCalledTimes(1);
       expect(response.body).toEqual({ message: 'Home page' });
+    });
+  });
+
+  describe('POST /inspections/count', () => {
+    it('should call homeController.postInspectionCount and return 200', async () => {
+      const response = await request(app)
+        .post('/inspections/count')
+        .expect(200);
+
+      expect(homeController.postInspectionCount).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ count: 1 });
+    });
+  });
+
+  describe('POST /inspections', () => {
+    it('should call inspectionController.postInspection and return 201 when authenticated', async () => {
+      const response = await request(app)
+        .post('/inspections')
+        .set('x-test-auth', 'true')
+        .send({ truckTractorNo: '12345' })
+        .expect(201);
+
+      expect(inspectionController.postInspection).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ success: true });
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      const response = await request(app)
+        .post('/inspections')
+        .send({ truckTractorNo: '12345' })
+        .expect(401);
+
+      expect(inspectionController.postInspection).not.toHaveBeenCalled();
+      expect(response.body).toEqual({ error: 'Unauthorised' });
     });
   });
 
@@ -91,7 +140,6 @@ describe('Main Routes', () => {
     it('should call authController.getLogout and return 200', async () => {
       const response = await request(app).get('/logout').expect(200);
 
-      // Note: the method is getLogout, not logout
       expect(authController.getLogout).toHaveBeenCalledTimes(1);
       expect(response.body).toEqual({ message: 'Logout successful' });
     });
@@ -128,6 +176,41 @@ describe('Main Routes', () => {
 
       expect(passwordResetController.getPasswordReset).toHaveBeenCalledTimes(1);
       expect(response.body).toEqual({ message: 'Forgot password page' });
+    });
+  });
+
+  describe('POST /forgot', () => {
+    it('should call passwordResetController.postPasswordReset and return 200', async () => {
+      const response = await request(app)
+        .post('/forgot')
+        .send({ email: 'test@example.com' })
+        .expect(200);
+
+      expect(passwordResetController.postPasswordReset).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Password reset email sent' });
+    });
+  });
+
+  describe('GET /reset/:token', () => {
+    it('should call passwordResetController.getRecoverPassword and return 200', async () => {
+      const response = await request(app)
+        .get('/reset/test-token-123')
+        .expect(200);
+
+      expect(passwordResetController.getRecoverPassword).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Recover password page' });
+    });
+  });
+
+  describe('POST /reset/:token', () => {
+    it('should call passwordResetController.postRecoverPassword and return 200', async () => {
+      const response = await request(app)
+        .post('/reset/test-token-123')
+        .send({ password: 'newpass123', confirmPassword: 'newpass123' })
+        .expect(200);
+
+      expect(passwordResetController.postRecoverPassword).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Password recovered' });
     });
   });
 
