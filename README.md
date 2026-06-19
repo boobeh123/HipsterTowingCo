@@ -48,8 +48,8 @@ I envision that this application has potential to become something with a global
     - The 1 hour date window from `resetPasswordExpires` is met
     - The user changes their password & the value sets itself as `undefined`
     - Here are some images demonstrating the `token` being hashed as a 64-character hex string & the property+property-value `undefining` itself
-    - ![db1](/imagesgit/PRETRIQDEMO2025.gif)
-    - ![db2](/imagesgit/PRETRIQDEMO2025.gif)
+    - ![db1](/imagesgit/db1.png)
+    - ![db2](/imagesgit/db2.png)
 
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.012
