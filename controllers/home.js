@@ -21,7 +21,7 @@ module.exports = {
             const counter = await Counter.findOneAndUpdate(
                 { name: 'inspectionCount' },
                 { $inc: { value: 1 } },
-                { new: true, upsert: true }
+                { returnDocument: 'after', upsert: true }
             )
             res.json({ count: counter.value })
         } catch(err) {
