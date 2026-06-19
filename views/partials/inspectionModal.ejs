@@ -199,9 +199,15 @@
 
         <footer class="inspection-dialog__footer">
             <button type="button" id="cancelInspectionBtn" class="btn btn--secondary">Cancel</button>
-            <button type="button" id="submitInspectionBtn" class="btn btn--primary btn--modal-submit">
-                Generate
-            </button>
+            <% if (user) { %>
+                <button type="button" id="saveInspectionBtn" class="btn btn--primary btn--modal-submit">
+                    Generate &amp; Save
+                </button>
+            <% } else { %>
+                <button type="button" id="submitInspectionBtn" class="btn btn--primary btn--modal-submit">
+                    Generate
+                </button>
+            <% } %>
         </footer>
     </div>
 </div>
