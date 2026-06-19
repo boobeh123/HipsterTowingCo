@@ -646,6 +646,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const inspectionBtn = document.querySelector('#startInspectionBtn');
     const submitInspectionBtn = document.querySelector('#submitInspectionBtn');
+    const saveInspectionBtn = document.querySelector('#saveInspectionBtn');
     const cancelInspetionBtn = document.querySelector('#cancelInspectionBtn')
 
     // Modal behavior start
@@ -672,43 +673,66 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // When submitInspectionBtn button is clicked, add an id & createdAt property with dot notation
+    /**************************************************************
+     * Shared inspection handler logic
+     * Extracted so both guest and authenticated buttons reuse it.
+     * Returns the sanitized object or null if validation fails.
+     ***************************************************************/
+    async function runInspection() {
+        const userInspectionObject = readFormData();
+        const sanitizedUserInspectionObject = validateAndSanitize(userInspectionObject);
+        if (!sanitizedUserInspectionObject) return null;
+
+        sanitizedUserInspectionObject.id = Date.now().toString();
+        sanitizedUserInspectionObject.createdAt = new Date().toISOString();
+
+        closeModal();
+
+        let userInspectionReport = null;
+        try {
+            userInspectionReport = await generateDVIRPDF(sanitizedUserInspectionObject);
+        } catch {
+            return null;
+        }
+
+        currentInspectionReport = userInspectionReport;
+
+        // Increment counter — fire and forget for both guest and authenticated users
+        fetch('/inspections/count', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        }).catch(() => {});
+
+        return sanitizedUserInspectionObject;
+    }
+
+    // Guest: generate PDF only
     if (submitInspectionBtn) {
         submitInspectionBtn.addEventListener('click', async () => {
-            // Iterate through the inputs & generate an object
-            const userInspectionObject = readFormData();
-            // Mutate the strings on the object and create a new object
-            const sanitizedUserInspectionObject = validateAndSanitize(userInspectionObject);
-            // If an object is not sanitized & validated, stop
-            if (!sanitizedUserInspectionObject) return;
+            const result = await runInspection();
+            if (!result) return;
+            openResultOverlay();
+        });
+    }
 
-            // Use dot notation to create metadata
-            sanitizedUserInspectionObject.id = Date.now().toString();
-            sanitizedUserInspectionObject.createdAt = new Date().toISOString();
+    // Authenticated: generate PDF and save to MongoDB
+    if (saveInspectionBtn) {
+        saveInspectionBtn.addEventListener('click', async () => {
+            const result = await runInspection();
+            if (!result) return;
 
-            closeModal();
-
-            // Variable will store PDF
-            let userInspectionReport = null;
-            try {
-                // Call generateDVIRPDF and pass (sanitized w/ metadata) object as an argument
-                userInspectionReport = await generateDVIRPDF(sanitizedUserInspectionObject);
-            } catch {
-                return;
-            }
-
-            // Store doc at module scope so downloadPdfBtn can access it, then show the result overlay
-            currentInspectionReport = userInspectionReport;
-
-            // Use Fetch API to send POST request to /inspections/count route before popup modal displays
-            // The home controller listens for POST requests on this route to increase a database-stored-variable by 1
-            fetch('/inspections/count', {
+            // POST the sanitized inspection object to the server
+            fetch('/inspections', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-            }).catch(() => {});
+                body: JSON.stringify(result),
+            }).catch(() => {
+                // Save failed silently — user still has their PDF
+                console.error('Failed to save inspection to account.');
+            });
 
             openResultOverlay();
-        })
+        });
     }
 
     if (downloadPdfBtn) {
