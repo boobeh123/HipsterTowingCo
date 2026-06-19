@@ -32,6 +32,16 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.014
+📅 **Release Date:** June 19th, 2026
+
+## 📢 Developer's Notes - Cloud storage for inspections
+
+- Registered user's reports are automatically stored into MongoDB upon creation
+  - Guest user's reports are NOT stored on the server
+- Updated tests, we have 113/113 passing tests covering controllers, models, middleware, routes, and client-side javascript
+
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.013
 📅 **Release Date:** June 18th, 2026
 
