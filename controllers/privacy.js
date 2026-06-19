@@ -1,6 +1,6 @@
 module.exports = {
 
-    getPrivacy: async (req, res) => {
+    getPrivacy: async (req, res, next) => {
       try {
           res.render('privacy.ejs');
     } catch(err) {
