@@ -5,10 +5,12 @@ const homeController = require('../controllers/home')
 const passwordResetController = require('../controllers/reset')
 const privacyController = require('../controllers/privacy')
 const termController = require('../controllers/terms')
-
+const inspectionController = require('../controllers/inspection')
+const { ensureAuthApi } = require('../middleware/auth')
 
 router.get('/', homeController.getIndex)
 router.post('/inspections/count', homeController.postInspectionCount)
+router.post('/inspections', ensureAuthApi, inspectionController.postInspection)
 router.get('/login', authController.getLogin)
 router.post('/login', authController.postLogin)
 router.get('/logout', authController.getLogout)
