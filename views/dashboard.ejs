@@ -1,0 +1,124 @@
+<%- include('./partials/head.ejs') %>
+<%- include('./partials/header.ejs') %>
+
+<main id="main-content" class="dashboard" tabindex="-1" aria-labelledby="dashboard-heading">
+    <div class="dashboard__inner">
+
+        <%- include('./partials/flash.ejs') %>
+
+        <!-- Page heading -->
+        <header class="dashboard__header">
+            <h1 id="dashboard-heading" class="dashboard__title">Dashboard</h1>
+            <p class="dashboard__subtitle">Welcome back, <strong><%= user.email %></strong></p>
+        </header>
+
+        <!-- Quick stats -->
+        <section class="dashboard__stats" aria-label="Quick stats">
+            <div class="statCard">
+                <p class="statCard__value"><%= totalInspections %></p>
+                <p class="statCard__label">Total inspections</p>
+            </div>
+            <div class="statCard">
+                <p class="statCard__value"><%= inspectionsWithDefects %></p>
+                <p class="statCard__label">Defects flagged</p>
+            </div>
+            <div class="statCard">
+                <p class="statCard__value">
+                    <% if (lastInspectionDate) { %>
+                        <%= new Date(lastInspectionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                    <% } else { %>
+                        &mdash;
+                    <% } %>
+                </p>
+                <p class="statCard__label">Last inspection</p>
+            </div>
+            <div class="statCard">
+                <button
+                    type="button"
+                    id="startInspectionBtn"
+                    class="btn btn--primary statCard__cta"
+                    aria-haspopup="dialog"
+                    aria-label="Start a new pretrip report"
+                >
+                    Start pretrip
+                </button>
+                <p class="statCard__label">New inspection</p>
+            </div>
+        </section>
+
+        <!-- Inspection history -->
+        <section class="dashboard__history" aria-labelledby="history-heading">
+            <h2 id="history-heading" class="dashboard__sectionTitle">Inspection history</h2>
+
+            <% if (inspections.length === 0) { %>
+                <div class="dashboard__empty">
+                    <p class="dashboard__emptyText">No inspections saved yet.</p>
+                    <p class="dashboard__emptyHint">Complete a pretrip and click <strong>Generate &amp; Save</strong> to start your history.</p>
+                </div>
+            <% } else { %>
+                <div class="historyTable" role="region" aria-label="Inspection history" tabindex="0">
+                    <table class="historyTable__table">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="historyTable__th">Date</th>
+                                <th scope="col" class="historyTable__th">Truck / Tractor</th>
+                                <th scope="col" class="historyTable__th">Trailer</th>
+                                <th scope="col" class="historyTable__th">Condition</th>
+                                <th scope="col" class="historyTable__th">
+                                    <span class="sr-only">Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% inspections.forEach((inspection) => { %>
+                                <tr class="historyTable__row">
+                                    <td class="historyTable__td">
+                                        <%= inspection.date
+                                            ? inspection.date
+                                            : new Date(inspection.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                                    </td>
+                                    <td class="historyTable__td"><%= inspection.truckTractorNo %></td>
+                                    <td class="historyTable__td"><%= inspection.trailerNo || '&mdash;' %></td>
+                                    <td class="historyTable__td">
+                                        <% if (inspection.conditionSatisfactory) { %>
+                                            <span class="historyTable__badge historyTable__badge--ok">Satisfactory</span>
+                                        <% } else { %>
+                                            <span class="historyTable__badge historyTable__badge--flag">Defects noted</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="historyTable__td historyTable__td--action">
+                                        <button
+                                            type="button"
+                                            class="btn btn--nav historyTable__redownload"
+                                            data-id="<%= inspection._id %>"
+                                            aria-label="Re-download inspection for truck <%= inspection.truckTractorNo %>"
+                                        >
+                                            Download PDF
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <% if (totalPages > 1) { %>
+                    <nav class="dashboard__pagination" aria-label="Inspection history pages">
+                        <% if (currentPage > 1) { %>
+                            <a href="/dashboard?page=<%= currentPage - 1 %>" class="btn btn--nav dashboard__pageBtn" aria-label="Previous page">&#8592; Prev</a>
+                        <% } %>
+                        <span class="dashboard__pageIndicator">Page <%= currentPage %> of <%= totalPages %></span>
+                        <% if (currentPage < totalPages) { %>
+                            <a href="/dashboard?page=<%= currentPage + 1 %>" class="btn btn--nav dashboard__pageBtn" aria-label="Next page">Next &#8594;</a>
+                        <% } %>
+                    </nav>
+                <% } %>
+            <% } %>
+        </section>
+
+    </div>
+</main>
+
+<%- include('./partials/inspectionModal.ejs') %>
+<%- include('./partials/footer.ejs') %>
