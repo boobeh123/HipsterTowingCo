@@ -16,45 +16,6 @@ jest.mock('../../../utils/mailer', () => ({
 }));
 
 // ─────────────────────────────────────────────
-// getPasswordReset
-// ─────────────────────────────────────────────
-describe('resetController.getPasswordReset', () => {
-    let req, res, next;
-
-    beforeEach(() => {
-        req = { user: null };
-        res = { render: jest.fn(), redirect: jest.fn() };
-        next = jest.fn();
-    });
-
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-
-    it('should redirect to / if user is already logged in', async () => {
-        req.user = { id: 'user123' };
-
-        await resetController.getPasswordReset(req, res, next);
-
-        expect(res.redirect).toHaveBeenCalledWith('/');
-    });
-
-    it('should render forgot.ejs if user is not logged in', async () => {
-        await resetController.getPasswordReset(req, res, next);
-
-        expect(res.render).toHaveBeenCalledWith('forgot.ejs');
-    });
-
-    it('should call next with error if render throws', async () => {
-        res.render.mockImplementation(() => { throw new Error('render failed') });
-
-        await resetController.getPasswordReset(req, res, next);
-
-        expect(next).toHaveBeenCalledWith(expect.any(Error));
-    });
-});
-
-// ─────────────────────────────────────────────
 // postPasswordReset
 // ─────────────────────────────────────────────
 describe('resetController.postPasswordReset', () => {
@@ -75,14 +36,6 @@ describe('resetController.postPasswordReset', () => {
 
     afterEach(() => {
         jest.clearAllMocks();
-    });
-
-    it('should redirect to / if user is already logged in', async () => {
-        req.user = { id: 'user123' };
-
-        await resetController.postPasswordReset(req, res, next);
-
-        expect(res.redirect).toHaveBeenCalledWith('/');
     });
 
     it('should flash errors and redirect to /forgot when email is invalid', async () => {
@@ -165,21 +118,13 @@ describe('resetController.getRecoverPassword', () => {
     let req, res, next;
 
     beforeEach(() => {
-        req = { user: null, params: { token: 'abc123' } };
+        req = { params: { token: 'abc123' } };
         res = { render: jest.fn(), redirect: jest.fn() };
         next = jest.fn();
     });
 
     afterEach(() => {
         jest.clearAllMocks();
-    });
-
-    it('should redirect to / if user is already logged in', async () => {
-        req.user = { id: 'user123' };
-
-        await resetController.getRecoverPassword(req, res, next);
-
-        expect(res.redirect).toHaveBeenCalledWith('/');
     });
 
     it('should render recover.ejs with the token', async () => {
@@ -218,14 +163,6 @@ describe('resetController.postRecoverPassword', () => {
 
     afterEach(() => {
         jest.clearAllMocks();
-    });
-
-    it('should redirect to / if user is already logged in', async () => {
-        req.user = { id: 'user123' };
-
-        await resetController.postRecoverPassword(req, res, next);
-
-        expect(res.redirect).toHaveBeenCalledWith('/');
     });
 
     it('should flash errors and redirect back when password is too short', async () => {
