@@ -32,6 +32,17 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.015
+📅 **Release Date:** June 20th, 2026
+
+## 📢 Developer's Notes - Maintenance pau - Thanks for your patience!
+
+- The `/dashboard` route is available to registered users
+  - pretriq users are able to `login` & `download` your inspection reports that were stored into `MongoDB`
+  - Previously registered accounts can recover their account with `forgot password`
+
+- There is more to do & tests to write
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.014
 📅 **Release Date:** June 19th, 2026
 
