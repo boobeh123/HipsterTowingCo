@@ -42,6 +42,10 @@ I envision that this application has potential to become something with a global
   - Previously registered accounts can recover their account with `forgot password`
 
 - There is more to do & tests to write
+- Add `multer` & `cloudinary`
+- Add `/profile` route 
+  - Registered users can add a profile photo, change your password, and delete your account here
+
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.014
 📅 **Release Date:** June 19th, 2026
