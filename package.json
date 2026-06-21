@@ -27,6 +27,7 @@
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "express-validator": "^7.3.1",
+    "helmet": "^8.2.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "method-override": "^3.0.0",
