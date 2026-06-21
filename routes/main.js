@@ -6,11 +6,15 @@ const passwordResetController = require('../controllers/reset')
 const privacyController = require('../controllers/privacy')
 const termController = require('../controllers/terms')
 const inspectionController = require('../controllers/inspection')
-const { ensureAuthApi } = require('../middleware/auth')
+const dashboardController = require('../controllers/dashboard')
+const { ensureAuth, ensureAuthApi } = require('../middleware/auth')
 
 router.get('/', homeController.getIndex)
 router.post('/inspections/count', homeController.postInspectionCount)
 router.post('/inspections', ensureAuthApi, inspectionController.postInspection)
+router.get('/dashboard', ensureAuth, dashboardController.getDashboard)
+router.get('/inspections/:id', ensureAuthApi, dashboardController.getInspection)
+
 router.get('/login', authController.getLogin)
 router.post('/login', authController.postLogin)
 router.get('/logout', authController.getLogout)
@@ -20,7 +24,9 @@ router.get('/forgot', passwordResetController.getPasswordReset)
 router.post('/forgot', passwordResetController.postPasswordReset)
 router.get('/reset/:token', passwordResetController.getRecoverPassword)
 router.post('/reset/:token', passwordResetController.postRecoverPassword)
+
 router.get('/privacy', privacyController.getPrivacy)
 router.get('/terms', termController.getTerms)
+
 
 module.exports = router
