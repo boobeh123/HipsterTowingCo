@@ -38,13 +38,13 @@
                 <div class="site-header__userNav">
                     <a
                         href="/dashboard"
-                        class="site-header__dashLink<%= currentPath === '/dashboard' ? ' site-header__dashLink--active' : '' %>"
-                        <%= currentPath === '/dashboard' ? 'aria-current="page"' : '' %>
+                        class="site-header__dashLink<%= (locals.currentPath || '') === '/dashboard' ? ' site-header__dashLink--active' : '' %>"
+                        <%= (locals.currentPath || '') === '/dashboard' ? 'aria-current="page"' : '' %>
                     >Dashboard</a>
                     <a
                         href="/profile"
-                        class="site-header__dashLink<%= currentPath === '/profile' ? ' site-header__dashLink--active' : '' %>"
-                        <%= currentPath === '/profile' ? 'aria-current="page"' : '' %>
+                        class="site-header__dashLink<%= (locals.currentPath || '') === '/profile' ? ' site-header__dashLink--active' : '' %>"
+                        <%= (locals.currentPath || '') === '/profile' ? 'aria-current="page"' : '' %>
                     >Profile</a>
                     <a href="/logout" class="btn btn--nav">Log out</a>
                 </div>
