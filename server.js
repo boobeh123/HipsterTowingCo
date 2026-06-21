@@ -32,11 +32,12 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc:     ["'self'"],
-            scriptSrc:      ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
-            styleSrc:       ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-            fontSrc:        ["'self'", "https://fonts.gstatic.com"],
+            scriptSrc:      ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com", "https://www.google-analytics.com", "https://cdnjs.cloudflare.com", "https://kit.fontawesome.com"],
+            scriptSrcAttr:  ["'unsafe-inline'"],
+            styleSrc:       ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+            fontSrc:        ["'self'", "https://fonts.gstatic.com", "https://kit.fontawesome.com", "https://ka-f.fontawesome.com"],
             imgSrc:         ["'self'", "data:", "https://res.cloudinary.com", "https://www.google-analytics.com", "https://placeholder.pics"],
-            connectSrc:     ["'self'", "https://www.google-analytics.com", "https://analytics.google.com"],
+            connectSrc:     ["'self'", "https://www.google-analytics.com", "https://analytics.google.com", "https://ka-f.fontawesome.com"],
             frameSrc:       ["'none'"],
             objectSrc:      ["'none'"],
             upgradeInsecureRequests: [],
@@ -84,7 +85,7 @@ app.use((req, res, next) => {
     res.locals.errors  = req.flash('errors')  || []
     res.locals.error   = req.flash('error')   || []
     res.locals.info    = req.flash('info')    || []
-    res.locals.currentPath = req.originalUrl
+    // res.locals.currentPath = req.originalUrl
     res.locals.user = req.user || null
     next()
   } catch (err) {
