@@ -17,8 +17,13 @@
 
         <div class="inspection-dialog__body">
             <div id="modalFlashError" class="modal-flash modal-flash--error" role="alert" aria-live="assertive" hidden>
-                <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
-                <span id="modalFlashErrorMsg"></span>
+                <span class="modal-flash__icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M8 5v3.5M8 11h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span id="modalFlashErrorMsg" class="modal-flash__message"></span>
             </div>
             <form id="inspectionForm" novalidate aria-labelledby="modal-heading">
                 <div class="inspection-field-row">
