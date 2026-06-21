@@ -1,4 +1,4 @@
-<header class="site-header">
+<header class="site-header<%= locals.currentPath !== '/' ? ' site-header--interior' : '' %>">
     <div class="site-header__inner">
         <a href="/" class="site-header__brand" aria-label="Pretriq Home">
             <svg
@@ -36,17 +36,41 @@
         <nav class="site-header__nav" aria-label="Main navigation">
             <% if (user) { %>
                 <div class="site-header__userNav">
-                    <a
-                        href="/dashboard"
-                        class="site-header__dashLink<%= (locals.currentPath || '') === '/dashboard' ? ' site-header__dashLink--active' : '' %>"
-                        <%= (locals.currentPath || '') === '/dashboard' ? 'aria-current="page"' : '' %>
-                    >Dashboard</a>
-                    <a
-                        href="/profile"
-                        class="site-header__dashLink<%= (locals.currentPath || '') === '/profile' ? ' site-header__dashLink--active' : '' %>"
-                        <%= (locals.currentPath || '') === '/profile' ? 'aria-current="page"' : '' %>
-                    >Profile</a>
-                    <a href="/logout" class="btn btn--nav">Log out</a>
+                    <button
+                        type="button"
+                        class="site-header__avatarBtn"
+                        id="userNavToggle"
+                        aria-expanded="false"
+                        aria-controls="userNavMenu"
+                        aria-label="Open user menu"
+                    >
+                        <% if (user.image) { %>
+                            <img
+                                src="<%= user.image %>"
+                                alt="<%= user.name || user.email %> profile photo"
+                                class="site-header__avatar"
+                            />
+                        <% } else { %>
+                            <span class="site-header__avatarFallback" aria-hidden="true"><%= (user.name || user.email).charAt(0).toUpperCase() %></span>
+                        <% } %>
+                    </button>
+                    <div
+                        id="userNavMenu"
+                        class="site-header__userMenu"
+                        aria-hidden="true"
+                    >
+                        <a
+                            href="/dashboard"
+                            class="site-header__menuLink<%= (locals.currentPath || '') === '/dashboard' ? ' site-header__menuLink--active' : '' %>"
+                            <%= (locals.currentPath || '') === '/dashboard' ? 'aria-current="page"' : '' %>
+                        >Dashboard</a>
+                        <a
+                            href="/profile"
+                            class="site-header__menuLink<%= (locals.currentPath || '') === '/profile' ? ' site-header__menuLink--active' : '' %>"
+                            <%= (locals.currentPath || '') === '/profile' ? 'aria-current="page"' : '' %>
+                        >Profile</a>
+                        <a href="/logout" class="site-header__menuLink">Log out</a>
+                    </div>
                 </div>
             <% } else { %>
                 <a href="/login" class="btn btn--nav">Log in</a>
