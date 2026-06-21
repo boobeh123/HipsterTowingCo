@@ -15,10 +15,6 @@ module.exports = {
 
     postPasswordReset: async (req, res, next) => {
         try {
-            if (req.user) {
-                return res.redirect('/')
-            }
-
             const validationErrors = []
             if (!validator.isEmail(req.body.email)) {
                 validationErrors.push({ msg: 'Please enter a valid email address.' })
@@ -125,9 +121,6 @@ module.exports = {
 
     getRecoverPassword: async (req, res, next) => {
         try {
-            if (req.user) {
-                return res.redirect('/')
-            }
             res.render('recover.ejs', { token: req.params.token })
         } catch(err) {
             next(err)
@@ -136,10 +129,6 @@ module.exports = {
 
     postRecoverPassword: async (req, res, next) => {
         try {
-            if (req.user) {
-                return res.redirect('/')
-            }
-
             const validationErrors = []
             if (!validator.isLength(req.body.password, { min: 5 })) {
                 validationErrors.push({ msg: 'Password must be at least 5 characters long.' })
