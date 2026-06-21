@@ -8,6 +8,8 @@ const passwordResetController = require('../../../controllers/reset');
 const privacyController = require('../../../controllers/privacy');
 const termController = require('../../../controllers/terms');
 const inspectionController = require('../../../controllers/inspection');
+const dashboardController = require('../../../controllers/dashboard');
+const profileController = require('../../../controllers/profile');
 const mainRoutes = require('../../../routes/main');
 
 jest.mock('../../../controllers/auth', () => ({
@@ -41,6 +43,23 @@ jest.mock('../../../controllers/terms', () => ({
 jest.mock('../../../controllers/inspection', () => ({
   postInspection: jest.fn((req, res) => res.status(201).json({ success: true })),
 }));
+
+jest.mock('../../../controllers/dashboard', () => ({
+  getDashboard:   jest.fn((req, res) => res.json({ message: 'Dashboard page' })),
+  getInspection:  jest.fn((req, res) => res.json({ message: 'Inspection data' })),
+}));
+
+jest.mock('../../../controllers/profile', () => ({
+  getProfile:    jest.fn((req, res) => res.json({ message: 'Profile page' })),
+  updatePhoto:   jest.fn((req, res) => res.json({ message: 'Photo updated' })),
+  deleteAccount: jest.fn((req, res) => res.json({ message: 'Account deleted' })),
+}));
+
+// Mock multer so file upload routes don't require real files
+jest.mock('../../../middleware/multer', () => {
+  const multerMock = { single: jest.fn(() => (req, res, next) => next()) };
+  return multerMock;
+});
 
 // Mock ensureAuthApi so we control auth in route tests
 jest.mock('../../../middleware/auth', () => ({
@@ -229,6 +248,66 @@ describe('Main Routes', () => {
 
       expect(termController.getTerms).toHaveBeenCalledTimes(1);
       expect(response.body).toEqual({ message: 'Terms page' });
+    });
+  });
+
+  describe('GET /dashboard', () => {
+    it('should call dashboardController.getDashboard and return 200', async () => {
+      const response = await request(app).get('/dashboard').expect(200);
+
+      expect(dashboardController.getDashboard).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Dashboard page' });
+    });
+  });
+
+  describe('GET /inspections/:id', () => {
+    it('should call dashboardController.getInspection and return 200 when authenticated', async () => {
+      const response = await request(app)
+        .get('/inspections/abc123')
+        .set('x-test-auth', 'true')
+        .expect(200);
+
+      expect(dashboardController.getInspection).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Inspection data' });
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      const response = await request(app)
+        .get('/inspections/abc123')
+        .expect(401);
+
+      expect(dashboardController.getInspection).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('GET /profile', () => {
+    it('should call profileController.getProfile and return 200', async () => {
+      const response = await request(app).get('/profile').expect(200);
+
+      expect(profileController.getProfile).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Profile page' });
+    });
+  });
+
+  describe('POST /profile/photo', () => {
+    it('should call profileController.updatePhoto and return 200', async () => {
+      const response = await request(app)
+        .post('/profile/photo')
+        .expect(200);
+
+      expect(profileController.updatePhoto).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Photo updated' });
+    });
+  });
+
+  describe('DELETE /profile/delete', () => {
+    it('should call profileController.deleteAccount and return 200', async () => {
+      const response = await request(app)
+        .delete('/profile/delete')
+        .expect(200);
+
+      expect(profileController.deleteAccount).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Account deleted' });
     });
   });
 
