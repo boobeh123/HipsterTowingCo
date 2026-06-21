@@ -19,10 +19,6 @@
                 <p class="statCard__label">Total inspections</p>
             </div>
             <div class="statCard">
-                <p class="statCard__value"><%= inspectionsWithDefects %></p>
-                <p class="statCard__label">Defects flagged</p>
-            </div>
-            <div class="statCard">
                 <p class="statCard__value">
                     <% if (lastInspectionDate) { %>
                         <%= new Date(lastInspectionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
@@ -42,7 +38,6 @@
                 >
                     Start pretrip
                 </button>
-                <p class="statCard__label">New inspection</p>
             </div>
         </section>
 
@@ -72,14 +67,14 @@
                         <tbody>
                             <% inspections.forEach((inspection) => { %>
                                 <tr class="historyTable__row">
-                                    <td class="historyTable__td">
+                                    <td class="historyTable__td" data-label="Date">
                                         <%= inspection.date
                                             ? inspection.date
                                             : new Date(inspection.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
                                     </td>
-                                    <td class="historyTable__td"><%= inspection.truckTractorNo %></td>
-                                    <td class="historyTable__td"><%= inspection.trailerNo || '&mdash;' %></td>
-                                    <td class="historyTable__td">
+                                    <td class="historyTable__td" data-label="Truck / Tractor"> <%= inspection.truckTractorNo %></td>
+                                    <td class="historyTable__td" data-label="Trailer"> <%- inspection.trailerNo || '&mdash;' %></td>
+                                    <td class="historyTable__td" data-label="Condition">
                                         <% if (inspection.conditionSatisfactory) { %>
                                             <span class="historyTable__badge historyTable__badge--ok">Satisfactory</span>
                                         <% } else { %>
