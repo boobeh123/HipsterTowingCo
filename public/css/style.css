@@ -137,6 +137,38 @@ a:hover {
 }
 
 /**************************************************************
+ * Modal flash — Independent from flash.ejs 
+**************************************************************/
+.modal-flash {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-4);
+}
+
+.modal-flash--error {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  border-left: 3px solid #b91c1c;
+}
+
+.modal-flash__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-top: 0.1em;
+}
+
+.modal-flash__message {
+  flex: 1;
+  line-height: 1.5;
+}
+
+/**************************************************************
  * Flash 
  **************************************************************/
  .flash-stack {
