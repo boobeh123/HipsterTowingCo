@@ -463,6 +463,15 @@ body.has-modal-open {
 }
 
 /**************************************************************
+ * Active nav link state
+ **************************************************************/
+ .site-header__dashLink--active {
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: 0.1em;
+}
+
+/**************************************************************
  * Layout — home
  **************************************************************/
 .page-home {
