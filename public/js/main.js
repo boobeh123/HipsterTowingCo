@@ -23,9 +23,12 @@ function openModal() {
     overlay.removeAttribute('aria-hidden');
     document.body.classList.add('has-modal-open');
 
+    clearModalFlash();
+    
     if (truckTractorNoInputField) {
         truckTractorNoInputField.focus();
     }
+
 }
 
 function closeModal() {
@@ -41,8 +44,8 @@ function closeModal() {
 }
 
 function showModalFlash(message) {
-    const banner = document.getElementById('modalFlashError');
-    const msg = document.getElementById('modalFlashErrorMsg');
+    const banner = document.querySelector('#modalFlashError');
+    const msg = document.querySelector('#modalFlashErrorMsg');
     if (!banner || !msg) return;
 
     msg.textContent = message;
