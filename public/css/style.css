@@ -149,6 +149,11 @@ a:hover {
   margin-bottom: var(--space-4);
 }
 
+/* Prevent display:flex from overriding the HTML hidden attribute */
+.modal-flash[hidden] {
+  display: none;
+}
+
 .modal-flash--error {
   background-color: #fef2f2;
   color: #b91c1c;
@@ -1143,6 +1148,11 @@ body.has-modal-open {
 
 .statCard__cta {
   width: 100%;
+}
+
+.statCard:last-child {
+  display: flex;
+  justify-content: center;
 }
 
 /* Dashboard link in header */
