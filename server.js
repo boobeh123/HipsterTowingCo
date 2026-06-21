@@ -2,6 +2,7 @@ require('dotenv').config({ path: './config/.env' })
 
 const express = require('express')
 const app = express()
+const helmet = require('helmet')
 const logger = require('morgan')
 const connectDB = require('./config/database')
 const methodOverride = require('method-override')
@@ -20,6 +21,33 @@ require('./config/passport')(passport)
 
 connectDB()
 app.set('view engine', 'ejs')
+
+// X-Content-Type-Options: nosniff — prevents MIME sniffing attacks
+// X-Frame-Options: SAMEORIGIN — prevents clickjacking via iframes
+// Strict-Transport-Security — forces HTTPS on browsers that have visited before
+// X-DNS-Prefetch-Control — controls DNS prefetching
+// Referrer-Policy — controls what's sent in the Referer header
+// CSP is configured explicitly to allow Google Analytics, Google Fonts, Cloudinary images, and our own assets while blocking everything else.
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc:     ["'self'"],
+            scriptSrc:      ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
+            styleSrc:       ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            fontSrc:        ["'self'", "https://fonts.gstatic.com"],
+            imgSrc:         ["'self'", "data:", "https://res.cloudinary.com", "https://www.google-analytics.com", "https://placeholder.pics"],
+            connectSrc:     ["'self'", "https://www.google-analytics.com", "https://analytics.google.com"],
+            frameSrc:       ["'none'"],
+            objectSrc:      ["'none'"],
+            upgradeInsecureRequests: [],
+        },
+    },
+    // X-Frame-Options: SAMEORIGIN — already covered by CSP frameSrc 'none'
+    // but kept for older browsers that don't support CSP
+    xFrameOptions: { action: 'sameorigin' },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+}))
+
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
