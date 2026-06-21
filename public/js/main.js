@@ -831,3 +831,36 @@ if (historyTable) {
         }
     });
 }
+
+/**************************************************************
+* Hamburger nav as a user avatar menu 
+* Toggles the user menu dropdown when the avatar button is clicked.
+***************************************************************/
+const userNavToggle = document.querySelector('#userNavToggle')
+const userNavMenu = document.querySelector('#userNavMenu')
+
+if (userNavToggle && userNavMenu) {
+    userNavToggle.addEventListener('click', () => {
+        const isOpen = userNavMenu.classList.contains('is-open')
+        userNavMenu.classList.toggle('is-open')
+        userNavToggle.setAttribute('aria-expanded', String(!isOpen))
+        userNavMenu.setAttribute('aria-hidden', String(isOpen))
+    })
+
+    document.addEventListener('click', (event) => {
+        if (!userNavToggle.contains(event.target) && !userNavMenu.contains(event.target)) {
+            userNavMenu.classList.remove('is-open')
+            userNavToggle.setAttribute('aria-expanded', 'false')
+            userNavMenu.setAttribute('aria-hidden', 'true')
+        }
+    })
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && userNavMenu.classList.contains('is-open')) {
+            userNavMenu.classList.remove('is-open')
+            userNavToggle.setAttribute('aria-expanded', 'false')
+            userNavMenu.setAttribute('aria-hidden', 'true')
+            userNavToggle.focus()
+        }
+    })
+}
