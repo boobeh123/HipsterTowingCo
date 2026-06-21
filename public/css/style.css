@@ -123,6 +123,19 @@ a:hover {
   white-space: normal;
 }
 
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /**************************************************************
  * Flash 
  **************************************************************/
@@ -1003,6 +1016,213 @@ body.has-modal-open {
   flex-wrap: wrap;
   gap: var(--space-3);
   justify-content: center;
+}
+
+/**************************************************************
+ * Dashboard
+ **************************************************************/
+ .dashboard {
+  flex: 1;
+  padding: var(--space-12) var(--space-4) var(--space-16);
+  background-color: var(--color-page-bg);
+}
+
+.dashboard__inner {
+  width: min(100% - var(--space-8), var(--content-max));
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.dashboard__header {
+  border-bottom: 2px solid var(--color-text);
+  padding-bottom: var(--space-6);
+}
+
+.dashboard__title {
+  margin: 0 0 var(--space-2);
+  font-size: clamp(1.75rem, 3vw + 0.75rem, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.dashboard__subtitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+}
+
+.dashboard__sectionTitle {
+  margin: 0 0 var(--space-6);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Quick stats */
+.dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-4);
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-6);
+  background-color: var(--color-footer-bg);
+  border: 1px solid var(--color-footer-border);
+  border-top: 3px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+}
+
+.statCard__value {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.statCard__label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.statCard__cta {
+  width: 100%;
+}
+
+/* Dashboard link in header */
+.site-header__dashLink {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.site-header__dashLink:hover {
+  color: var(--color-brand);
+}
+
+/* Inspection history table */
+.historyTable {
+  overflow-x: auto;
+  border: 1px solid var(--color-footer-border);
+  border-radius: var(--radius-sm);
+}
+
+.historyTable__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.historyTable__th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background-color: var(--color-footer-bg);
+  border-bottom: 1px solid var(--color-footer-border);
+  white-space: nowrap;
+}
+
+.historyTable__row {
+  border-bottom: 1px solid var(--color-footer-border);
+  transition: background-color 0.1s ease;
+}
+
+.historyTable__row:last-child {
+  border-bottom: none;
+}
+
+.historyTable__row:hover {
+  background-color: var(--color-footer-bg);
+}
+
+.historyTable__td {
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+.historyTable__td--action {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.historyTable__badge {
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+
+.historyTable__badge--ok {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.historyTable__badge--flag {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+/* Empty state */
+.dashboard__empty {
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+  border: 1px dashed var(--color-footer-border);
+  border-radius: var(--radius-sm);
+}
+
+.dashboard__emptyText {
+  margin: 0 0 var(--space-2);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.dashboard__emptyHint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+/* Pagination */
+.dashboard__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.dashboard__pageIndicator {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.dashboard__pageBtn {
+  min-height: 2.25rem;
+  padding: var(--space-2) var(--space-4);
 }
 
 /**************************************************************
