@@ -1,76 +1,96 @@
-<%- include('./partials/sidenavheader.ejs') %>
-    <main class="profile-main" aria-labelledby="profile-heading">
-        <div class="container">
-            <div class="card-panel z-depth-2">
-                <h1 class="center-align flow-text" id="profile-heading">
-                    <a href="/todos" aria-label="Back to dashboard"><i class="fas fa-chevron-left"></i></a>
-                    Profile Information
-                </h1>
-                <div class="divider"></div>
-                <div class="center-align margin">
-                    <img src="<%= user.image === '' ? 'https://placeholder.pics/svg/100x100' : user.image %>" class="responsive-img circle z-depth-1" alt="User profile image" style="width: 120px; height: 120px;">
-                    <form id="profile-pic-form" class="margin" action="/profile" method="POST" enctype="multipart/form-data">
-                        <div class="file-field input-field" style="display: inline-block; vertical-align: middle;">
-                            <div class="btn blue-grey waves-effect waves-light hoverable" style="transition: background 0.2s;">
-                                <span><i class="material-icons left">cloud_upload</i>Browse</span>
-                                <input id="profile-file" type="file" name="file" required>
-                            </div>
-                            <div class="file-path-wrapper">
-                                <input class="file-path validate" type="text" placeholder="Upload a new profile picture">
-                            </div>
-                        </div>
-                        <button id="upload-btn" type="submit" class="btn blue-grey waves-effect waves-light hoverable" aria-label="Update Picture" style="margin-left: 1rem; transition: background 0.2s;">
-                            <span id="upload-btn-text">Submit</span>
-                            <div id="upload-preloader" class="preloader-wrapper small active" style="display:none; vertical-align: middle;">
-                                <div class="spinner-layer spinner-blue-only">
-                                    <div class="circle-clipper left"><div class="circle"></div></div>
-                                    <div class="gap-patch"><div class="circle"></div></div>
-                                    <div class="circle-clipper right"><div class="circle"></div></div>
-                                </div>
-                            </div>
-                        </button>
-                    </form>
-                </div>
-                <section class="profile-info-section center-align margin" aria-labelledby="profile-info-heading">
-                    <h2 id="profile-info-heading" class="sr-only">Profile Details</h2>
-                    <div class="profile-info-card" role="region" aria-labelledby="profile-name-label">
-                        <dl>
-                            <dt id="profile-name-label" class="bold">Name:</dt>
-                            <dd><%= user.name || '' %></dd>
-                        </dl>
-                    </div>
-                    <div class="profile-info-card" role="region" aria-labelledby="profile-email-label">
-                        <dl>
-                            <dt id="profile-email-label" class="bold">Email:</dt>
-                            <dd><%= user.email %></dd>
-                        </dl>
-                    </div>
-                    <div class="profile-info-card" role="region" aria-labelledby="profile-role-label">
-                        <dl>
-                            <dt id="profile-role-label" class="bold">Account Type:</dt>
-                            <dd><%= user.role %></dd>
-                        </dl>
-                    </div>
-                    <form action="/profile/edit/<%=user._id%>" method="GET" style="display:inline;">
-                        <button type="submit" class="btn blue-grey waves-effect waves-light hoverable" aria-label="Edit Profile" style="margin-top: 0.5rem; transition: background 0.2s;">
-                            <i class="fas fa-edit left"></i> Edit Profile
-                        </button>
-                    </form>
-                    <form action="/profile/delete/<%=user._id%>?_method=DELETE" method="POST" style="display:inline; margin-left: 0.5rem;" onsubmit="return confirm('Are you sure you want to delete your profile? This action cannot be undone.');">
-                        <button type="submit" class="btn red waves-effect waves-light hoverable" aria-label="Delete Profile" style="margin-top: 0.5rem; transition: background 0.2s;">
-                            <i class="fas fa-trash left"></i> Delete Profile
-                        </button>
-                    </form>
-                </section>
+<%- include('./partials/head.ejs') %>
+<%- include('./partials/header.ejs') %>
+
+<main id="main-content" class="profilePage" tabindex="-1" aria-labelledby="profilePage-heading">
+    <div class="profilePage__inner">
+
+        <%- include('./partials/flash.ejs') %>
+
+        <header class="profilePage__header">
+            <div class="profilePage__headerNav">
+                <a href="/dashboard" class="profilePage__back">&#8592; Dashboard</a>
             </div>
-            <% if ((user.isAdmin) && (user.role === 'Admin')) { %>
-            <div class="card-panel z-depth-2">
-                <div class="card-content" aria-labelledby="admin-heading">
-                    <h1 class="border-bottom" id="admin-heading">Admin Console</h1>
-                    <button onclick="confetti()"></button>
-                </div>
+            <h1 id="profilePage-heading" class="profilePage__title">Profile</h1>
+        </header>
+
+        <!-- Photo section -->
+        <section class="profileCard" aria-labelledby="photo-heading">
+            <h2 id="photo-heading" class="profileCard__title">Photo</h2>
+
+            <div class="profileCard__photoRow">
+                <img
+                    src="<%= user.image || 'https://placeholder.pics/svg/80x80' %>"
+                    alt="Profile photo for <%= user.email %>"
+                    class="profileCard__avatar"
+                    width="80"
+                    height="80"
+                />
+                <form
+                    class="profileCard__uploadForm"
+                    action="/profile/photo"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    aria-label="Upload profile photo"
+                >
+                    <label for="profile-file" class="profileCard__fileLabel">
+                        Choose photo
+                        <input
+                            id="profile-file"
+                            type="file"
+                            name="file"
+                            accept=".jpg,.jpeg,.png"
+                            required
+                            class="profileCard__fileInput"
+                        />
+                    </label>
+                    <button type="submit" class="btn btn--primary profileCard__uploadBtn">
+                        Upload
+                    </button>
+                    <p class="profileCard__fileHint">JPG or PNG, square crop applied automatically</p>
+                </form>
             </div>
-            <% } %>
-        </div>
-    </main>
-<%- include('./partials/sidenavfooter.ejs') %>
+        </section>
+
+        <!-- Account info section -->
+        <section class="profileCard" aria-labelledby="account-heading">
+            <h2 id="account-heading" class="profileCard__title">Account</h2>
+
+            <dl class="profileCard__dl">
+                <div class="profileCard__row">
+                    <dt class="profileCard__dt">Email</dt>
+                    <dd class="profileCard__dd"><%= user.email %></dd>
+                </div>
+                <div class="profileCard__row">
+                    <dt class="profileCard__dt">Role</dt>
+                    <dd class="profileCard__dd"><%= user.role || 'user' %></dd>
+                </div>
+                <div class="profileCard__row">
+                    <dt class="profileCard__dt">Member since</dt>
+                    <dd class="profileCard__dd">
+                        <%= new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
+                    </dd>
+                </div>
+            </dl>
+
+            <div class="profileCard__actions">
+                <a href="/forgot" class="btn btn--secondary">Change password</a>
+            </div>
+        </section>
+
+        <!-- Danger zone -->
+        <section class="profileCard profileCard--danger" aria-labelledby="danger-heading">
+            <h2 id="danger-heading" class="profileCard__title profileCard__title--danger">Danger zone</h2>
+            <p class="profileCard__dangerText">Deleting your account is permanent. All your inspections will also be deleted and cannot be recovered.</p>
+            <form
+                action="/profile/delete?_method=DELETE"
+                method="POST"
+                onsubmit="return confirm('Are you sure? This will permanently delete your account and all your inspections.')"
+            >
+                <button type="submit" class="btn profileCard__deleteBtn">Delete account</button>
+            </form>
+        </section>
+
+    </div>
+</main>
+
+<%- include('./partials/footer.ejs') %>
