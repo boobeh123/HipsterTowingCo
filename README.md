@@ -6,6 +6,7 @@ Deployed on Railway: https://pretriq.com/
 ## Demo
 ![demo](/imagesgit/todomvcauthdemo.gif)
 ![demo](/imagesgit/PRETRIQDEMO2025.gif)
+![demo](/imagesgit/pretriq2026demo.gif)
 
 ## Optimizations 
 * Style landing page
@@ -40,6 +41,8 @@ I envision that this application has potential to become something with a global
 - The `/dashboard` route is available to registered users
   - pretriq users are able to `login` & `download` your inspection reports that were stored into `MongoDB`
   - Previously registered accounts can recover their account with `forgot password`
+
+- ![2026demo](/imagesgit/pretriq2026demo.gif)
 
 - There is more to do & tests to write
 - Add `multer` & `cloudinary`
