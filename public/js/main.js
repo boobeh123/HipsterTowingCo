@@ -786,3 +786,45 @@ if (flashStack) {
         flash.addEventListener('animationend', () => flash.remove(), { once: true });
     });
 }
+
+/**************************************************************
+ * Re-download inspection from history
+ * Fetches a saved inspection by id from the server, regenerates
+ * the PDF client-side using the existing generateDVIRPDF function,
+ * then triggers a download. The server verifies userId ownership
+ * before returning data so no spoofing is possible.
+ ***************************************************************/
+const historyTable = document.querySelector('.historyTable');
+
+if (historyTable) {
+    historyTable.addEventListener('click', async (event) => {
+        const btn = event.target.closest('.historyTable__redownload');
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        if (!id) return;
+
+        btn.textContent = '…';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch(`/inspections/${id}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch inspection.');
+            }
+
+            const inspection = await response.json();
+            const pdf = await generateDVIRPDF(inspection);
+            pdf.save(`Drivers-Vehicle-Inspection-Report.pdf`);
+        } catch(err) {
+            console.error('Re-download failed:', err);
+        } finally {
+            btn.innerHTML = 'File saved!';
+            btn.disabled = false;
+        }
+    });
+}
