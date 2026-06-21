@@ -7,9 +7,6 @@ module.exports = {
 
     getPasswordReset: async (req, res, next) => {
         try {
-            if (req.user) {
-                return res.redirect('/')
-            }
             res.render('forgot.ejs')
         } catch(err) {
             next(err)
