@@ -36,9 +36,7 @@
         <nav class="site-header__nav" aria-label="Main navigation">
             <% if (user) { %>
                 <div class="site-header__userNav">
-                    <span class="site-header__userEmail" aria-label="Logged in as <%= user.email %>">
-                        <%= user.email %>
-                    </span>
+                    <a href="/dashboard" class="site-header__dashLink">Dashboard</a>
                     <a href="/logout" class="btn btn--nav">Log out</a>
                 </div>
             <% } else { %>
