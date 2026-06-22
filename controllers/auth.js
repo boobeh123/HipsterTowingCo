@@ -108,10 +108,9 @@ module.exports = {
 
       req.login(user, function(err) {
         if (err) { return next(err) }
-        req.flash('success', 'Account created. Welcome to pretriq.')
         req.session.save((err) => {
           if (err) { return next(err) }
-          res.redirect('/')
+          res.redirect('/onboard')
         })
       })
     } catch(err) {
