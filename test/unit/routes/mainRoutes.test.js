@@ -4,6 +4,7 @@ const session = require('express-session');
 const passport = require('passport');
 const authController = require('../../../controllers/auth');
 const homeController = require('../../../controllers/home');
+const onboardController = require('../../../controllers/onboard');
 const passwordResetController = require('../../../controllers/reset');
 const privacyController = require('../../../controllers/privacy');
 const termController = require('../../../controllers/terms');
@@ -23,6 +24,11 @@ jest.mock('../../../controllers/auth', () => ({
 jest.mock('../../../controllers/home', () => ({
   getIndex:            jest.fn((req, res) => res.json({ message: 'Home page' })),
   postInspectionCount: jest.fn((req, res) => res.json({ count: 1 })),
+}));
+
+jest.mock('../../../controllers/onboard', () => ({
+  getOnboard:  jest.fn((req, res) => res.json({ message: 'Onboard page' })),
+  postOnboard: jest.fn((req, res) => res.json({ message: 'Onboard submitted' })),
 }));
 
 jest.mock('../../../controllers/reset', () => ({
@@ -61,10 +67,11 @@ jest.mock('../../../middleware/multer', () => {
   return multerMock;
 });
 
-// Mock ensureAuthApi so we control auth in route tests
+// Mock auth middleware so we control auth in route tests
 jest.mock('../../../middleware/auth', () => ({
-  ensureAuth:    jest.fn((req, res, next) => next()),
-  ensureAuthApi: jest.fn((req, res, next) => {
+  ensureAuth:       jest.fn((req, res, next) => next()),
+  ensureOnboarding: jest.fn((req, res, next) => next()),
+  ensureAuthApi:    jest.fn((req, res, next) => {
     if (req.headers['x-test-auth'] === 'true') {
       return next()
     }
@@ -131,6 +138,27 @@ describe('Main Routes', () => {
 
       expect(inspectionController.postInspection).not.toHaveBeenCalled();
       expect(response.body).toEqual({ error: 'Unauthorised' });
+    });
+  });
+
+  describe('GET /onboard', () => {
+    it('should call onboardController.getOnboard and return 200', async () => {
+      const response = await request(app).get('/onboard').expect(200);
+
+      expect(onboardController.getOnboard).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Onboard page' });
+    });
+  });
+
+  describe('POST /onboard', () => {
+    it('should call onboardController.postOnboard and return 200', async () => {
+      const response = await request(app)
+        .post('/onboard')
+        .send({ name: 'Jordan Rivera' })
+        .expect(200);
+
+      expect(onboardController.postOnboard).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Onboard submitted' });
     });
   });
 

@@ -165,16 +165,15 @@ describe('authController.postSignup', () => {
     expect(res.redirect).toHaveBeenCalledWith('/signup');
   });
 
-  it('should create user, flash success, and redirect to / on valid input', async () => {
+  it('should create user, log in, and redirect to /onboard on valid input', async () => {
     User.findOne.mockResolvedValue(null);
     User.prototype.save = jest.fn().mockResolvedValue();
 
     await authController.postSignup(req, res, next);
 
     expect(req.login).toHaveBeenCalled();
-    expect(req.flash).toHaveBeenCalledWith('success', expect.any(String));
     expect(req.session.save).toHaveBeenCalled();
-    expect(res.redirect).toHaveBeenCalledWith('/');
+    expect(res.redirect).toHaveBeenCalledWith('/onboard');
   });
 });
 
