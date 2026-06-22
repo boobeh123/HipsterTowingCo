@@ -33,6 +33,21 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.016
+📅 **Release Date:** June 21st, 2026
+
+## 📢 Developer's Notes - Onboarding
+
+- I took off work from the 15-19th of June, 2026
+
+- Re-added flash styling on `inspectionModal.ejs` 
+- Added dynamic styling on `header.ejs`
+  - Added hamburger nav
+- All new & existing registered accounts will be redirected to the `/onboard` route upon logging in & sending a request
+- Updated unit tests - 155/155 passsing
+
+---------------------------------------------------------------------------------------------------------------------------
+
 # 🛠️ pretriq Patch 1.6.015
 📅 **Release Date:** June 20th, 2026
 
