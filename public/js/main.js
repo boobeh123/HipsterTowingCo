@@ -680,6 +680,8 @@ document.addEventListener('DOMContentLoaded', () => {
      * Shared inspection handler logic
      * Extracted so both guest and authenticated buttons reuse it.
      * Returns the sanitized object or null if validation fails.
+     * Guests increment after PDF generation. 
+     * Authenticated users only after a successful POST /inspections response.
      ***************************************************************/
     async function runInspection() {
         const userInspectionObject = readFormData();
@@ -700,36 +702,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentInspectionReport = userInspectionReport;
 
-        // Increment counter — fire and forget for both guest and authenticated users
-        fetch('/inspections/count', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-        }).catch(() => {});
-
         return sanitizedUserInspectionObject;
     }
 
-    // Guest: generate PDF only
+    // Guest: generate PDF only, then increment counter
     if (submitInspectionBtn) {
         submitInspectionBtn.addEventListener('click', async () => {
             const result = await runInspection();
             if (!result) return;
+
+            fetch('/inspections/count', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            }).catch(() => {});
+
             openResultOverlay();
         });
     }
 
-    // Authenticated: generate PDF and save to MongoDB
+    // Authenticated: generate PDF, save to MongoDB, then increment counter on success
     if (saveInspectionBtn) {
         saveInspectionBtn.addEventListener('click', async () => {
             const result = await runInspection();
             if (!result) return;
 
-            // POST the sanitized inspection object to the server
+            // POST the sanitized inspection object to the server.
+            // Counter only increments if the save returns a success response,
+            // so failed saves don't inflate the global count.
             fetch('/inspections', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(result),
-            }).catch(() => {
+            })
+            .then((response) => {
+                if (response.ok) {
+                    fetch('/inspections/count', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                    }).catch(() => {});
+                }
+            })
+            .catch(() => {
                 // Save failed silently — user still has their PDF
                 console.error('Failed to save inspection to account.');
             });
