@@ -62,7 +62,43 @@ describe('inspectionController.postInspection', () => {
     expect(capturedData.userId).toBe('user123');
   });
 
-  it('should call next with error if save throws', async () => {
+  it('should return 400 with the validation message when save throws a ValidationError', async () => {
+    const validationError = new Error('Inspection validation failed');
+    validationError.name = 'ValidationError';
+    validationError.errors = {
+      truckTractorNo: { message: 'Truck number must be at least 1 character long.' },
+    };
+
+    Inspection.mockImplementation(function() {
+      this._id = 'abc';
+      this.save = jest.fn().mockRejectedValue(validationError);
+    });
+
+    await inspectionController.postInspection(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Truck number must be at least 1 character long.' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should return 400 with a fallback message when ValidationError has no error detail', async () => {
+    const validationError = new Error('Inspection validation failed');
+    validationError.name = 'ValidationError';
+    validationError.errors = {};
+
+    Inspection.mockImplementation(function() {
+      this._id = 'abc';
+      this.save = jest.fn().mockRejectedValue(validationError);
+    });
+
+    await inspectionController.postInspection(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Validation failed.' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should call next with error if save throws a non-validation error', async () => {
     const error = new Error('db error');
     Inspection.mockImplementation(function() {
       this._id = 'abc';

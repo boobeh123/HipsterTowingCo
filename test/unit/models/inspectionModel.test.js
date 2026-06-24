@@ -19,10 +19,11 @@ describe('Inspection Model', () => {
     expect(err.errors.userId).toBeDefined();
   });
 
-  it('should require truckTractorNo to be at least 3 characters', async () => {
+
+  it('should require truckTractorNo to be at least 1 character', async () => {
     const inspection = new Inspection({
-      truckTractorNo: '12',
-      userId: new mongoose.Types.ObjectId()
+        truckTractorNo: '',
+        userId: new mongoose.Types.ObjectId()
     });
     let err;
     try {
