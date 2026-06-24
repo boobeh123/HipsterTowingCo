@@ -38,7 +38,7 @@ I envision that this application has potential to become something with a global
 
 ## 📢 Developer's Notes - Bug fixs - Validation error 
 
-- Using a 1-2 character long truck number cleared `validateAndSanitize`'s validation by since the conditional only determines if the `<input>` was empty
+- Using a 1-2 character long truck number cleared `validateAndSanitize`'s validation since the conditional only determines if the `<input>` was empty
 - The Mongoose schema has `minLength:` `3`. Anything 1–2 characters long cleared the client-side, reached the server, and Mongoose rejects it as a validation error due to `truckTractorNo.minLength`.
   - The `minLength` property value was changed from `3` to `1` (the USDOT #'s I've seen are 7 characters long tho)
 - The `Counter` bundles guests & user reports as a global count
