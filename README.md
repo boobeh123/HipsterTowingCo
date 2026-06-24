@@ -42,7 +42,7 @@ I envision that this application has potential to become something with a global
 - The Mongoose schema has `minLength:` `3`. Anything 1–2 characters long cleared the client-side, reached the server, and Mongoose rejects it as a validation error due to `truckTractorNo.minLength`.
   - The `minLength` property value was changed from `3` to `1` (the USDOT #'s I've seen are 7 characters long tho)
 - The `Counter` bundles guests & user reports as a global count
-  -  The `Counter` increments before the inspection POST settles, so failed saves are inflating the global count.
+  -  Previously, the `Counter` incremented before the inspection POST settles, so failed saves are inflating the global count.
     - The `Counter` now increments only after `response.ok` receives status 201
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.016
