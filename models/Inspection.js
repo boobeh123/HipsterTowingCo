@@ -60,7 +60,7 @@ const InspectionSchema = new mongoose.Schema({
         type: String,
         required: [true, 'USDOT/Truck number is required.'],
         trim: true,
-        minLength: [3, 'Truck number must be at least 3 characters long.']
+        minLength: [1, 'Truck number must be at least 1 character long.']
     },
     trailerNo: {
         type: String,
