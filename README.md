@@ -33,6 +33,18 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.017
+📅 **Release Date:** June 23rd, 2026
+
+## 📢 Developer's Notes - Bug fixs - Validation error 
+
+- Using a 1-2 character long truck number cleared `validateAndSanitize`'s validation by since the conditional only determines if the `<input>` was empty
+- The Mongoose schema has `minLength:` `3`. Anything 1–2 characters long cleared the client-side, reached the server, and Mongoose rejects it as a validation error due to `truckTractorNo.minLength`.
+  - The `minLength` property value was changed from `3` to `1` (the USDOT #'s I've seen are 7 characters long tho)
+- The `Counter` bundles guests & user reports as a global count
+  -  The `Counter` increments before the inspection POST settles, so failed saves are inflating the global count.
+    - The `Counter` now increments only after `response.ok` receives status 201
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.016
 📅 **Release Date:** June 21st, 2026
 
