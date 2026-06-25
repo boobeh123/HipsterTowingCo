@@ -90,6 +90,19 @@
                                         >
                                             Download PDF
                                         </button>
+                                        <form
+                                            class="historyTable__deleteForm"
+                                            action="/inspections/<%= inspection._id %>?_method=DELETE"
+                                            method="POST"
+                                        >
+                                            <button
+                                                type="submit"
+                                                class="btn btn--danger historyTable__delete"
+                                                aria-label="Delete inspection for truck <%= inspection.truckTractorNo %>"
+                                            >
+                                                Delete
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             <% }) %>
