@@ -47,7 +47,8 @@ jest.mock('../../../controllers/terms', () => ({
 }));
 
 jest.mock('../../../controllers/inspection', () => ({
-  postInspection: jest.fn((req, res) => res.status(201).json({ success: true })),
+  postInspection:   jest.fn((req, res) => res.status(201).json({ success: true })),
+  deleteInspection: jest.fn((req, res) => res.json({ message: 'Inspection deleted' })),
 }));
 
 jest.mock('../../../controllers/dashboard', () => ({
@@ -138,6 +139,17 @@ describe('Main Routes', () => {
 
       expect(inspectionController.postInspection).not.toHaveBeenCalled();
       expect(response.body).toEqual({ error: 'Unauthorised' });
+    });
+  });
+
+  describe('DELETE /inspections/:id', () => {
+    it('should call inspectionController.deleteInspection and return 200', async () => {
+      const response = await request(app)
+        .delete('/inspections/inspection_abc123')
+        .expect(200);
+
+      expect(inspectionController.deleteInspection).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Inspection deleted' });
     });
   });
 
