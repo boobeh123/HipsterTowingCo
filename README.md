@@ -33,6 +33,15 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.018
+📅 **Release Date:** June 24th, 2026
+
+## 📢 Developer's Notes - Deleting Inspections
+
+- Registered users can now delete their documents stored in MongoDB on the `/dashboard`
+- Add 6 more tests for a total of 163/163 passing unit tests
+  - Still need to do `integration` & `e2e`
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.017
 📅 **Release Date:** June 23rd, 2026
 
