@@ -846,6 +846,21 @@ if (historyTable) {
 }
 
 /**************************************************************
+ * Confirm before deleting an inspection from history
+ * Delegated submit listener intercepts delete form submissions
+ * and prompts for confirmation. Cancelling prevents the submit.
+ **************************************************************/
+if (historyTable) {
+    historyTable.addEventListener('submit', (event) => {
+        const form = event.target.closest('.historyTable__deleteForm')
+        if (!form) return
+        if (!confirm('Delete this inspection? This action cannot be undone.')) {
+            event.preventDefault()
+        }
+    })
+}
+
+/**************************************************************
 * Hamburger nav as a user avatar menu 
 * Toggles the user menu dropdown when the avatar button is clicked.
 ***************************************************************/
