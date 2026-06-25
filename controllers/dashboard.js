@@ -60,21 +60,4 @@ module.exports = {
         }
     },
 
-    getInspection: async (req, res, next) => {
-        try {
-            const inspection = await Inspection.findOne({
-                _id: req.params.id,
-                userId: req.user._id,
-            }).lean()
-
-            if (!inspection) {
-                return res.status(404).json({ error: 'Inspection not found.' })
-            }
-
-            res.json(inspection)
-        } catch(err) {
-            next(err)
-        }
-    },
-
 }
