@@ -13,10 +13,11 @@ const upload = require('../middleware/multer')
 const { ensureAuth, ensureAuthApi, ensureOnboarding } = require('../middleware/auth')
 
 router.get('/', homeController.getIndex)
+router.get('/dashboard', ensureAuth, dashboardController.getDashboard)
+router.get('/inspections/:id', ensureAuthApi, inspectionController.getInspection)
 router.post('/inspections/count', homeController.postInspectionCount)
 router.post('/inspections', ensureAuthApi, inspectionController.postInspection)
-router.get('/dashboard', ensureAuth, dashboardController.getDashboard)
-router.get('/inspections/:id', ensureAuthApi, dashboardController.getInspection)
+router.delete('/inspections/:id', ensureAuth, inspectionController.deleteInspection)
 
 router.get('/onboard', ensureOnboarding, onboardController.getOnboard)
 router.post('/onboard', ensureOnboarding, onboardController.postOnboard)
