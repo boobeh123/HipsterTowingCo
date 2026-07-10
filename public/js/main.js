@@ -8,6 +8,31 @@ const closeResultBtn = document.querySelector('#closeResultBtn');
 // Holds the most recently generated jsPDF doc so the download button can access it
 let currentInspectionReport = null;
 
+/**************************************************************
+ * Google Analytics — dynamic consent injection
+ * GA is never loaded on page load. injectGA() is called only
+ * after the user explicitly accepts via the consent banner,
+ * or on return visits where consent was already granted.
+ * Guards against double-injection with a src check.
+ **************************************************************/
+function injectGA() {
+    if (document.querySelector('script[src*="googletagmanager"]')) return
+    window.dataLayer = window.dataLayer || []
+    window.gtag = function() { window.dataLayer.push(arguments) }
+    window.gtag('js', new Date())
+    window.gtag('config', 'G-DHM2VXYJYE')
+    const gaScript = document.createElement('script')
+    gaScript.async = true
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-DHM2VXYJYE'
+    document.head.appendChild(gaScript)
+}
+
+// Returning visitors: inject GA immediately if already consented (no banner needed)
+const gaConsent = localStorage.getItem('pretriq_ga_consent')
+if (gaConsent === 'granted') {
+    injectGA()
+}
+
 function openModal() {
     if (!overlay) return;
 
@@ -645,6 +670,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const yearEl = document.getElementById('current-year');
     if (yearEl) {
         yearEl.textContent = String(new Date().getFullYear());
+    }
+
+    /**************************************************************
+     * Consent banner
+     * Show the banner only on first visit (no stored preference).
+     * Accept: inject GA and store 'granted'.
+     * Decline: store 'declined', banner hides, GA never loads.
+     **************************************************************/
+    const consentBanner = document.querySelector('#consentBanner')
+    const consentAccept = document.querySelector('#consentAccept')
+    const consentDecline = document.querySelector('#consentDecline')
+
+    if (consentBanner && !gaConsent) {
+        consentBanner.hidden = false
+    }
+
+    if (consentAccept) {
+        consentAccept.addEventListener('click', () => {
+            localStorage.setItem('pretriq_ga_consent', 'granted')
+            injectGA()
+            consentBanner.hidden = true
+        })
+    }
+
+    if (consentDecline) {
+        consentDecline.addEventListener('click', () => {
+            localStorage.setItem('pretriq_ga_consent', 'declined')
+            consentBanner.hidden = true
+        })
     }
 
     const inspectionBtn = document.querySelector('#startInspectionBtn');
