@@ -1886,6 +1886,7 @@ body.has-modal-open {
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
     z-index: 200;
     padding: var(--space-4) var(--space-6);
+    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
 }
 
 .consentBanner__inner {
