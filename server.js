@@ -19,7 +19,16 @@ const errorHandler = require('./middleware/errorHandler')
 // Passport config
 require('./config/passport')(passport)
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 connectDB()
+
+// Railway routes requests through a proxy. Without this, req.ip is the proxy's
+// address — so the rate limiters would count every visitor as one client — and
+// Express can't tell the connection is HTTPS, so secure cookies are never set.
+// The value is 1 (one proxy hop), not true: express-rate-limit rejects `true`
+// as too permissive because it lets clients spoof X-Forwarded-For.
+app.set('trust proxy', 1)
 app.set('view engine', 'ejs')
 
 // X-Content-Type-Options: nosniff — prevents MIME sniffing attacks
@@ -69,6 +78,12 @@ app.use(
         connectTimeoutMS: 10_000,
       },
     }),
+    cookie: {
+      httpOnly: true,                    // Not readable by document.cookie
+      sameSite: 'lax',                   // Blocks most cross-site request forgery
+      secure: isProduction,              // HTTPS only in production; local dev is plain HTTP
+      maxAge: 1000 * 60 * 60 * 24 * 7,   // 7 days
+    },
   })
 )
 
