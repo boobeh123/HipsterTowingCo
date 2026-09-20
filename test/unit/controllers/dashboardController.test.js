@@ -47,9 +47,7 @@ describe('dashboardController.getDashboard', () => {
 
     it('should render dashboard.ejs with stats and inspections', async () => {
         Counter.findOne.mockResolvedValue({ value: 42 });
-        Inspection.countDocuments
-            .mockResolvedValueOnce(6)  // totalInspections
-            .mockResolvedValueOnce(4); // inspectionsWithDefects
+        Inspection.countDocuments.mockResolvedValue(6);
         Inspection.findOne.mockReturnValue(mockFindOne({ date: '6/20/2026', createdAt: new Date() }));
         Inspection.find.mockReturnValue(mockFind([
             { _id: 'abc', truckTractorNo: '12345', trailerNo: '', date: '6/20/2026', conditionSatisfactory: true }
@@ -59,10 +57,23 @@ describe('dashboardController.getDashboard', () => {
 
         expect(res.render).toHaveBeenCalledWith('dashboard.ejs', expect.objectContaining({
             totalInspections: 6,
-            inspectionsWithDefects: 4,
             inspectionCount: 42,
             currentPage: 1,
         }));
+    });
+
+    // inspectionCount feeds inspectionModal.ejs, which dashboard.ejs includes.
+    // Dropping it renders a 500, so it is pinned here deliberately.
+    it('should pass inspectionCount through for the modal partial', async () => {
+        Counter.findOne.mockResolvedValue({ value: 7 });
+        Inspection.countDocuments.mockResolvedValue(0);
+        Inspection.findOne.mockReturnValue(mockFindOne(null));
+        Inspection.find.mockReturnValue(mockFind([]));
+
+        await dashboardController.getDashboard(req, res, next);
+
+        const payload = res.render.mock.calls[0][1];
+        expect(payload).toHaveProperty('inspectionCount', 7);
     });
 
     it('should default inspectionCount to 0 when no counter document exists', async () => {
@@ -75,12 +86,36 @@ describe('dashboardController.getDashboard', () => {
 
         expect(res.render).toHaveBeenCalledWith('dashboard.ejs', expect.objectContaining({
             inspectionCount: 0,
-            totalInspections: 0,
         }));
     });
 
+    it('should not run the unrendered defects count', async () => {
+        Inspection.countDocuments.mockResolvedValue(0);
+        Inspection.findOne.mockReturnValue(mockFindOne(null));
+        Inspection.find.mockReturnValue(mockFind([]));
+
+        await dashboardController.getDashboard(req, res, next);
+
+        // One countDocuments only: totalInspections. The 8-clause $or that
+        // nothing rendered used to be a second call here.
+        expect(Inspection.countDocuments).toHaveBeenCalledTimes(1);
+        expect(Inspection.countDocuments).toHaveBeenCalledWith({ userId: 'user123' });
+        expect(res.render.mock.calls[0][1]).not.toHaveProperty('inspectionsWithDefects');
+    });
+
+    it('should scope every query to the requesting user', async () => {
+        Inspection.countDocuments.mockResolvedValue(0);
+        Inspection.findOne.mockReturnValue(mockFindOne(null));
+        Inspection.find.mockReturnValue(mockFind([]));
+
+        await dashboardController.getDashboard(req, res, next);
+
+        expect(Inspection.countDocuments).toHaveBeenCalledWith({ userId: 'user123' });
+        expect(Inspection.findOne).toHaveBeenCalledWith({ userId: 'user123' });
+        expect(Inspection.find).toHaveBeenCalledWith({ userId: 'user123' });
+    });
+
     it('should set lastInspectionDate to null when no inspections exist', async () => {
-        Counter.findOne.mockResolvedValue(null);
         Inspection.countDocuments.mockResolvedValue(0);
         Inspection.findOne.mockReturnValue(mockFindOne(null));
         Inspection.find.mockReturnValue(mockFind([]));
@@ -94,7 +129,6 @@ describe('dashboardController.getDashboard', () => {
 
     it('should prefer inspection.date over createdAt for lastInspectionDate', async () => {
         const date = '6/20/2026';
-        Counter.findOne.mockResolvedValue(null);
         Inspection.countDocuments.mockResolvedValue(1);
         Inspection.findOne.mockReturnValue(mockFindOne({ date, createdAt: new Date() }));
         Inspection.find.mockReturnValue(mockFind([]));
@@ -107,7 +141,6 @@ describe('dashboardController.getDashboard', () => {
     });
 
     it('should default to page 1 when no page query param is provided', async () => {
-        Counter.findOne.mockResolvedValue(null);
         Inspection.countDocuments.mockResolvedValue(0);
         Inspection.findOne.mockReturnValue(mockFindOne(null));
         Inspection.find.mockReturnValue(mockFind([]));
@@ -121,7 +154,6 @@ describe('dashboardController.getDashboard', () => {
 
     it('should clamp page to 1 when an invalid page value is provided', async () => {
         req.query.page = '-5';
-        Counter.findOne.mockResolvedValue(null);
         Inspection.countDocuments.mockResolvedValue(0);
         Inspection.findOne.mockReturnValue(mockFindOne(null));
         Inspection.find.mockReturnValue(mockFind([]));
@@ -134,10 +166,7 @@ describe('dashboardController.getDashboard', () => {
     });
 
     it('should calculate totalPages correctly', async () => {
-        Counter.findOne.mockResolvedValue(null);
-        Inspection.countDocuments
-            .mockResolvedValueOnce(25) // 25 inspections = 3 pages at 10 per page
-            .mockResolvedValueOnce(0);
+        Inspection.countDocuments.mockResolvedValue(25); // 25 inspections = 3 pages at 10 per page
         Inspection.findOne.mockReturnValue(mockFindOne(null));
         Inspection.find.mockReturnValue(mockFind([]));
 
@@ -149,7 +178,9 @@ describe('dashboardController.getDashboard', () => {
     });
 
     it('should call next with error if a query throws', async () => {
-        Counter.findOne.mockRejectedValue(new Error('db error'));
+        Inspection.countDocuments.mockRejectedValue(new Error('db error'));
+        Inspection.findOne.mockReturnValue(mockFindOne(null));
+        Inspection.find.mockReturnValue(mockFind([]));
 
         await dashboardController.getDashboard(req, res, next);
 
