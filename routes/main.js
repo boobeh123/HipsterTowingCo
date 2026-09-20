@@ -9,7 +9,7 @@ const termController = require('../controllers/terms')
 const inspectionController = require('../controllers/inspection')
 const dashboardController = require('../controllers/dashboard')
 const profileController = require('../controllers/profile')
-const upload = require('../middleware/multer')
+const { uploadProfilePhoto } = require('../middleware/multer')
 const { ensureAuth, ensureAuthApi, ensureOnboarding } = require('../middleware/auth')
 const { authLimiter, passwordResetLimiter, counterLimiter } = require('../middleware/rateLimiters')
 
@@ -24,7 +24,7 @@ router.get('/onboard', ensureOnboarding, onboardController.getOnboard)
 router.post('/onboard', ensureOnboarding, onboardController.postOnboard)
 
 router.get('/profile', ensureAuth, profileController.getProfile)
-router.post('/profile/photo', ensureAuth, upload.single('file'), profileController.updatePhoto)
+router.post('/profile/photo', ensureAuth, uploadProfilePhoto, profileController.updatePhoto)
 router.delete('/profile/delete', ensureAuth, profileController.deleteAccount)
 
 router.get('/login', authController.getLogin)
