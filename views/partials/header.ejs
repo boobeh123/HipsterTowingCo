@@ -62,12 +62,12 @@
                         <a
                             href="/dashboard"
                             class="site-header__menuLink<%= (locals.currentPath || '') === '/dashboard' ? ' site-header__menuLink--active' : '' %>"
-                            <%= (locals.currentPath || '') === '/dashboard' ? 'aria-current="page"' : '' %>
+                            aria-current="<%= (locals.currentPath || '') === '/dashboard' ? 'page' : 'false' %>"
                         >Dashboard</a>
                         <a
                             href="/profile"
                             class="site-header__menuLink<%= (locals.currentPath || '') === '/profile' ? ' site-header__menuLink--active' : '' %>"
-                            <%= (locals.currentPath || '') === '/profile' ? 'aria-current="page"' : '' %>
+                            aria-current="<%= (locals.currentPath || '') === '/profile' ? 'page' : 'false' %>"
                         >Profile</a>
                         <a href="/logout" class="site-header__menuLink">Log out</a>
                     </div>
