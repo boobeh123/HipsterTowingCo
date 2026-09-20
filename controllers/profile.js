@@ -1,3 +1,4 @@
+const fs = require('fs')
 const User = require('../models/User')
 const cloudinary = require('../middleware/cloudinary')
 
@@ -13,16 +14,34 @@ module.exports = {
 
     updatePhoto: async (req, res, next) => {
         try {
+            // The <input> contains required attribute. A direct POST with no file would throw on req.file.path below.
+            if (!req.file) {
+                req.flash('errors', [{ msg: 'Please choose a photo to upload.' }])
+                return req.session.save((err) => {
+                    if (err) { return next(err) }
+                    res.redirect('/profile')
+                })
+            }
+
+            let result
+            try {
+                result = await cloudinary.uploader.upload(req.file.path, {
+                    width: 200,
+                    height: 200,
+                    gravity: 'faces',
+                    crop: 'thumb',
+                })
+            } finally {
+                // Multer writes the upload to the OS temp directory and doesn't remove it
+                // once it hands the request on. Clean it up whether or not Cloudinary
+                // accepted it. A failed unlink shouldn't fail the user's upload
+                await fs.promises.unlink(req.file.path).catch(() => {})
+            }
+
+            // Destroy the previous upload only after the replacement is safely stored,
             if (req.user.cloudinaryId) {
                 await cloudinary.uploader.destroy(req.user.cloudinaryId)
             }
-
-            const result = await cloudinary.uploader.upload(req.file.path, {
-                width: 200,
-                height: 200,
-                gravity: 'faces',
-                crop: 'thumb',
-            })
 
             await User.findByIdAndUpdate(req.user._id, {
                 image: result.secure_url,
