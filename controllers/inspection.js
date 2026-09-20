@@ -15,6 +15,10 @@ module.exports = {
 
             res.json(inspection)
         } catch(err) {
+            // A malformed id in the URL makes Mongoose throw a CastError before it queries. 
+            if (err.name === 'CastError') {
+                return res.status(404).json({ error: 'Inspection not found.' })
+            }
             next(err)
         }
     },
@@ -57,6 +61,15 @@ module.exports = {
                 res.redirect('/dashboard')
             })
         } catch(err) {
+            // As above: a malformed id is a bad address, so it gets the same
+            // flash and redirect as an inspection that simply isn't there.
+            if (err.name === 'CastError') {
+                req.flash('errors', [{ msg: 'Inspection not found.' }])
+                return req.session.save((saveErr) => {
+                    if (saveErr) return next(saveErr)
+                    res.redirect('/dashboard')
+                })
+            }
             next(err)
         }
     },
