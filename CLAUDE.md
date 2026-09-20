@@ -128,6 +128,14 @@ In `updatePhoto`, order matters: upload to Cloudinary **first**, then destroy th
 failed upload can't leave a user with no photo. The multer temp file is unlinked in a `finally`.
 Note `file.mimetype` is client-supplied — Cloudinary is what actually validates the bytes.
 
+### A view's required locals include every partial's
+
+Grepping a single `.ejs` file for a variable is not enough — partials are included at render time and
+share the same locals. `inspectionCount` is used only in `views/partials/inspectionModal.ejs`, which
+**both** `dashboard.ejs` and `index.ejs` include, so `getDashboard` and `getIndex` must each pass it
+or the page 500s at render. Grep `views/` recursively, and prefer actually rendering the template
+with the controller's payload over reasoning about it.
+
 ### EJS escaping gotcha
 
 `<%=` escapes its output, so **you cannot emit markup or HTML entities through it**. Two bugs in this
