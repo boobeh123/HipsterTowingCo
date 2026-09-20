@@ -9,29 +9,18 @@ module.exports = {
         try {
             const page = Math.max(1, parseInt(req.query.page) || 1)
             const userId = req.user._id
-            const counter = await Counter.findOne({ name: 'inspectionCount' })
-            const inspectionCount = counter ? counter.value : 0
 
+            // inspectionCount feeds the global counter in inspectionModal.ejs,
+            // which dashboard.ejs includes. It used to be awaited on its own
+            // line ahead of these; running it here makes it parallel instead.
             const [
+                counter,
                 totalInspections,
-                inspectionsWithDefects,
                 mostRecent,
                 inspections,
             ] = await Promise.all([
+                Counter.findOne({ name: 'inspectionCount' }),
                 Inspection.countDocuments({ userId }),
-                Inspection.countDocuments({
-                    userId,
-                    $or: [
-                        { 'defects.truckTractor.airCompressor': true },
-                        { 'defects.truckTractor.brakes': true },
-                        { 'defects.truckTractor.engine': true },
-                        { 'defects.truckTractor.steering': true },
-                        { 'defects.truckTractor.tires': true },
-                        { 'defects.trailer.brakes': true },
-                        { 'defects.trailer.tires': true },
-                        { conditionSatisfactory: false },
-                    ]
-                }),
                 Inspection.findOne({ userId })
                     .sort({ createdAt: -1 })
                     .select('date createdAt')
@@ -49,11 +38,10 @@ module.exports = {
             res.render('dashboard.ejs', {
                 inspections,
                 totalInspections,
-                inspectionsWithDefects,
                 lastInspectionDate: mostRecent ? (mostRecent.date || mostRecent.createdAt) : null,
                 currentPage: page,
                 totalPages,
-                inspectionCount,
+                inspectionCount: counter ? counter.value : 0,
             })
         } catch(err) {
             next(err)
