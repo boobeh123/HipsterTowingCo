@@ -140,7 +140,10 @@ module.exports = {
                 req.flash('errors', validationErrors)
                 return req.session.save((err) => {
                     if (err) { return next(err) }
-                    res.redirect('back')
+                    // Express 5 removed res.redirect('back')
+                    // Send user back to their own reset URL.
+                    // The token is encoded so it can't escape the /reset/ path.
+                    res.redirect(`/reset/${encodeURIComponent(req.params.token)}`)
                 })
             }
 
