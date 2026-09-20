@@ -165,7 +165,7 @@ describe('resetController.postRecoverPassword', () => {
         jest.clearAllMocks();
     });
 
-    it('should flash errors and redirect back when password is too short', async () => {
+    it('should flash errors and redirect to the reset form when password is too short', async () => {
         req.body.password = 'ab';
         req.body.confirmPassword = 'ab';
 
@@ -173,17 +173,17 @@ describe('resetController.postRecoverPassword', () => {
 
         expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
         expect(req.session.save).toHaveBeenCalled();
-        expect(res.redirect).toHaveBeenCalledWith('back');
+        expect(res.redirect).toHaveBeenCalledWith('/reset/abc123');
     });
 
-    it('should flash errors and redirect back when passwords do not match', async () => {
+    it('should flash errors and redirect to the reset form when passwords do not match', async () => {
         req.body.confirmPassword = 'different';
 
         await resetController.postRecoverPassword(req, res, next);
 
         expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
         expect(req.session.save).toHaveBeenCalled();
-        expect(res.redirect).toHaveBeenCalledWith('back');
+        expect(res.redirect).toHaveBeenCalledWith('/reset/abc123');
     });
 
     it('should flash errors and redirect to /forgot when token is invalid or expired', async () => {
