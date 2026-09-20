@@ -227,131 +227,31 @@ function readFormData() {
 }
 
 /**************************************************************
- * sanitizeText()
- * When a guest submits a form, this function iterates through the input(s) to remove characters that are used in XSS attacks.
- * Parameters: This function takes in one parameter.
- * Returns: This function returns a string.
- * Examples: 
- * If we are given:                 should return:
- * '<img src="#" onerror=alert(1)'  'img src=# onerror=alert(1)'
- * "'; DROP TABLE users; --"        '; DROP TABLE users; --'
- * '     hello `world`     '        'hello world'
- * 'C:\Program Files\'              'C:Program Files'
-
-* This function takes in one parameter, and it is a string.
-    * We want to declare a variable containing an array of characters used in Cross-site scripting attacks.
-    * We want to iterate through the string-argument.
-    * We want to compare the current letter against the array of characters.
-
-* I declare two variables:
-    * sanitized contains a blank string which will used to concatenate letters.
-    * arrayOfStrings will be used to compare each letter from the string-argument to a set of characters.
-* I check the user's input by using the typeof operator and the strict equality operator.
-    * typeof determines if the argument passed in is a string.
-        * I iterate through the string-argument using a for loop, which will be used to compare each individual letter in the argument.
-            * I use the includes() method on the arrayOfStrings and pass in the current letter
-                * I determine if the current letter is not character by using the (!) NOT operator:
-                    * If the current letter is NOT a character, 
-                        * I use the (+=) addition assignment operator to concatenate the current letter to the variable containing a blank string.
-    * Otherwise the argument does not evaluate as a string, and we return an empty string.
-* I use the trim() method on the variable containing a concatenated string and return the result.
-    * Trim removes whitespace from both the start & end of a string.
-***************************************************************/
-
-function sanitizeText(string) {
-    let sanitized = '';
-    let arrayOfStrings = ['<', '>', '"', '`', "'", '\\'];
-
-    if (typeof string === 'string') {
-
-        for (let i = 0; i < string.length; i++) {
-            if (!arrayOfStrings.includes(string[i])) {
-                sanitized += string[i];
-            }
-        }
-
-    } else {
-        return '';
-    }
-    return sanitized.trim();
-}
+ * sanitizeText(), validateAndSanitize() and decodeHTMLEntities()
+ * now live in public/js/utils.js, which footer.ejs loads before this
+ * file. 
+ *
+ * validateAndSanitize stays pure so it remains testable. The DOM
+ * feedback it used to perform lives in flagMissingTruckNumber() below.
+ **************************************************************/
 
 /**************************************************************
- * validateAndSanitize()
- * This function takes the current object-argument, sanitizes the property-values, then creates a new object using the same property names with sanitized property-values
- * Parameters: This function takes in one parameter.
- * Returns: This function returns an object.
- * Examples: 
- * If we are given:                 should return:
- * {                                {
-  "date": "3/1/2026",               "date": "3/1/2026",
-  "truckTractorNo": "<12\345'67>",  "truckTractorNo": "1234567",
-  "defects": {                      "defects": {
-    "truckTractor": {                 "truckTractor": {
-      "airCompressor": true,            "airCompressor": true,
-      "springs": true,                  "springs": true,
-      "mirrors": true                   "mirrors": true
-}                                   }
-  },                                  },
-  "trailerNo": "C:\Program Files\", "trailerNo": "C:Program Files",
-  "remarks": "",                    "remarks": "",
-  "mechanicDate": "",               "mechanicDate": "",
-  "driverDate": ""                  "driverDate": ""
-}                                   }
+ * flagMissingTruckNumber()
+ * Called when validateAndSanitize() rejects the form for a missing
+ * Truck / Tractor No. Shows the modal flash, focuses the field and
+ * marks it, then clears both on the next keystroke.
+ **************************************************************/
+function flagMissingTruckNumber() {
+    const truckTractorNoInputField = document.querySelector('#truckTractorNo');
+    if (!truckTractorNoInputField) return;
 
-* This function takes in one parameter, and it is an object.
-
-* I declare a variable which calls the sanitizeText() function
-    * I pass in the truckTractorNo property-value from our object-argument
-* I determine if the user submitted a truck-tractor number in their form
-    * If there's no input, the input field on the modal is focused with the focus() method & I return null
-
-* I create an object using literal notation
-    * I use the (...) spread operator to iterate through the object-argument
-        * The spread operator copies property & property-values from the object-argument into the new object
-    * I assign new property-values which are sanitized by sanitizeText()
-* I return a new object with sanitized property values
-***************************************************************/
-
-function validateAndSanitize(userInspectionObject) {
-    const truckNo = sanitizeText(userInspectionObject.truckTractorNo);
-    
-    if (!truckNo) {
-        const truckTractorNoInputField = document.querySelector('#truckTractorNo');
-        if (truckTractorNoInputField) {
-            showModalFlash('Truck / Tractor No. is required before generating a PDF.');
-            truckTractorNoInputField.focus();
-            truckTractorNoInputField.classList.add('input--error');
-            truckTractorNoInputField.addEventListener('input', () => {
-                truckTractorNoInputField.classList.remove('input--error');
-                clearModalFlash();
-            }, { once: true });
-            return null;
-        }
-    }
-    
-    let sanitizedUserInspectionObject = {
-        ...userInspectionObject,
-        truckTractorNo: truckNo,
-        trailerNo: sanitizeText(userInspectionObject.trailerNo),
-        remarks: sanitizeText(userInspectionObject.remarks),
-        mechanicDate: sanitizeText(userInspectionObject.mechanicDate),
-        driverDate: sanitizeText(userInspectionObject.driverDate)
-    }
-
-    return sanitizedUserInspectionObject;
-}
-
-/**************************************************************
- * decodeHTMLEntities
- * This function takes in the string from sanitizedUserInspectionObject.remarks, 
- * decodes any HTML entities ("&amp;"" -> "&") into a detached <textarea> element, and returns the string
- * There is no XSS risk because the detached element is never inserted into the live DOM.
-***************************************************************/
-function decodeHTMLEntities(remarks) {
-    const textArea = document.createElement('textarea');
-    textArea.innerHTML = remarks;
-    return textArea.value;
+    showModalFlash('Truck / Tractor No. is required before generating a PDF.');
+    truckTractorNoInputField.focus();
+    truckTractorNoInputField.classList.add('input--error');
+    truckTractorNoInputField.addEventListener('input', () => {
+        truckTractorNoInputField.classList.remove('input--error');
+        clearModalFlash();
+    }, { once: true });
 }
 
 /**************************************************************
@@ -740,7 +640,10 @@ document.addEventListener('DOMContentLoaded', () => {
     async function runInspection() {
         const userInspectionObject = readFormData();
         const sanitizedUserInspectionObject = validateAndSanitize(userInspectionObject);
-        if (!sanitizedUserInspectionObject) return null;
+        if (!sanitizedUserInspectionObject) {
+            flagMissingTruckNumber();
+            return null;
+        }
 
         sanitizedUserInspectionObject.id = Date.now().toString();
         sanitizedUserInspectionObject.createdAt = new Date().toISOString();
