@@ -767,7 +767,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             fetch('/inspections/count', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             }).catch(() => {});
 
             openResultOverlay();
@@ -785,14 +785,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // so failed saves don't inflate the global count.
             fetch('/inspections', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify(result),
             })
             .then((response) => {
                 if (response.ok) {
                     fetch('/inspections/count', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     }).catch(() => {});
                 }
             })
@@ -880,7 +880,7 @@ if (historyTable) {
         try {
             const response = await fetch(`/inspections/${id}`, {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             });
 
             if (!response.ok) {
