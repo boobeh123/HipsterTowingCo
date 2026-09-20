@@ -20,6 +20,9 @@ const ensureAuth = (req, res, next) => {
  * 3. Authenticated, name set  → next()
  **************************************************************/
 const ensureAuthApi = (req, res, next) => {
+    // Marks the request as a JSON endpoint so errorHandler returns JSON rather than an HTML error page 
+    req.wantsJson = true
+
     if (!req.isAuthenticated()) return res.status(401).json({ error: 'Unauthorized.' })
     if (!req.user.name) return res.status(403).json({ error: 'Onboarding required.' })
     return next()
