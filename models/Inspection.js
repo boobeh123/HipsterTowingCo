@@ -129,11 +129,17 @@ const InspectionSchema = new mongoose.Schema({
         required: true
     },
 
-    // Timestamps
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
+    // createdAt and updatedAt are supplied by { timestamps: true } below.
+    // They were also declared manually here, which was redundant and made it
+    // unclear which one governed.
 }, { timestamps: true })
+
+/**************************************************************
+ * Every dashboard query filters by userId and sorts by createdAt,
+ * so this compound index covers all of them. Without it each one is
+ * a collection scan. The order matters: equality field first, then
+ * the sort field, descending to match the queries.
+ **************************************************************/
+InspectionSchema.index({ userId: 1, createdAt: -1 })
 
 module.exports = mongoose.model('Inspection', InspectionSchema)
