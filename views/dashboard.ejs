@@ -73,7 +73,7 @@
                                             : new Date(inspection.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
                                     </td>
                                     <td class="historyTable__td" data-label="Truck / Tractor"> <%= inspection.truckTractorNo %></td>
-                                    <td class="historyTable__td" data-label="Trailer"> <%- inspection.trailerNo || '&mdash;' %></td>
+                                    <td class="historyTable__td" data-label="Trailer"> <%= inspection.trailerNo || '&mdash;' %></td>
                                     <td class="historyTable__td" data-label="Condition">
                                         <% if (inspection.conditionSatisfactory) { %>
                                             <span class="historyTable__badge historyTable__badge--ok">Satisfactory</span>
