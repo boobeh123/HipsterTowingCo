@@ -102,4 +102,11 @@ function decodeHTMLEntities(remarks) {
     return textArea.value;
 }
 
-module.exports = { sanitizeText, validateAndSanitize, decodeHTMLEntities };
+/**************************************************************
+ * This file is loaded two ways: by the browser as a plain script
+ * and by Jest as a CommonJS module. The guard keeps the browser from throwing
+ * "module is not defined" on the export below.
+ **************************************************************/
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { sanitizeText, validateAndSanitize, decodeHTMLEntities };
+}
