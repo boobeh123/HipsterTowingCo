@@ -158,57 +158,5 @@ describe('dashboardController.getDashboard', () => {
     });
 });
 
-// ─────────────────────────────────────────────
-// getInspection
-// ─────────────────────────────────────────────
-describe('dashboardController.getInspection', () => {
-    let req, res, next;
-
-    beforeEach(() => {
-        req = {
-            user: { _id: 'user123' },
-            params: { id: 'inspection_abc' },
-        };
-        res = {
-            json: jest.fn(),
-            status: jest.fn().mockReturnThis(),
-        };
-        next = jest.fn();
-    });
-
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-
-    it('should return the inspection as JSON when userId matches', async () => {
-        const mockInspection = { _id: 'inspection_abc', truckTractorNo: '12345', userId: 'user123' };
-        Inspection.findOne.mockReturnValue({ lean: jest.fn().mockResolvedValue(mockInspection) });
-
-        await dashboardController.getInspection(req, res, next);
-
-        expect(Inspection.findOne).toHaveBeenCalledWith({
-            _id: 'inspection_abc',
-            userId: 'user123',
-        });
-        expect(res.json).toHaveBeenCalledWith(mockInspection);
-    });
-
-    it('should return 404 when inspection is not found or userId does not match', async () => {
-        Inspection.findOne.mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
-
-        await dashboardController.getInspection(req, res, next);
-
-        expect(res.status).toHaveBeenCalledWith(404);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Inspection not found.' });
-    });
-
-    it('should call next with error if findOne throws', async () => {
-        const error = new Error('db error');
-        Inspection.findOne.mockReturnValue({ lean: jest.fn().mockRejectedValue(error) });
-
-        await dashboardController.getInspection(req, res, next);
-
-        expect(next).toHaveBeenCalledWith(error);
-        expect(res.json).not.toHaveBeenCalled();
-    });
-});
+// getInspection moved to controllers/inspection.js in a409f7d.
+// Its tests now live in test/unit/controllers/inspectionController.test.js

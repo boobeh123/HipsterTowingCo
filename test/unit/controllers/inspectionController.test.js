@@ -4,6 +4,83 @@ const Inspection = require('../../../models/Inspection');
 jest.mock('../../../models/Inspection');
 
 // ─────────────────────────────────────────────
+// getInspection
+// ─────────────────────────────────────────────
+describe('inspectionController.getInspection', () => {
+  let req, res, next;
+
+  beforeEach(() => {
+    req = {
+      user: { _id: 'user123' },
+      params: { id: 'inspection_abc' },
+    };
+    res = {
+      json: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    };
+    next = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return the inspection as JSON when userId matches', async () => {
+    const mockInspection = { _id: 'inspection_abc', truckTractorNo: '12345', userId: 'user123' };
+    Inspection.findOne.mockReturnValue({ lean: jest.fn().mockResolvedValue(mockInspection) });
+
+    await inspectionController.getInspection(req, res, next);
+
+    expect(Inspection.findOne).toHaveBeenCalledWith({
+      _id: 'inspection_abc',
+      userId: 'user123',
+    });
+    expect(res.json).toHaveBeenCalledWith(mockInspection);
+  });
+
+  it('should scope the query to both _id and userId to prevent reading other users records', async () => {
+    Inspection.findOne.mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
+
+    await inspectionController.getInspection(req, res, next);
+
+    expect(Inspection.findOne).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 'user123' })
+    );
+  });
+
+  it('should return 404 when inspection is not found or userId does not match', async () => {
+    Inspection.findOne.mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
+
+    await inspectionController.getInspection(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Inspection not found.' });
+  });
+
+  it('should return 404 rather than 500 when the id is a malformed ObjectId', async () => {
+    const castError = new Error('Cast to ObjectId failed');
+    castError.name = 'CastError';
+    Inspection.findOne.mockReturnValue({ lean: jest.fn().mockRejectedValue(castError) });
+
+    await inspectionController.getInspection(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Inspection not found.' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should call next with error if findOne throws something other than a CastError', async () => {
+    const error = new Error('db error');
+    Inspection.findOne.mockReturnValue({ lean: jest.fn().mockRejectedValue(error) });
+
+    await inspectionController.getInspection(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(error);
+    expect(res.json).not.toHaveBeenCalled();
+  });
+});
+
+// ─────────────────────────────────────────────
 // postInspection
 // ─────────────────────────────────────────────
 describe('inspectionController.postInspection', () => {

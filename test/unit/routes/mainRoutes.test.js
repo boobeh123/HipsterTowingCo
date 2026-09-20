@@ -47,6 +47,7 @@ jest.mock('../../../controllers/terms', () => ({
 }));
 
 jest.mock('../../../controllers/inspection', () => ({
+  getInspection:    jest.fn((req, res) => res.json({ message: 'Inspection fetched' })),
   postInspection:   jest.fn((req, res) => res.status(201).json({ success: true })),
   deleteInspection: jest.fn((req, res) => res.json({ message: 'Inspection deleted' })),
 }));
@@ -62,11 +63,11 @@ jest.mock('../../../controllers/profile', () => ({
   deleteAccount: jest.fn((req, res) => res.json({ message: 'Account deleted' })),
 }));
 
-// Mock multer so file upload routes don't require real files
-jest.mock('../../../middleware/multer', () => {
-  const multerMock = { single: jest.fn(() => (req, res, next) => next()) };
-  return multerMock;
-});
+// Mock multer so file upload routes don't require real files.
+// The module exports the uploadProfilePhoto wrapper, not a bare multer instance.
+jest.mock('../../../middleware/multer', () => ({
+  uploadProfilePhoto: jest.fn((req, res, next) => next()),
+}));
 
 // Mock auth middleware so we control auth in route tests
 jest.mock('../../../middleware/auth', () => ({
@@ -301,22 +302,22 @@ describe('Main Routes', () => {
   });
 
   describe('GET /inspections/:id', () => {
-    it('should call dashboardController.getInspection and return 200 when authenticated', async () => {
+    it('should call inspectionController.getInspection and return 200 when authenticated', async () => {
       const response = await request(app)
         .get('/inspections/abc123')
         .set('x-test-auth', 'true')
         .expect(200);
 
-      expect(dashboardController.getInspection).toHaveBeenCalledTimes(1);
-      expect(response.body).toEqual({ message: 'Inspection data' });
+      expect(inspectionController.getInspection).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Inspection fetched' });
     });
 
     it('should return 401 when not authenticated', async () => {
-      const response = await request(app)
+      await request(app)
         .get('/inspections/abc123')
         .expect(401);
 
-      expect(dashboardController.getInspection).not.toHaveBeenCalled();
+      expect(inspectionController.getInspection).not.toHaveBeenCalled();
     });
   });
 
