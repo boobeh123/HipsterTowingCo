@@ -25,7 +25,8 @@ module.exports = function (passport) {
   passport.deserializeUser(function(id, done) {
     process.nextTick(async function() {
       try {
-        const user = await User.findById(id)
+        // Exclude the bcrypt hash
+        const user = await User.findById(id).select('-password')
         done(null, user)
       } catch (err) {
         done(err)
