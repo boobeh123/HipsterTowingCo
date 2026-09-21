@@ -24,12 +24,10 @@ npx jest test/unit/controllers/authController.test.js
 npx jest -t "should flash errors and redirect to /forgot when email is invalid"
 ```
 
-### The other npm scripts are broken — use bare `npm test`
-
-`test:unit`, `test:e2e:simple`, `test:e2e:critical`, `test:e2e:full`, `test:e2e:all` and `test:all`
-all pass positional path arguments that **match zero files**. Jest treats those arguments as regexes
-against full paths, and the referenced `test/e2e*.test.js` files don't exist. `jest.config.js` uses
-`testMatch: ['**/test/**/*.test.js']`, which is why bare `jest` finds everything.
+`jest.config.js` uses `testMatch: ['**/test/**/*.test.js']`, so bare `jest` finds every suite. Six
+other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched **zero files** —
+Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
+files they named never existed. They have been removed; don't reintroduce that pattern.
 
 ### Expected test baseline: 168 passed, 14 suites, 0 failures
 
