@@ -41,15 +41,18 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc:     ["'self'"],
-            scriptSrc:      ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com", "https://www.google-analytics.com", "https://cdnjs.cloudflare.com", "https://kit.fontawesome.com"],
-            scriptSrcAttr:  ["'unsafe-inline'"],
+            // No 'unsafe-inline'
+            scriptSrc:      ["'self'", "'sha256-NDhfFC8SsrynpH/33WORDEVUNZTNzuIZ98Qxx9z7BJY='", "https://www.googletagmanager.com", "https://www.google-analytics.com", "https://cdnjs.cloudflare.com", "https://kit.fontawesome.com"],
+            // scriptSrcAttr is absent — it defaults to 'none', 
+            // which blocks inline handlers like onclick/onsubmit. 
+            // The two this app had were replaced with addEventListener.
             styleSrc:       ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
             fontSrc:        ["'self'", "https://fonts.gstatic.com", "https://kit.fontawesome.com", "https://ka-f.fontawesome.com"],
             imgSrc:         ["'self'", "data:", "https://res.cloudinary.com", "https://www.google-analytics.com", "https://placeholder.pics"],
             connectSrc:     ["'self'", "https://www.google-analytics.com", "https://analytics.google.com", "https://ka-f.fontawesome.com"],
             frameSrc:       ["'none'"],
             objectSrc:      ["'none'"],
-            upgradeInsecureRequests: [],
+            upgradeInsecureRequests: isProduction ? [] : null,
         },
     },
     // X-Frame-Options: SAMEORIGIN — already covered by CSP frameSrc 'none'
