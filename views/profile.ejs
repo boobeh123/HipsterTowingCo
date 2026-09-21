@@ -82,9 +82,9 @@
             <h2 id="danger-heading" class="profileCard__title profileCard__title--danger">Danger zone</h2>
             <p class="profileCard__dangerText">Deleting your account is permanent. All your inspections will also be deleted and cannot be recovered.</p>
             <form
+                class="profileCard__deleteForm"
                 action="/profile/delete?_method=DELETE"
                 method="POST"
-                onsubmit="return confirm('Are you sure? This will permanently delete your account and all your inspections.')"
             >
                 <button type="submit" class="btn profileCard__deleteBtn">Delete account</button>
             </form>
