@@ -33,6 +33,13 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.021
+📅 **Release Date:** September 20th, 2026
+
+## 📢 Developer's Notes - 
+
+- Add favicon fallback & site.webmanifest
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.020
 📅 **Release Date:** September 19th, 2026
 
@@ -45,6 +52,22 @@ I envision that this application has potential to become something with a global
 - I've been interfacing with LLMs using their web app since GPT-2
   - I asked Claude to help me setup the Claude Code desktop app & VSCode extension. Got a couple `.md` files & settings to update-- so far so good?!
 - Updated several packages with `npm audit fix`
+  - Updated Node to v22 - required for updating packages from `npm audit fix`
+- Added middleware for POST requests on /profile/photo 
+- Added validation which prevent empty images from being submitted
+- Added file size limit & extension+MIME checks to multer
+- Updated errorHandler 
+- Updated EJS tag so unescaped data doesn't display
+- The navigation's active state now displays 
+  - Being on /dashboard changes dashboards state in the nav
+- `res.redirect('back')` from Express 5 sent users to an unexisting route during password recovery
+  - When your passwords did not match while typing in a new password & confirm password, it would send you to `/reset/back/` instead of `/reset/:token/`
+- Updated tests suites & remove unused tests
+- Relocate a few client-side js functions from `public/js/main.js` to `public/js/utils.js`
+  - Functions are global by the time the handlers from `main.js` invoke the utils
+- Add `CLAUDE.md` to the project repository
+  - Welcome Claude & my intro to Claude Code
+- Add a compound index to the `InspectionSchema`
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.019
 📅 **Release Date:** July 9th, 2026
