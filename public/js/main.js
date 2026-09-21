@@ -818,7 +818,23 @@ if (historyTable) {
 }
 
 /**************************************************************
-* Hamburger nav as a user avatar menu 
+ * Confirm before deleting an account
+ * This used to be an inline onsubmit attribute on the form in
+ * profile.ejs, which forced script-src-attr: 'unsafe-inline' into
+ * the Content-Security-Policy. Same behaviour, no inline handler.
+ **************************************************************/
+const deleteAccountForm = document.querySelector('.profileCard__deleteForm')
+
+if (deleteAccountForm) {
+    deleteAccountForm.addEventListener('submit', (event) => {
+        if (!confirm('Are you sure? This will permanently delete your account and all your inspections.')) {
+            event.preventDefault()
+        }
+    })
+}
+
+/**************************************************************
+* Hamburger nav as a user avatar menu
 * Toggles the user menu dropdown when the avatar button is clicked.
 ***************************************************************/
 const userNavToggle = document.querySelector('#userNavToggle')
