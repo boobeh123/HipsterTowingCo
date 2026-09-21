@@ -1,0 +1,21 @@
+{
+  "name": "Pretriq",
+  "short_name": "Pretriq",
+  "description": "Submit FMCSA pre-trip inspection checklists digitally.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4caf50",
+  "icons": [
+    {
+      "src": "/imgs/favicon-32x32.png",
+      "sizes": "91x91",
+      "type": "image/png"
+    },
+    {
+      "src": "/imgs/favicon-32x32.webp",
+      "sizes": "91x91",
+      "type": "image/webp"
+    }
+  ]
+}
