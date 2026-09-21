@@ -134,6 +134,22 @@ share the same locals. `inspectionCount` is used only in `views/partials/inspect
 or the page 500s at render. Grep `views/` recursively, and prefer actually rendering the template
 with the controller's payload over reasoning about it.
 
+### CSP: no inline scripts or handlers, and a hash that can go stale
+
+`scriptSrc` has **no `'unsafe-inline'`**, and `scriptSrcAttr` is absent so it defaults to `'none'`.
+That means **an inline `onclick`/`onsubmit` will silently not fire** — use `addEventListener` in
+`public/js/main.js` instead. `.profileCard__deleteForm` is the pattern to copy.
+
+The one inline `<script>` is the JSON-LD block in `head.ejs`, allowed by a SHA-256 hash in
+`server.js`. **Editing that block — even its whitespace — invalidates the hash and silently blocks
+the structured data.** Regenerate with:
+
+```bash
+node -e "const fs=require('fs'),c=require('crypto');const m=fs.readFileSync('views/partials/head.ejs','utf8').match(/<script type=\"application\/ld\+json\">([\s\S]*?)<\/script>/);console.log(\"'sha256-\"+c.createHash('sha256').update(m[1],'utf8').digest('base64')+\"'\")"
+```
+
+`upgradeInsecureRequests` is production-only; it rewrites `http://` to `https://` and breaks local dev.
+
 ### EJS escaping gotcha
 
 `<%=` escapes its output, so **you cannot emit markup or HTML entities through it**. Two bugs in this
