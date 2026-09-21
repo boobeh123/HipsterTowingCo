@@ -31,7 +31,7 @@ all pass positional path arguments that **match zero files**. Jest treats those 
 against full paths, and the referenced `test/e2e*.test.js` files don't exist. `jest.config.js` uses
 `testMatch: ['**/test/**/*.test.js']`, which is why bare `jest` finds everything.
 
-### Expected test baseline: 165 passed, 14 suites, 0 failures
+### Expected test baseline: 168 passed, 14 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
