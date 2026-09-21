@@ -51,7 +51,9 @@ const UserSchema = new mongoose.Schema({
 // Password hash middleware
 UserSchema.pre('save', async function save() {
   if (!this.isModified('password')) { return }
-  this.password = await bcrypt.hash(this.password, 10)
+  // Cost 12. Existing hashes store the cost they were created with, so
+  // passwords hashed at 10 keep verifying; only new ones use 12.
+  this.password = await bcrypt.hash(this.password, 12)
 })
 
 // Helper method for validating user's password
