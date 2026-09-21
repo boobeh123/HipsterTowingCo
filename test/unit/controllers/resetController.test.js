@@ -48,14 +48,36 @@ describe('resetController.postPasswordReset', () => {
         expect(res.redirect).toHaveBeenCalledWith('/forgot');
     });
 
-    it('should flash errors and redirect to /forgot when email is not registered', async () => {
+    // An unregistered address must be indistinguishable from a registered one,
+    // or this form becomes a way to discover which emails have accounts.
+    it('should give an unregistered email the same response as a registered one', async () => {
         User.findOne.mockResolvedValue(null);
 
         await resetController.postPasswordReset(req, res, next);
 
-        expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
-        expect(req.session.save).toHaveBeenCalled();
+        expect(req.flash).toHaveBeenCalledWith('info', expect.any(Array));
+        expect(req.flash).not.toHaveBeenCalledWith('errors', expect.any(Array));
         expect(res.redirect).toHaveBeenCalledWith('/forgot');
+    });
+
+    it('should not send any email when the address is not registered', async () => {
+        User.findOne.mockResolvedValue(null);
+
+        await resetController.postPasswordReset(req, res, next);
+
+        expect(mockSendMail).not.toHaveBeenCalled();
+    });
+
+    it('should normalise the email before looking it up', async () => {
+        req.body.email = 'TEST@Example.COM';
+        User.findOne.mockResolvedValue(null);
+
+        await resetController.postPasswordReset(req, res, next);
+
+        // Mongoose does not run the schema's lowercase setter on query filters,
+        // so the controller must normalise or a differently-cased address
+        // silently finds nothing and the reset never arrives.
+        expect(User.findOne).toHaveBeenCalledWith({ email: 'test@example.com' });
     });
 
     it('should save token to user, send email, flash info, and redirect on valid email', async () => {

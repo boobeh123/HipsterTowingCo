@@ -55,13 +55,29 @@ describe('authController.postLogin', () => {
     expect(res.redirect).toHaveBeenCalledWith('/login');
   });
 
-  it('should flash errors and redirect to /login when password is too short', () => {
+  // Login deliberately has no password-length check. Accounts created before the
+  // minimum was raised to 8 still have shorter passwords, and rejecting them here
+  // would lock those users out. Passport decides whether the credentials are valid.
+  it('should NOT reject a short password at login — it goes to passport', () => {
+    req.body.password = 'ab';
+    req.__passportUser = { id: 'user123' };
+    req.logIn = jest.fn((user, cb) => cb(null));
+
+    authController.postLogin(req, res, next);
+
+    expect(passport.authenticate).toHaveBeenCalled();
+    expect(req.logIn).toHaveBeenCalled();
+    expect(req.flash).not.toHaveBeenCalledWith('errors', expect.any(Array));
+    expect(res.redirect).toHaveBeenCalledWith('/');
+  });
+
+  it('should still reject an invalid email regardless of password length', () => {
+    req.body.email = 'not-an-email';
     req.body.password = 'ab';
 
     authController.postLogin(req, res, next);
 
-    expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
-    expect(req.session.save).toHaveBeenCalled();
+    expect(passport.authenticate).not.toHaveBeenCalled();
     expect(res.redirect).toHaveBeenCalledWith('/login');
   });
 
