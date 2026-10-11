@@ -20,8 +20,10 @@ jest.mock('../../../utils/mailer', () => ({
 // ─────────────────────────────────────────────
 describe('resetController.postPasswordReset', () => {
     let req, res, next;
+    const originalBaseUrl = process.env.BASE_URL;
 
     beforeEach(() => {
+        process.env.BASE_URL = 'https://pretriq.test';
         req = {
             user: null,
             body: { email: 'test@example.com' },
@@ -36,6 +38,11 @@ describe('resetController.postPasswordReset', () => {
 
     afterEach(() => {
         jest.clearAllMocks();
+        if (originalBaseUrl === undefined) {
+            delete process.env.BASE_URL;
+        } else {
+            process.env.BASE_URL = originalBaseUrl;
+        }
     });
 
     it('should flash errors and redirect to /forgot when email is invalid', async () => {
@@ -103,6 +110,40 @@ describe('resetController.postPasswordReset', () => {
         expect(req.flash).toHaveBeenCalledWith('info', expect.any(Array));
         expect(req.session.save).toHaveBeenCalled();
         expect(res.redirect).toHaveBeenCalledWith('/forgot');
+    });
+
+    // A link built from the Host header would let anyone send a real reset
+    // email whose link points at their own server.
+    it('should build the reset link from BASE_URL and ignore the Host header', async () => {
+        req.headers.host = 'attacker.example';
+        const mockUser = {
+            email: 'test@example.com',
+            save: jest.fn().mockResolvedValue(),
+        };
+        User.findOne.mockResolvedValue(mockUser);
+
+        await resetController.postPasswordReset(req, res, next);
+
+        const { html } = mockSendMail.mock.calls[0][0];
+        // BASE_URL, then /reset/, then the 40-character hex token
+        expect(html).toMatch(/href="https:\/\/pretriq\.test\/reset\/[0-9a-f]{40}"/);
+        expect(html).not.toContain('attacker.example');
+    });
+
+    it('should call next with an error and send nothing when BASE_URL is not set', async () => {
+        delete process.env.BASE_URL;
+        const mockUser = {
+            email: 'test@example.com',
+            save: jest.fn().mockResolvedValue(),
+        };
+        User.findOne.mockResolvedValue(mockUser);
+
+        await resetController.postPasswordReset(req, res, next);
+
+        expect(next).toHaveBeenCalledWith(expect.any(Error));
+        expect(mockUser.save).not.toHaveBeenCalled();
+        expect(mockSendMail).not.toHaveBeenCalled();
+        expect(res.redirect).not.toHaveBeenCalled();
     });
 
     it('should call next with error if User.findOne throws', async () => {

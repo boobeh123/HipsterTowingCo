@@ -21,6 +21,11 @@ require('./config/passport')(passport)
 
 const isProduction = process.env.NODE_ENV === 'production'
 
+// Password reset emails build their link from BASE_URL (controllers/reset.js)
+if (isProduction && !process.env.BASE_URL) {
+  console.error('BASE_URL is not set: password reset emails will fail until it is.')
+}
+
 connectDB()
 
 // Railway routes requests through a proxy. Without this, req.ip is the proxy's
