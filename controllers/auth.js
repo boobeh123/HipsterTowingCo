@@ -48,7 +48,7 @@ module.exports = {
     })(req, res, next)
   },
 
-  getLogout: (req, res, next) => {
+  postLogout: (req, res, next) => {
     req.logout(function(err) {
       if (err) { return next(err) }
       req.session.destroy(function(err) {

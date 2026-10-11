@@ -16,7 +16,7 @@ const mainRoutes = require('../../../routes/main');
 jest.mock('../../../controllers/auth', () => ({
   getLogin:   jest.fn((req, res) => res.json({ message: 'Login page' })),
   postLogin:  jest.fn((req, res) => res.json({ message: 'Login successful' })),
-  getLogout:  jest.fn((req, res) => res.json({ message: 'Logout successful' })),
+  postLogout: jest.fn((req, res) => res.json({ message: 'Logout successful' })),
   getSignup:  jest.fn((req, res) => res.json({ message: 'Signup page' })),
   postSignup: jest.fn((req, res) => res.json({ message: 'Signup successful' })),
 }));
@@ -196,12 +196,20 @@ describe('Main Routes', () => {
     });
   });
 
-  describe('GET /logout', () => {
-    it('should call authController.getLogout and return 200', async () => {
-      const response = await request(app).get('/logout').expect(200);
+  describe('POST /logout', () => {
+    it('should call authController.postLogout and return 200', async () => {
+      const response = await request(app).post('/logout').expect(200);
 
-      expect(authController.getLogout).toHaveBeenCalledTimes(1);
+      expect(authController.postLogout).toHaveBeenCalledTimes(1);
       expect(response.body).toEqual({ message: 'Logout successful' });
+    });
+
+    // Another site could log users out with a link or redirect to a GET
+    // /logout, because SameSite=Lax cookies are sent on top-level GET navigations.
+    it('should not log out on GET /logout', async () => {
+      await request(app).get('/logout').expect(404);
+
+      expect(authController.postLogout).not.toHaveBeenCalled();
     });
   });
 

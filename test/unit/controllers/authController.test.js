@@ -272,9 +272,9 @@ describe('authController.getLogin', () => {
 });
 
 // ─────────────────────────────────────────────
-// getLogout
+// postLogout
 // ─────────────────────────────────────────────
-describe('authController.getLogout', () => {
+describe('authController.postLogout', () => {
   let req, res, next;
 
   beforeEach(() => {
@@ -291,7 +291,7 @@ describe('authController.getLogout', () => {
   });
 
   it('should call req.logout, destroy the session, and redirect to /', () => {
-    authController.getLogout(req, res, next);
+    authController.postLogout(req, res, next);
 
     expect(req.logout).toHaveBeenCalled();
     expect(req.session.destroy).toHaveBeenCalled();
@@ -302,7 +302,7 @@ describe('authController.getLogout', () => {
     const error = new Error('logout failed');
     req.logout = jest.fn(cb => cb(error));
 
-    authController.getLogout(req, res, next);
+    authController.postLogout(req, res, next);
 
     expect(next).toHaveBeenCalledWith(error);
     expect(res.redirect).not.toHaveBeenCalled();
@@ -312,7 +312,7 @@ describe('authController.getLogout', () => {
     const error = new Error('destroy failed');
     req.session.destroy = jest.fn(cb => cb(error));
 
-    authController.getLogout(req, res, next);
+    authController.postLogout(req, res, next);
 
     expect(next).toHaveBeenCalledWith(error);
     expect(res.redirect).not.toHaveBeenCalled();
