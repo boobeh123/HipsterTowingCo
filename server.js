@@ -69,6 +69,12 @@ app.use(helmet({
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+// Reset links carry a live token in the path. Log the route's shape instead,
+// so tokens never end up in Railway's logs.
+logger.token('url', (req) => {
+  const url = req.originalUrl || req.url
+  return url.startsWith('/reset/') ? '/reset/:token' : url
+})
 app.use(logger('dev'))
 // Use forms for put / delete
 app.use(methodOverride('_method'))
