@@ -60,15 +60,18 @@ const InspectionSchema = new mongoose.Schema({
         type: String,
         required: [true, 'USDOT/Truck number is required.'],
         trim: true,
-        minLength: [1, 'Truck number must be at least 1 character long.']
+        minLength: [1, 'Truck number must be at least 1 character long.'],
+        maxLength: [30, 'Truck / Tractor No. can be up to 30 characters.'],
     },
     trailerNo: {
         type: String,
         trim: true,
+        maxLength: [60, 'Trailer No(s). can be up to 60 characters.'],
     },
     date: {
         type: String,
         trim: true,
+        maxLength: [20, 'Date can be up to 20 characters.'],
     },
 
     // Defect checklists
@@ -84,6 +87,7 @@ const InspectionSchema = new mongoose.Schema({
     remarks: {
         type: String,
         trim: true,
+        maxLength: [2000, 'Remarks can be up to 2000 characters.'],
     },
 
     // Condition & certification
@@ -101,6 +105,7 @@ const InspectionSchema = new mongoose.Schema({
     driverDate: {
         type: String,
         trim: true,
+        maxLength: [20, "The driver's date can be up to 20 characters."],
     },
 
     // Mechanic section
@@ -120,6 +125,7 @@ const InspectionSchema = new mongoose.Schema({
     mechanicDate: {
         type: String,
         trim: true,
+        maxLength: [20, "The mechanic's date can be up to 20 characters."],
     },
 
     // Ownership

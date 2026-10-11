@@ -16,6 +16,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: false,
     trim: true,
+    maxLength: 60,
     default: ''
   },
   password: {
@@ -31,6 +32,8 @@ const UserSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
+  // Set when the Terms of Use checkbox is ticked at signup
+  termsAcceptedAt: Date,
   // lastLogin: {
   //   type: Date,
   //   default: Date.now
@@ -38,11 +41,6 @@ const UserSchema = new mongoose.Schema({
   // isActive: {
   //   type: Boolean,
   //   default: true
-  // },
-  // agreeToTerms: {
-  //   type: Boolean,
-  //   required: true,
-  //   default: false
   // },
 }, 
     { timestamps: true }

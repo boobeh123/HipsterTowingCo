@@ -1,5 +1,7 @@
 const inspectionController = require('../../../controllers/inspection');
 const Inspection = require('../../../models/Inspection');
+const { validateInspection } = require('../../../middleware/validators');
+const runValidators = require('../helpers/runValidators');
 
 jest.mock('../../../models/Inspection');
 
@@ -86,6 +88,23 @@ describe('inspectionController.getInspection', () => {
 describe('inspectionController.postInspection', () => {
   let req, res, next;
 
+  // Runs the route's validators, then the controller
+  const postInspection = async () => {
+    await runValidators(validateInspection, req);
+    await inspectionController.postInspection(req, res, next);
+  };
+
+  // Records what the controller passes to new Inspection()
+  const captureInspection = () => {
+    const captured = {};
+    Inspection.mockImplementation(function(data) {
+      captured.data = data;
+      this._id = 'abc';
+      this.save = jest.fn().mockResolvedValue();
+    });
+    return captured;
+  };
+
   beforeEach(() => {
     req = {
       body: {
@@ -119,7 +138,7 @@ describe('inspectionController.postInspection', () => {
       this.save = jest.fn().mockResolvedValue();
     });
 
-    await inspectionController.postInspection(req, res, next);
+    await postInspection();
 
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith({ success: true, id: mockId });
@@ -135,9 +154,83 @@ describe('inspectionController.postInspection', () => {
 
     req.body.userId = 'spoofed-id';
 
-    await inspectionController.postInspection(req, res, next);
+    await postInspection();
 
     expect(capturedData.userId).toBe('user123');
+  });
+
+  // Spreading req.body used to let a client set any field the schema has
+  it('should ignore createdAt, _id and the old signature fields sent by the client', async () => {
+    const captured = captureInspection();
+    Object.assign(req.body, {
+      createdAt: '2020-01-01T00:00:00.000Z',
+      updatedAt: '2020-01-01T00:00:00.000Z',
+      _id: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+      id: '1772771025543',
+      driverSignature: 'forged',
+      mechanicSignature: 'forged',
+    });
+
+    await postInspection();
+
+    expect(res.status).toHaveBeenCalledWith(201);
+    ['createdAt', 'updatedAt', '_id', 'id', 'driverSignature', 'mechanicSignature'].forEach((field) => {
+      expect(captured.data).not.toHaveProperty(field);
+    });
+    expect(captured.data).toMatchObject({ truckTractorNo: '12345', date: '2026-06-19' });
+  });
+
+  it('should return 400 without saving when the truck number is missing', async () => {
+    delete req.body.truckTractorNo;
+
+    await postInspection();
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Truck / Tractor No. is required.' });
+    expect(Inspection).not.toHaveBeenCalled();
+  });
+
+  it('should return 400 without saving when the truck number is not text', async () => {
+    req.body.truckTractorNo = { $gt: '' };
+
+    await postInspection();
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Truck / Tractor No. is required.' });
+    expect(Inspection).not.toHaveBeenCalled();
+  });
+
+  it('should return 400 without saving when remarks are longer than 2000 characters', async () => {
+    req.body.remarks = 'x'.repeat(2001);
+
+    await postInspection();
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Remarks can be up to 2000 characters.' });
+    expect(Inspection).not.toHaveBeenCalled();
+  });
+
+  // The modal's checkboxes arrive as the string "true" when ticked
+  it('should turn ticked checkboxes into booleans and trim text', async () => {
+    const captured = captureInspection();
+    req.body.truckTractorNo = '  12345  ';
+    req.body.conditionSatisfactory = 'true';
+    req.body.defects = { truckTractor: { brakes: 'true' }, trailer: { tires: true } };
+
+    await postInspection();
+
+    expect(captured.data.truckTractorNo).toBe('12345');
+    expect(captured.data.conditionSatisfactory).toBe(true);
+    expect(captured.data.defects).toEqual({ truckTractor: { brakes: true }, trailer: { tires: true } });
+  });
+
+  it('should return 400 when a checkbox holds something other than true or false', async () => {
+    req.body.defects = { truckTractor: { brakes: 'yes please' } };
+
+    await postInspection();
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(Inspection).not.toHaveBeenCalled();
   });
 
   it('should return 400 with the validation message when save throws a ValidationError', async () => {
@@ -152,7 +245,7 @@ describe('inspectionController.postInspection', () => {
       this.save = jest.fn().mockRejectedValue(validationError);
     });
 
-    await inspectionController.postInspection(req, res, next);
+    await postInspection();
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: 'Truck number must be at least 1 character long.' });
@@ -169,7 +262,7 @@ describe('inspectionController.postInspection', () => {
       this.save = jest.fn().mockRejectedValue(validationError);
     });
 
-    await inspectionController.postInspection(req, res, next);
+    await postInspection();
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: 'Validation failed.' });
@@ -183,7 +276,7 @@ describe('inspectionController.postInspection', () => {
       this.save = jest.fn().mockRejectedValue(error);
     });
 
-    await inspectionController.postInspection(req, res, next);
+    await postInspection();
 
     expect(next).toHaveBeenCalledWith(error);
     expect(res.json).not.toHaveBeenCalled();

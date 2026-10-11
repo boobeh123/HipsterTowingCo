@@ -146,3 +146,32 @@ describe('User Model', () => {
   });
 
 });
+
+// ─────────────────────────────────────────────
+// Fields added with server-side validation
+// ─────────────────────────────────────────────
+describe('User Model — terms and name length', () => {
+
+  it('should store when the Terms of Use were accepted', () => {
+    const acceptedAt = new Date('2026-10-01T00:00:00Z');
+    const user = new User({
+      email: 'test@example.com',
+      password: 'password123',
+      termsAcceptedAt: acceptedAt,
+    });
+
+    expect(user.termsAcceptedAt).toEqual(acceptedAt);
+  });
+
+  it('should reject a name longer than 60 characters', async () => {
+    const user = new User({ email: 'test@example.com', password: 'password123', name: 'A'.repeat(61) });
+
+    await expect(user.validate()).rejects.toMatchObject({ errors: { name: expect.anything() } });
+  });
+
+  it('should accept a name of exactly 60 characters', async () => {
+    const user = new User({ email: 'test@example.com', password: 'password123', name: 'A'.repeat(60) });
+
+    await expect(user.validate()).resolves.toBeUndefined();
+  });
+});
