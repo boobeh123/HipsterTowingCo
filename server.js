@@ -11,6 +11,7 @@ const MongoStore = require('connect-mongo').default
 const passport = require('passport')
 const flash = require('connect-flash')
 const mainRoutes = require('./routes/main')
+const viewLocals = require('./middleware/viewLocals')
 const errorHandler = require('./middleware/errorHandler')
 // const todoRoutes = require('./routes/todos')
 // const profileRoutes = require('./routes/profile')
@@ -108,23 +109,7 @@ app.use(passport.session())
 app.use(flash())
 
 // Flash + request context for all views (must run after session + connect-flash)
-app.use((req, res, next) => {
-  try {
-    res.locals.success = req.flash('success') || []
-    res.locals.errors  = req.flash('errors')  || []
-    res.locals.error   = req.flash('error')   || []
-    res.locals.info    = req.flash('info')    || []
-    res.locals.currentPath = req.path
-    res.locals.user = req.user || null
-    next()
-  } catch (err) {
-    res.locals.success = []
-    res.locals.errors  = []
-    res.locals.error   = []
-    res.locals.info    = []
-    next(err)
-  }
-})
+app.use(viewLocals)
 
 app.use('/', mainRoutes)
 // app.use('/todos', todoRoutes)
