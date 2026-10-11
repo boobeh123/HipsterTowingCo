@@ -11,6 +11,7 @@ const MongoStore = require('connect-mongo').default
 const passport = require('passport')
 const flash = require('connect-flash')
 const mainRoutes = require('./routes/main')
+const viewLocals = require('./middleware/viewLocals')
 const errorHandler = require('./middleware/errorHandler')
 // const todoRoutes = require('./routes/todos')
 // const profileRoutes = require('./routes/profile')
@@ -20,6 +21,11 @@ const errorHandler = require('./middleware/errorHandler')
 require('./config/passport')(passport)
 
 const isProduction = process.env.NODE_ENV === 'production'
+
+// Password reset emails build their link from BASE_URL (controllers/reset.js)
+if (isProduction && !process.env.BASE_URL) {
+  console.error('BASE_URL is not set: password reset emails will fail until it is.')
+}
 
 connectDB()
 
@@ -64,6 +70,12 @@ app.use(helmet({
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+// Reset links carry a live token in the path. Log the route's shape instead,
+// so tokens never end up in Railway's logs.
+logger.token('url', (req) => {
+  const url = req.originalUrl || req.url
+  return url.startsWith('/reset/') ? '/reset/:token' : url
+})
 app.use(logger('dev'))
 // Use forms for put / delete
 app.use(methodOverride('_method'))
@@ -97,23 +109,7 @@ app.use(passport.session())
 app.use(flash())
 
 // Flash + request context for all views (must run after session + connect-flash)
-app.use((req, res, next) => {
-  try {
-    res.locals.success = req.flash('success') || []
-    res.locals.errors  = req.flash('errors')  || []
-    res.locals.error   = req.flash('error')   || []
-    res.locals.info    = req.flash('info')    || []
-    res.locals.currentPath = req.path
-    res.locals.user = req.user || null
-    next()
-  } catch (err) {
-    res.locals.success = []
-    res.locals.errors  = []
-    res.locals.error   = []
-    res.locals.info    = []
-    next(err)
-  }
-})
+app.use(viewLocals)
 
 app.use('/', mainRoutes)
 // app.use('/todos', todoRoutes)

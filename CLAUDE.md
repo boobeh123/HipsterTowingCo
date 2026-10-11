@@ -14,7 +14,7 @@ https://pretriq.com.
 ```bash
 npm run dev      # nodemon server.js
 npm start        # node server.js
-npm test         # jest — runs all 14 suites
+npm test         # jest — runs all 15 suites
 ```
 
 Run a single suite or a single test:
@@ -29,7 +29,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 171 passed, 14 suites, 0 failures
+### Expected test baseline: 180 passed, 15 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -48,15 +48,18 @@ exist and set `NODE_ENV`, which no test reads. `testPathIgnorePatterns` still na
 ### Request pipeline (`server.js`) — order is load-bearing
 
 `trust proxy` → helmet/CSP → static → body parsers → `method-override` → session → passport →
-connect-flash → **res.locals middleware** → `routes/main.js` → 404 handler → `errorHandler`.
+connect-flash → **`viewLocals`** → `routes/main.js` → 404 handler → `errorHandler`.
 
 - **`app.set('trust proxy', 1)` must come before any `app.use`.** Railway proxies requests; without
   it `req.ip` is the proxy, so rate limiters count every visitor as one client and `secure` session
   cookies are never set. The value is `1`, not `true` — express-rate-limit rejects `true` as
   spoofable.
-- The `res.locals` middleware populates `success` / `errors` / `error` / `info` / `currentPath` /
-  `user` for **every** view. `currentPath` uses `req.path`, not `req.originalUrl`, so
-  `/dashboard?page=2` still matches the `'/dashboard'` comparisons in `views/partials/header.ejs`.
+- `middleware/viewLocals.js` populates `success` / `errors` / `error` / `info` / `currentPath` /
+  `user` for **every** view. It calls `req.flash()` only when `req.session.flash` exists: reading a
+  flash creates that object, a changed session gets saved and sent a cookie, and reading
+  unconditionally gave every anonymous visitor (bots included) a cookie and a MongoDB session.
+  `currentPath` uses `req.path`, not `req.originalUrl`, so `/dashboard?page=2` still matches the
+  `'/dashboard'` comparisons in `views/partials/header.ejs`.
 - All routes live in the single `routes/main.js`. There is no per-resource route file.
 
 ### Flash-then-redirect, always with an explicit `req.session.save()`
@@ -89,6 +92,15 @@ for routes without the flag (`POST /inspections/count` is unauthenticated and ha
 Controllers convert Mongoose `CastError` (a malformed `:id` in the URL) into the same response the
 not-found path produces — a JSON 404 in `getInspection`, a flash+redirect in `deleteInspection` —
 rather than letting it become a 500.
+
+### Logout is POST, and reset tokens stay out of logs and analytics
+
+- `POST /logout` comes from a small form in `views/partials/header.ejs`. There is deliberately no
+  GET route, because another site could sign users out by linking to it. `.site-header__logoutBtn`
+  resets the button so it looks exactly like the menu links.
+- A reset token is in the reset page's URL. `injectGA()` in `public/js/main.js` returns early on
+  `/reset/` paths, and `server.js` overrides morgan's `url` token so the log shows `/reset/:token`.
+  Keep both in step if the reset URL ever changes shape.
 
 ### Inspection flow — the PDF is built entirely client-side
 
@@ -162,9 +174,12 @@ entities. Reserve `<%-` for `include()`.
 
 - **`.env` lives at `config/.env`, not the project root.** Both `server.js` and
   `middleware/cloudinary.js` load it with an explicit `{ path: './config/.env' }`. A root `.env` is
-  silently ignored. There is no `.env.example`.
+  silently ignored. `config/.env.example` lists every key with no values; add new keys there too.
 - Variables read by the code: `DB_STRING`, `SESSION_SECRET`, `PORT`, `NODE_ENV`, `BASE_URL`,
   `EMAILNAME`, `EMAILPASSWORD`, `CLOUD_NAME`, `API_KEY`, `API_SECRET`.
+- **`BASE_URL` is required for password reset emails.** The link is built from it only, never from
+  the `Host` header, which the client controls. Without it, `POST /forgot` fails with a 500 and
+  `server.js` logs a warning at startup in production.
 - **`engines: { node: "22.x" }` in `package.json` is load-bearing — do not remove it.** Railway's
   Nixpacks reads it to pick a Node version. `mongodb`/`mongoose` require `>=20.19.0` and call the
   global `crypto.getRandomValues`, which does not exist on Node 18. Without the pin, Railway

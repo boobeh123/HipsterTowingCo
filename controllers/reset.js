@@ -31,10 +31,12 @@ module.exports = {
             // different capitalisation finds nothing and reset silently fails.
             const email = validator.normalizeEmail(req.body.email, { gmail_remove_dots: false })
 
-            // Resolve base URL — prefer explicit env var over Host header
-            // x-forwarded-proto is set by Railway in production
-            const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http'
-            const baseUrl = process.env.BASE_URL || `${protocol}://${req.headers.host}`
+            // The reset link is built from BASE_URL only. The Host header comes from
+            // the client, so a link built from it could point at someone else's
+            // server and hand them the token. Without BASE_URL no email is sent.
+            if (!process.env.BASE_URL) {
+                return next(new Error('BASE_URL is not set, so password reset links cannot be built.'))
+            }
 
             const user = await User.findOne({ email })
 
@@ -49,6 +51,9 @@ module.exports = {
                     })
                 })
                 const token = buf.toString('hex')
+
+                // new URL() also copes with a trailing slash on BASE_URL
+                const resetUrl = new URL(`/reset/${token}`, process.env.BASE_URL).href
 
                 // Hash the token before storing — raw token only lives in the email link.
                 // If the database is ever compromised, hashed tokens cannot be used directly.
@@ -91,7 +96,7 @@ module.exports = {
                                     <p>You are receiving this email because a password reset was requested for your pretriq account.</p>
                                     <p>Click the link below or paste it into your browser to reset your password. This link expires in <strong>1 hour</strong>.</p>
                                     <p style="padding: 1rem; border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; word-break: break-all;">
-                                        <a href="${baseUrl}/reset/${token}">${baseUrl}/reset/${token}</a>
+                                        <a href="${resetUrl}">${resetUrl}</a>
                                     </p>
                                     <p>If you did not request this, you can safely ignore this email and your password will remain unchanged.</p>
                                 </div>

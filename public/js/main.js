@@ -16,6 +16,9 @@ let currentInspectionReport = null;
  * Guards against double-injection with a src check.
  **************************************************************/
 function injectGA() {
+    // Reset pages carry a live token in the URL, and GA's page_view would send
+    // that whole URL to Google. Analytics resumes on the next page.
+    if (window.location.pathname.startsWith('/reset/')) return
     if (document.querySelector('script[src*="googletagmanager"]')) return
     window.dataLayer = window.dataLayer || []
     window.gtag = function() { window.dataLayer.push(arguments) }

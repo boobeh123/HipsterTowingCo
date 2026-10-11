@@ -16,3 +16,6 @@ SETUP_GUIDE.md
 README_E2E.md
 /test/config/test.env
 CLAUDE.local.md
+.env
+.env.*
+!.env.example

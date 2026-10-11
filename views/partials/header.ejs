@@ -69,7 +69,9 @@
                             class="site-header__menuLink<%= (locals.currentPath || '') === '/profile' ? ' site-header__menuLink--active' : '' %>"
                             aria-current="<%= (locals.currentPath || '') === '/profile' ? 'page' : 'false' %>"
                         >Profile</a>
-                        <a href="/logout" class="site-header__menuLink">Log out</a>
+                        <form action="/logout" method="POST" class="site-header__logoutForm">
+                            <button type="submit" class="site-header__menuLink site-header__logoutBtn">Log out</button>
+                        </form>
                     </div>
                 </div>
             <% } else { %>
