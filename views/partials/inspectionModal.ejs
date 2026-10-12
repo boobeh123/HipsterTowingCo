@@ -164,8 +164,13 @@
                     </label>
 
                     <div class="inspection-sig-block">
-                        <span class="inspection-sig-block__label">Driver's Signature</span>
-                        <div class="inspection-sig-line" aria-hidden="true"></div>
+                        <span id="driverSignatureLabel" class="inspection-sig-block__label">Driver's Signature (optional)</span>
+                        <%# A signature pad (main.js): what's drawn here is stamped on the PDF's line %>
+                        <div class="inspection-sig-pad" data-field="driverSignature">
+                            <canvas class="inspection-sig-pad__canvas" role="img" aria-labelledby="driverSignatureLabel" aria-describedby="signatureHint"></canvas>
+                            <button type="button" class="inspection-sig-pad__clear" aria-label="Clear the driver's signature">Clear</button>
+                        </div>
+                        <p id="signatureHint" class="inspection-sig-hint">Sign with your finger, a stylus or the mouse, or leave it blank to sign the printed copy by hand.</p>
                     </div>
 
                     <label class="inspection-condition">
@@ -180,8 +185,11 @@
 
                     <div class="inspection-sig-grid">
                         <div class="inspection-sig-block">
-                            <span class="inspection-sig-block__label">Mechanic's Signature</span>
-                            <div class="inspection-sig-line" aria-hidden="true"></div>
+                            <span id="mechanicSignatureLabel" class="inspection-sig-block__label">Mechanic's Signature (optional)</span>
+                            <div class="inspection-sig-pad" data-field="mechanicSignature">
+                                <canvas class="inspection-sig-pad__canvas" role="img" aria-labelledby="mechanicSignatureLabel" aria-describedby="signatureHint"></canvas>
+                                <button type="button" class="inspection-sig-pad__clear" aria-label="Clear the mechanic's signature">Clear</button>
+                            </div>
                         </div>
                         <div class="inspection-field inspection-field--date">
                             <label for="mechanicDate">Date</label>

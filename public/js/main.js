@@ -7,6 +7,7 @@ const closeResultBtn = document.querySelector('#closeResultBtn');
 const saveStatus = document.querySelector('#saveStatus');
 const filterTz = document.querySelector('#filter-tz');
 const exportLink = document.querySelector('.dashboard__exportBtn');
+const signaturePadElements = document.querySelectorAll('.inspection-sig-pad');
 
 // Holds the most recently generated jsPDF doc, and the data it was built
 // from, so the download button can save it under a meaningful file name
@@ -21,6 +22,9 @@ let modalOpener = null;
 // Set after a signed-in save succeeds on the dashboard, so closing the
 // result popup reloads the page and the new report shows in the history
 let reloadOnResultClose = false;
+
+// The modal's signature pads, keyed by the inspection field each one fills
+const signaturePads = new Map();
 
 // Every fetch here talks JSON; errorHandler.js answers in JSON when asked to
 const JSON_HEADERS = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
@@ -70,6 +74,8 @@ function openModal(event) {
     overlay.classList.add('is-open');
     overlay.removeAttribute('aria-hidden');
     document.body.classList.add('has-modal-open');
+    // The pads only have a size once the modal shows
+    signaturePads.forEach((pad) => pad.resize());
 
     clearModalFlash();
     
@@ -108,6 +114,118 @@ function closeModal() {
     if (form) {
         form.reset();
     }
+    signaturePads.forEach((pad) => pad.clear());
+}
+
+/**************************************************************
+ * createSignaturePad()
+ * Turns one .inspection-sig-pad into a pad to sign with a finger,
+ * stylus or mouse (pointer events cover all three). Returns:
+ *   resize()    sizes the canvas to its box; called when the modal opens
+ *   clear()     wipes the pad
+ *   toDataUrl() the signature cropped to its ink, as a small PNG data
+ *               URL, or undefined while the pad is blank
+ **************************************************************/
+const SIGNATURE_EXPORT = { maxWidth: 600, maxHeight: 150, margin: 6 };
+
+function createSignaturePad(element) {
+    const canvas = element.querySelector('.inspection-sig-pad__canvas');
+    const clearButton = element.querySelector('.inspection-sig-pad__clear');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let last = null;
+    // The inked area in CSS pixels, or null while the pad is blank
+    let ink = null;
+
+    function pointAt(event) {
+        const box = canvas.getBoundingClientRect();
+        return { x: event.clientX - box.left, y: event.clientY - box.top };
+    }
+
+    function strokeTo(point) {
+        ctx.beginPath();
+        ctx.moveTo(last.x, last.y);
+        ctx.lineTo(point.x, point.y);
+        ctx.stroke();
+        last = point;
+        ink = {
+            minX: Math.min(ink.minX, point.x),
+            minY: Math.min(ink.minY, point.y),
+            maxX: Math.max(ink.maxX, point.x),
+            maxY: Math.max(ink.maxY, point.y),
+        };
+    }
+
+    function resize() {
+        // Resizing a canvas wipes it, so leave a signature in place
+        const box = canvas.getBoundingClientRect();
+        if (ink || !box.width) return;
+        const scale = window.devicePixelRatio || 1;
+        canvas.width = Math.round(box.width * scale);
+        canvas.height = Math.round(box.height * scale);
+        ctx.setTransform(scale, 0, 0, scale, 0, 0);
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = '#111';
+    }
+
+    function clear() {
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+        ink = null;
+    }
+
+    function toDataUrl() {
+        if (!ink) return undefined;
+
+        // Crop to the ink plus a margin, in the canvas's own pixels
+        const scale = canvas.width / canvas.getBoundingClientRect().width;
+        const margin = SIGNATURE_EXPORT.margin;
+        const sx = Math.max(0, (ink.minX - margin) * scale);
+        const sy = Math.max(0, (ink.minY - margin) * scale);
+        const sw = Math.min(canvas.width - sx, (ink.maxX - ink.minX + 2 * margin) * scale);
+        const sh = Math.min(canvas.height - sy, (ink.maxY - ink.minY + 2 * margin) * scale);
+
+        // Shrink it until it fits the size the server accepts
+        let fit = Math.min(1, SIGNATURE_EXPORT.maxWidth / sw, SIGNATURE_EXPORT.maxHeight / sh);
+        for (let attempt = 0; attempt < 4; attempt++) {
+            const output = document.createElement('canvas');
+            output.width = Math.max(1, Math.round(sw * fit));
+            output.height = Math.max(1, Math.round(sh * fit));
+            output.getContext('2d').drawImage(canvas, sx, sy, sw, sh, 0, 0, output.width, output.height);
+            const image = output.toDataURL('image/png');
+            if (isSignatureImage(image)) return image;
+            fit *= 0.7;
+        }
+        return undefined;
+    }
+
+    canvas.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
+        canvas.setPointerCapture(event.pointerId);
+        drawing = true;
+        last = pointAt(event);
+        ink = ink || { minX: last.x, minY: last.y, maxX: last.x, maxY: last.y };
+        // A tap leaves a dot
+        strokeTo({ x: last.x + 0.1, y: last.y });
+    });
+    canvas.addEventListener('pointermove', (event) => {
+        if (!drawing) return;
+        // Fast strokes arrive as several points per event
+        const points = event.getCoalescedEvents ? event.getCoalescedEvents() : [event];
+        (points.length ? points : [event]).forEach((point) => strokeTo(pointAt(point)));
+    });
+    ['pointerup', 'pointercancel'].forEach((type) => {
+        canvas.addEventListener(type, () => {
+            drawing = false;
+        });
+    });
+    clearButton.addEventListener('click', clear);
+
+    return { resize, clear, toDataUrl };
 }
 
 function showModalFlash(message) {
@@ -399,6 +517,7 @@ function flagMissingTruckNumber() {
 * 13. I split the remarks into lines that fit the Remarks box, and write each one just above a ruled line
     * Up to 6 lines go on the form. Longer remarks put 5 lines there, a "continue on page 2" note on the 6th,
       and the rest on a second page headed "Remarks (continued)" with the truck number and date
+* 14. I stamp any drawn signatures (driver, mechanic) just above their lines on page 1, scaled to fit
 ***************************************************************/
 // 0
 async function generateDVIRPDF(sanitizedUserInspectionObject) {
@@ -547,6 +666,28 @@ async function generateDVIRPDF(sanitizedUserInspectionObject) {
             y += lineHeight;
         });
     }
+
+    // 14. Drawn signatures, fitted just above the driver's and mechanic's
+    // lines on page 1 (long remarks may have moved jsPDF on to page 2).
+    // Only PNG data URLs from the pads count; old saved text is left out.
+    // Heights stop about 1.5 mm below the printed line above each signature.
+    const SIGNATURE_BOXES = {
+        driverSignature: { x: 50, bottom: 232.3, maxWidth: 75, maxHeight: 7 },
+        mechanicSignature: { x: 57, bottom: 257.0, maxWidth: 75, maxHeight: 7 },
+    };
+    driverVehicleInspectionReport.setPage(1);
+    Object.entries(SIGNATURE_BOXES).forEach(([field, box]) => {
+        const image = sanitizedUserInspectionObject[field];
+        if (!isSignatureImage(image)) return;
+        try {
+            const { width, height } = driverVehicleInspectionReport.getImageProperties(image);
+            const fit = Math.min(box.maxWidth / width, box.maxHeight / height);
+            driverVehicleInspectionReport.addImage(image, 'PNG', box.x, box.bottom - height * fit, width * fit, height * fit);
+        } catch (err) {
+            // A damaged image shouldn't stop the rest of the PDF
+            console.error(`Skipped a ${field} that could not be read:`, err);
+        }
+    });
 
     return driverVehicleInspectionReport;
 }
@@ -698,6 +839,10 @@ function initHeroLetterBounceCanvas() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    signaturePadElements.forEach((element) => {
+        signaturePads.set(element.dataset.field, createSignaturePad(element));
+    });
+
     // The dashboard filter's From and To are the driver's local days, so the
     // form sends the browser's time zone along (utils/inspectionFilter.js).
     // The CSV export needs it too, for its local "Saved" times and file name.
@@ -788,6 +933,14 @@ document.addEventListener('DOMContentLoaded', () => {
             flagMissingTruckNumber();
             return null;
         }
+
+        // The signature pads aren't form fields, so add what was drawn
+        signaturePads.forEach((pad, field) => {
+            const image = pad.toDataUrl();
+            if (image) {
+                sanitizedUserInspectionObject[field] = image;
+            }
+        });
 
         try {
             currentInspectionReport = await generateDVIRPDF(sanitizedUserInspectionObject);

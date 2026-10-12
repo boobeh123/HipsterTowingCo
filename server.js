@@ -82,7 +82,9 @@ app.use(logger(isProduction ? 'combined' : 'dev'))
 // enough, and a field like email[$ne] stays a plain string key instead of
 // becoming an object. The inspection save arrives as JSON.
 app.use(express.urlencoded({ extended: false }))
-app.use(express.json())
+// An inspection save can carry two drawn signatures of up to 60 KB each
+// (SIGNATURE_MAX_LENGTH in public/js/utils.js); the default limit is 100kb
+app.use(express.json({ limit: '200kb' }))
 
 app.use(express.static('public'))
 // Use forms for put / delete

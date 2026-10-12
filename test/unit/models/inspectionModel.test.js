@@ -99,6 +99,8 @@ describe('Inspection Model — length limits and unknown fields', () => {
   const base = () => ({ truckTractorNo: '12345', userId: new mongoose.Types.ObjectId() });
 
   it.each([
+    ['driverSignature', 60000],
+    ['mechanicSignature', 60000],
     ['truckTractorNo', 30],
     ['trailerNo', 60],
     ['date', 20],

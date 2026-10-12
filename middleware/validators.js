@@ -1,5 +1,6 @@
 const { body, query, validationResult } = require('express-validator')
 const { FILTER_STATUSES } = require('../utils/inspectionFilter')
+const { SIGNATURE_PREFIX, SIGNATURE_MAX_LENGTH, isSignatureImage } = require('../public/js/utils')
 
 /**************************************************************
  * validators.js
@@ -67,6 +68,27 @@ const checkbox = (field) =>
         .optional()
         .isBoolean().withMessage('Checkbox values must be true or false.').bail()
         .toBoolean(true)
+
+// The first bytes of every PNG file
+const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+
+// A drawn signature from the inspection form's pads: a PNG data URL within
+// SIGNATURE_MAX_LENGTH (shared with public/js/utils.js) whose base64 text is
+// well formed and really decodes to a PNG
+const isPngSignature = (value) => {
+    if (!isSignatureImage(value)) return false
+    const base64 = value.slice(SIGNATURE_PREFIX.length)
+    // Base64 letters, then up to two "=" pads
+    if (!/^[A-Za-z0-9+/]+={0,2}$/.test(base64)) return false
+    return Buffer.from(base64.slice(0, 12), 'base64').subarray(0, 8).equals(PNG_SIGNATURE)
+}
+
+const signatureField = (field) =>
+    body(field)
+        .optional()
+        .isString().withMessage('Signatures must be images.').bail()
+        .isLength({ max: SIGNATURE_MAX_LENGTH }).withMessage('A signature was too large. Please clear it and sign again.').bail()
+        .custom(isPngSignature).withMessage('Signatures must be PNG images drawn on the form.')
 
 const TERMS_MESSAGE = 'Please agree to the Terms of Use to create an account.'
 
@@ -147,5 +169,7 @@ module.exports = {
         // Unknown defect names pass through here, and the schema drops them
         checkbox('defects.truckTractor.*'),
         checkbox('defects.trailer.*'),
+        signatureField('driverSignature'),
+        signatureField('mechanicSignature'),
     ],
 }

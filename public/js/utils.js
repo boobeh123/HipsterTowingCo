@@ -108,10 +108,38 @@ function pdfFileName(truckNo, when) {
 }
 
 /**************************************************************
+ * isSignatureImage()
+ * True for a drawn signature as the pads in main.js export it: a
+ * PNG data URL no longer than SIGNATURE_MAX_LENGTH. Older saved
+ * inspections can hold plain text in the signature fields, which
+ * this rejects, so generateDVIRPDF() leaves those lines blank.
+ * The server checks the same limit and also the PNG's own bytes
+ * (signatureField in middleware/validators.js).
+ **************************************************************/
+const SIGNATURE_PREFIX = 'data:image/png;base64,';
+const SIGNATURE_MAX_LENGTH = 60000;
+
+function isSignatureImage(value) {
+    return typeof value === 'string'
+        && value.startsWith(SIGNATURE_PREFIX)
+        && value.length > SIGNATURE_PREFIX.length
+        && value.length <= SIGNATURE_MAX_LENGTH;
+}
+
+/**************************************************************
  * This file is loaded two ways: by the browser as a plain script
  * and by Jest as a CommonJS module. The guard keeps the browser from throwing
  * "module is not defined" on the export below.
  **************************************************************/
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { FIELD_LIMITS, sanitizeText, validateAndSanitize, decodeHTMLEntities, pdfFileName };
+    module.exports = {
+        FIELD_LIMITS,
+        SIGNATURE_PREFIX,
+        SIGNATURE_MAX_LENGTH,
+        sanitizeText,
+        validateAndSanitize,
+        decodeHTMLEntities,
+        pdfFileName,
+        isSignatureImage,
+    };
 }

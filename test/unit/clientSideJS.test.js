@@ -1,5 +1,5 @@
 // public/js/utils.js has no DOM access, so these run in Jest's plain node environment
-const { FIELD_LIMITS, sanitizeText, validateAndSanitize, decodeHTMLEntities, pdfFileName } = require('../../public/js/utils.js');
+const { FIELD_LIMITS, SIGNATURE_MAX_LENGTH, sanitizeText, validateAndSanitize, decodeHTMLEntities, pdfFileName, isSignatureImage } = require('../../public/js/utils.js');
 
 // ─────────────────────────────────────────────
 // sanitizeText
@@ -169,6 +169,32 @@ describe('pdfFileName()', () => {
     const expectedDay = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, '0'), String(today.getDate()).padStart(2, '0')].join('-');
 
     expect(pdfFileName('', new Date('not a date'))).toBe(`pretriq-inspection-${expectedDay}.pdf`);
+  });
+
+});
+
+// ─────────────────────────────────────────────
+// isSignatureImage — what generateDVIRPDF() stamps on a signature line
+// ─────────────────────────────────────────────
+describe('isSignatureImage()', () => {
+
+  it('should accept a PNG data URL within the size limit', () => {
+    expect(isSignatureImage('data:image/png;base64,iVBORw0KGgo=')).toBe(true);
+  });
+
+  // Inspections saved before the pads existed can hold plain text here
+  it('should reject old text signatures and anything that is not a PNG data URL', () => {
+    expect(isSignatureImage('Jordan Rivera')).toBe(false);
+    expect(isSignatureImage('data:image/svg+xml;base64,PHN2Zz4=')).toBe(false);
+    expect(isSignatureImage('data:image/png;base64,')).toBe(false);
+    expect(isSignatureImage(undefined)).toBe(false);
+    expect(isSignatureImage({})).toBe(false);
+  });
+
+  it('should reject a data URL longer than SIGNATURE_MAX_LENGTH', () => {
+    const prefix = 'data:image/png;base64,';
+    expect(isSignatureImage(prefix + 'A'.repeat(SIGNATURE_MAX_LENGTH - prefix.length))).toBe(true);
+    expect(isSignatureImage(prefix + 'A'.repeat(SIGNATURE_MAX_LENGTH - prefix.length + 1))).toBe(false);
   });
 
 });

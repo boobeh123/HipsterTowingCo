@@ -160,24 +160,64 @@ describe('inspectionController.postInspection', () => {
   });
 
   // Spreading req.body used to let a client set any field the schema has
-  it('should ignore createdAt, _id and the old signature fields sent by the client', async () => {
+  it('should ignore createdAt, _id and other fields the form does not have', async () => {
     const captured = captureInspection();
     Object.assign(req.body, {
       createdAt: '2020-01-01T00:00:00.000Z',
       updatedAt: '2020-01-01T00:00:00.000Z',
       _id: 'aaaaaaaaaaaaaaaaaaaaaaaa',
       id: '1772771025543',
-      driverSignature: 'forged',
-      mechanicSignature: 'forged',
+      userId: 'someone-else',
     });
 
     await postInspection();
 
     expect(res.status).toHaveBeenCalledWith(201);
-    ['createdAt', 'updatedAt', '_id', 'id', 'driverSignature', 'mechanicSignature'].forEach((field) => {
+    ['createdAt', 'updatedAt', '_id', 'id'].forEach((field) => {
       expect(captured.data).not.toHaveProperty(field);
     });
+    expect(captured.data.userId).toBe('user123');
     expect(captured.data).toMatchObject({ truckTractorNo: '12345', date: '2026-06-19' });
+  });
+
+  // ── Drawn signatures (the form's signature pads) ──
+  // The first bytes of a real PNG, as base64
+  const PNG_DATA_URL = 'data:image/png;base64,' + Buffer.from('89504e470d0a1a0a0000000d49484452', 'hex').toString('base64');
+
+  it('should save drawn signatures that are PNG images', async () => {
+    const captured = captureInspection();
+    req.body.driverSignature = PNG_DATA_URL;
+    req.body.mechanicSignature = PNG_DATA_URL;
+
+    await postInspection();
+
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(captured.data.driverSignature).toBe(PNG_DATA_URL);
+    expect(captured.data.mechanicSignature).toBe(PNG_DATA_URL);
+  });
+
+  it.each([
+    ['plain text', 'Jordan Rivera'],
+    ['an SVG image', 'data:image/svg+xml;base64,PHN2Zz48L3N2Zz4='],
+    ['GIF bytes labelled as PNG', 'data:image/png;base64,' + Buffer.from('GIF89a000000').toString('base64')],
+    ['broken base64', 'data:image/png;base64,iVBORw0KGgo<script>'],
+  ])('should refuse a signature that is %s', async (label, value) => {
+    req.body.driverSignature = value;
+
+    await postInspection();
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Signatures must be PNG images drawn on the form.' });
+    expect(Inspection).not.toHaveBeenCalled();
+  });
+
+  it('should refuse a signature over 60,000 characters', async () => {
+    req.body.mechanicSignature = PNG_DATA_URL + 'A'.repeat(60000);
+
+    await postInspection();
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'A signature was too large. Please clear it and sign again.' });
   });
 
   it('should return 400 without saving when the truck number is missing', async () => {
