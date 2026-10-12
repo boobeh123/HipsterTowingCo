@@ -1883,6 +1883,13 @@ body.has-modal-open {
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
 }
 
+/* Inline SVG icons, sized like the Font Awesome glyphs they replace: 1em tall,
+   with the width coming from each icon's viewBox */
+.site-footer__icon {
+  height: 1em;
+  width: auto;
+}
+
 .site-footer__copyright {
   margin: var(--space-6) 0 0;
   font-size: 0.875rem;

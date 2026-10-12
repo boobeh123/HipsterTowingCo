@@ -6,20 +6,14 @@ const mongoose = require('mongoose')
 // the same way.
 mongoose.set('sanitizeFilter', true)
 
+// Connects once and returns the driver's client, which the session store in
+// server.js reuses instead of opening a second connection. A failure is
+// thrown to server.js, which logs it and exits rather than serve requests
+// with no database.
 const connectDB = async () => {
-
-  try {
-    const conn = await mongoose.connect(process.env.DB_STRING)
-
-    console.log(`MongoDB Connected: ${conn.connection.host}`)
-
-  } catch (err) {
-
-    console.error(err, err.message)
-    process.exit(1)
-
-  }
-
+  const conn = await mongoose.connect(process.env.DB_STRING)
+  console.log(`MongoDB Connected: ${conn.connection.host}`)
+  return conn.connection.getClient()
 }
 
 module.exports = connectDB

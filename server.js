@@ -1,4 +1,4 @@
-require('dotenv').config({ path: './config/.env' })
+require('dotenv').config({ path: './config/.env', quiet: true }) // quiet: no dotenv tip line in the logs
 
 const express = require('express')
 const app = express()
@@ -7,20 +7,18 @@ const logger = require('morgan')
 const connectDB = require('./config/database')
 const methodOverride = require('method-override')
 const session = require('express-session')
-const MongoStore = require('connect-mongo').default
+const { MongoStore } = require('connect-mongo')
 const passport = require('passport')
 const flash = require('connect-flash')
 const mainRoutes = require('./routes/main')
 const viewLocals = require('./middleware/viewLocals')
 const { endStaleSessions } = require('./middleware/auth')
 const errorHandler = require('./middleware/errorHandler')
-// const todoRoutes = require('./routes/todos')
-// const profileRoutes = require('./routes/profile')
-// const contactRoutes = require('./routes/contact');
 
 // Passport config
 require('./config/passport')(passport)
 
+const PORT = process.env.PORT || 3000
 const isProduction = process.env.NODE_ENV === 'production'
 
 // Password reset emails build their link from BASE_URL (controllers/reset.js)
@@ -28,7 +26,9 @@ if (isProduction && !process.env.BASE_URL) {
   console.error('BASE_URL is not set: password reset emails will fail until it is.')
 }
 
-connectDB()
+// Connect once. The session store reuses this connection, and the server
+// starts listening only after it succeeds (see the bottom of this file).
+const clientPromise = connectDB()
 
 // Railway routes requests through a proxy. Without this, req.ip is the proxy's
 // address — so the rate limiters would count every visitor as one client — and
@@ -43,20 +43,24 @@ app.set('view engine', 'ejs')
 // Strict-Transport-Security — forces HTTPS on browsers that have visited before
 // X-DNS-Prefetch-Control — controls DNS prefetching
 // Referrer-Policy — controls what's sent in the Referer header
-// CSP is configured explicitly to allow Google Analytics, Google Fonts, Cloudinary images, and our own assets while blocking everything else.
+// CSP is configured explicitly to allow Google Analytics, Google Fonts, jsPDF from cdnjs, Cloudinary images, and our own assets while blocking everything else.
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc:     ["'self'"],
-            // No 'unsafe-inline'
-            scriptSrc:      ["'self'", "'sha256-NDhfFC8SsrynpH/33WORDEVUNZTNzuIZ98Qxx9z7BJY='", "https://www.googletagmanager.com", "https://www.google-analytics.com", "https://cdnjs.cloudflare.com", "https://kit.fontawesome.com"],
+            // No 'unsafe-inline'. The hash is the JSON-LD block in head.ejs, and
+            // cdnjs serves jsPDF (pinned with an integrity hash in footer.ejs).
+            scriptSrc:      ["'self'", "'sha256-NDhfFC8SsrynpH/33WORDEVUNZTNzuIZ98Qxx9z7BJY='", "https://www.googletagmanager.com", "https://www.google-analytics.com", "https://cdnjs.cloudflare.com"],
             // scriptSrcAttr is absent — it defaults to 'none', 
             // which blocks inline handlers like onclick/onsubmit. 
             // The two this app had were replaced with addEventListener.
-            styleSrc:       ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
-            fontSrc:        ["'self'", "https://fonts.gstatic.com", "https://kit.fontawesome.com", "https://ka-f.fontawesome.com"],
-            imgSrc:         ["'self'", "data:", "https://res.cloudinary.com", "https://www.google-analytics.com", "https://placeholder.pics"],
-            connectSrc:     ["'self'", "https://www.google-analytics.com", "https://analytics.google.com", "https://ka-f.fontawesome.com"],
+            // No 'unsafe-inline' for styles either: no page uses a style
+            // attribute or <style> block. Setting element.style from JS is
+            // still allowed.
+            styleSrc:       ["'self'", "https://fonts.googleapis.com"],
+            fontSrc:        ["'self'", "https://fonts.gstatic.com"],
+            imgSrc:         ["'self'", "data:", "https://res.cloudinary.com", "https://www.google-analytics.com"],
+            connectSrc:     ["'self'", "https://www.google-analytics.com", "https://analytics.google.com"],
             frameSrc:       ["'none'"],
             objectSrc:      ["'none'"],
             upgradeInsecureRequests: isProduction ? [] : null,
@@ -68,32 +72,32 @@ app.use(helmet({
     referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
 }))
 
-app.use(express.static('public'))
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
+// Logging: Apache's combined format in production, short colored lines locally.
 // Reset links carry a live token in the path. Log the route's shape instead,
 // so tokens never end up in Railway's logs.
 logger.token('url', (req) => {
   const url = req.originalUrl || req.url
   return url.startsWith('/reset/') ? '/reset/:token' : url
 })
-app.use(logger('dev'))
+app.use(logger(isProduction ? 'combined' : 'dev'))
+
+// Body parsing. No form uses nested field names, so the simple parser is
+// enough, and a field like email[$ne] stays a plain string key instead of
+// becoming an object. The inspection save arrives as JSON.
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
+
+app.use(express.static('public'))
 // Use forms for put / delete
 app.use(methodOverride('_method'))
 
-// Sessions (mongoOptions avoids indefinite hangs if DB is unreachable)
+// Sessions, stored in MongoDB over the same connection as Mongoose
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.DB_STRING,
-      mongoOptions: {
-        serverSelectionTimeoutMS: 10_000,
-        connectTimeoutMS: 10_000,
-      },
-    }),
+    store: MongoStore.create({ clientPromise }),
     cookie: {
       httpOnly: true,                    // Not readable by document.cookie
       sameSite: 'lax',                   // Blocks most cross-site request forgery
@@ -115,9 +119,6 @@ app.use(flash())
 app.use(viewLocals)
 
 app.use('/', mainRoutes)
-// app.use('/todos', todoRoutes)
-// app.use('/profile', profileRoutes)
-// app.use('/contact', contactRoutes);
 
 // 404 handler — catches any request that didn't match a route above
 app.use((req, res) => {
@@ -127,6 +128,15 @@ app.use((req, res) => {
 // Central error handler — must be last -> routes -> 404 handler - > error handler
 app.use(errorHandler)
 
-app.listen(process.env.PORT, () => {
-  console.log('Server is running, you better catch it!')
-})
+// Requests arriving before the database is up would only fail, and a server
+// that can't reach its database at all should stop so Railway restarts it
+clientPromise
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}, you better catch it!`)
+    })
+  })
+  .catch((err) => {
+    console.error('MongoDB connection failed:', err)
+    process.exit(1)
+  })
