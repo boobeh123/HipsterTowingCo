@@ -9,15 +9,20 @@ const rateLimit = require('express-rate-limit')
  *
  * Redirecting to req.originalUrl is safe here: these handlers only
  * run once a route has already matched, so the value is always the
- * same app path the user just posted to.
+ * same app path the user just posted to. A route with no page of
+ * its own (POST /profile/photo) passes redirectTo instead.
  **************************************************************/
-const flashAndRedirect = (message) => (req, res, next) => {
+const flashAndRedirect = (message, redirectTo) => (req, res, next) => {
     req.flash('errors', [{ msg: message }])
     req.session.save((err) => {
         if (err) { return next(err) }
-        res.redirect(req.originalUrl)
+        res.redirect(redirectTo || req.originalUrl)
     })
 }
+
+// Counts per account instead of per IP. These limiters only run after
+// ensureAuth or ensureAuthApi, so req.user is always set.
+const byAccount = (req) => String(req.user._id)
 
 /**************************************************************
  * authLimiter
@@ -65,4 +70,38 @@ const counterLimiter = rateLimit({
     },
 })
 
-module.exports = { authLimiter, passwordResetLimiter, counterLimiter }
+/**************************************************************
+ * inspectionSaveLimiter
+ * Guards POST /inspections. Each save stores a document, so
+ * without a cap one account could fill the database. Responds
+ * with JSON because the caller is a fetch() in public/js/main.js.
+ * 60 saves per account per 15 minutes.
+ **************************************************************/
+const inspectionSaveLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 60,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    keyGenerator: byAccount,
+    handler: (req, res) => {
+        res.status(429).json({ error: 'Too many inspections saved. Please wait a few minutes and try again.' })
+    },
+})
+
+/**************************************************************
+ * photoUploadLimiter
+ * Guards POST /profile/photo. Every upload goes to Cloudinary and
+ * counts against the account's quota. Runs before multer, so a
+ * blocked request never writes a temp file.
+ * 10 uploads per account per hour.
+ **************************************************************/
+const photoUploadLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    limit: 10,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    keyGenerator: byAccount,
+    handler: flashAndRedirect('Too many photo uploads. Please wait an hour and try again.', '/profile'),
+})
+
+module.exports = { authLimiter, passwordResetLimiter, counterLimiter, inspectionSaveLimiter, photoUploadLimiter }
