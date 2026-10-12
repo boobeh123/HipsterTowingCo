@@ -4,9 +4,24 @@ const resultOverlay = document.querySelector('#result-overlay');
 const downloadPdfBtn = document.querySelector('#downloadPdfBtn');
 const viewPdfBtn = document.querySelector('#viewPdfBtn');
 const closeResultBtn = document.querySelector('#closeResultBtn');
+const saveStatus = document.querySelector('#saveStatus');
 
-// Holds the most recently generated jsPDF doc so the download button can access it
+// Holds the most recently generated jsPDF doc, and the data it was built
+// from, so the download button can save it under a meaningful file name
 let currentInspectionReport = null;
+let currentInspectionData = null;
+
+// The button that opened the inspection modal. Focus goes back to it when
+// the modal and the result popup close, so keyboard and screen reader users
+// don't lose their place.
+let modalOpener = null;
+
+// Set after a signed-in save succeeds on the dashboard, so closing the
+// result popup reloads the page and the new report shows in the history
+let reloadOnResultClose = false;
+
+// Every fetch here talks JSON; errorHandler.js answers in JSON when asked to
+const JSON_HEADERS = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
 
 /**************************************************************
  * Google Analytics — dynamic consent injection
@@ -36,9 +51,12 @@ if (gaConsent === 'granted') {
     injectGA()
 }
 
-function openModal() {
+function openModal(event) {
     if (!overlay) return;
 
+    // The clicked button itself: Safari doesn't focus buttons on click, so
+    // document.activeElement would often be the page body
+    modalOpener = (event && event.currentTarget) || document.activeElement;
     const dateField = document.querySelector('#date');
     const truckTractorNoInputField = document.querySelector('#truckTractorNo');
 
@@ -59,9 +77,28 @@ function openModal() {
 
 }
 
+/**************************************************************
+ * returnFocus()
+ * Moves focus out of a dialog that is about to be hidden, back to
+ * the button that opened the modal. A hidden dialog that still
+ * holds focus leaves screen reader users stranded, and Chrome
+ * blocks aria-hidden on it.
+ **************************************************************/
+function returnFocus(dialog) {
+    if (!dialog.contains(document.activeElement)) return;
+    if (modalOpener && modalOpener !== document.body && document.contains(modalOpener)) {
+        modalOpener.focus();
+    }
+    // Still inside the dialog (no opener to go back to): let go of focus
+    if (dialog.contains(document.activeElement)) {
+        document.activeElement.blur();
+    }
+}
+
 function closeModal() {
     if (!overlay) return;
 
+    returnFocus(overlay);
     overlay.classList.remove('is-open');
     overlay.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('has-modal-open');
@@ -81,7 +118,7 @@ function showModalFlash(message) {
 }
 
 function clearModalFlash() {
-    const banner = document.getElementById('modalFlashError');
+    const banner = document.querySelector('#modalFlashError');
     if (banner) banner.hidden = true;
 }
 
@@ -100,10 +137,64 @@ function openResultOverlay() {
 function closeResultOverlay() {
     if (!resultOverlay) return;
 
+    returnFocus(resultOverlay);
     resultOverlay.classList.remove('is-open');
     resultOverlay.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('has-modal-open');
     currentInspectionReport = null;
+    currentInspectionData = null;
+
+    if (reloadOnResultClose) {
+        window.location.reload();
+    }
+}
+
+/**************************************************************
+ * showSaveStatus()
+ * Tells a signed-in user, inside the result popup, whether their
+ * inspection was saved to their account. Guests see a fixed note
+ * in the popup instead (inspectionModal.ejs).
+ **************************************************************/
+function showSaveStatus(message, failed) {
+    if (!saveStatus) return;
+    saveStatus.textContent = message;
+    saveStatus.classList.toggle('result-dialog__status--error', failed);
+}
+
+/**************************************************************
+ * countInspection()
+ * Adds one to the public "reports generated" counter. A failure
+ * only means the counter misses one, so it is ignored.
+ **************************************************************/
+function countInspection() {
+    fetch('/inspections/count', { method: 'POST', headers: JSON_HEADERS }).catch(() => {});
+}
+
+/**************************************************************
+ * saveInspection()
+ * Saves a signed-in user's inspection to their account.
+ * Returns { ok: true }, or { ok: false, message } where the message
+ * says what went wrong. It never throws: the PDF already exists,
+ * and a failed save mustn't take it away from the driver.
+ **************************************************************/
+async function saveInspection(inspection) {
+    try {
+        const response = await fetch('/inspections', {
+            method: 'POST',
+            headers: JSON_HEADERS,
+            body: JSON.stringify(inspection),
+        });
+        if (response.ok) {
+            return { ok: true };
+        }
+        if (response.status === 401) {
+            return { ok: false, message: 'Your session has ended, so log in again to save inspections.' };
+        }
+        const data = await response.json().catch(() => ({}));
+        return { ok: false, message: data.error || 'Something went wrong. Please try again.' };
+    } catch {
+        return { ok: false, message: 'Check your connection and try again.' };
+    }
 }
 
 /**************************************************************
@@ -207,11 +298,9 @@ function readFormData() {
                     } else {
                         pointingAt[currentValue] = value;
                     }
-                    console.log(`Added defect ${currentValue} to user's inspection`)
                 } else {
                     // 8b
                     if (!pointingAt[currentValue]) {
-                        console.log(`Created a new object for ${pointingAt[currentValue]}`)
                         pointingAt[currentValue] = {};
                     }
                     // 8c
@@ -221,7 +310,6 @@ function readFormData() {
             })
         } else {
             // 5b
-            console.log(`Added ${value} to user's inspection`)
             userInspection[key] = value;
         }
 
@@ -299,14 +387,16 @@ function flagMissingTruckNumber() {
 * 6. Set the font styling
 * 7. Populates the date, truckTractorNo, and trailerNo from the argument as a string. If the field is empty, display an empty string
     * X / Y coordinates are given to mark where the strings will be populated
+    * field() runs every value through decodeHTMLEntities, because inspections saved in 2025 can hold entities like &#x27;
 * 8. A function that stamps an 'X' when the user input evaluates as true, on given coordinates
 * 9. I use optional chaining to determine if the sanitizedUserInspectionObject contains any true property-values within the defects property
 * 10. I call the xMark function to populate an 'X' on given coordinates
 * 11. Converts string 'true' to boolean, checkboxes stay as strings. readFormData returns string 'true' for checkboxes.
 * 12. I determine if the input field(s) for driver/mechanic date contains a value, and populate the value as a string
     * This is different from the date from step 7. These dates exist near the bottom of the Driver's Vehicle Inspection Report
-* 13. I determine if sanitizedUserInspectionObject.remarks type is a string
-    * If it is a string, I call the decodeHTMLEntities function and pass the string in as an argument
+* 13. I split the remarks into lines that fit the Remarks box, and write each one just above a ruled line
+    * Up to 6 lines go on the form. Longer remarks put 5 lines there, a "continue on page 2" note on the 6th,
+      and the rest on a second page headed "Remarks (continued)" with the truck number and date
 ***************************************************************/
 // 0
 async function generateDVIRPDF(sanitizedUserInspectionObject) {
@@ -335,10 +425,12 @@ async function generateDVIRPDF(sanitizedUserInspectionObject) {
     // 6
     driverVehicleInspectionReport.setTextColor(0, 0, 0);
     driverVehicleInspectionReport.setFontSize(11);
-    // 7 
-    driverVehicleInspectionReport.text(String(sanitizedUserInspectionObject.date || ''), 30, 41);
-    driverVehicleInspectionReport.text(String(sanitizedUserInspectionObject.truckTractorNo || ''), 60, 50);
-    driverVehicleInspectionReport.text(String(sanitizedUserInspectionObject.trailerNo || ''), 55, 150);
+    // 7. Text fields. field() also decodes the HTML entities that inspections
+    // saved in 2025 can contain (see decodeHTMLEntities in utils.js)
+    const field = (value) => decodeHTMLEntities(String(value || ''));
+    driverVehicleInspectionReport.text(field(sanitizedUserInspectionObject.date), 30, 41);
+    driverVehicleInspectionReport.text(field(sanitizedUserInspectionObject.truckTractorNo), 60, 50);
+    driverVehicleInspectionReport.text(field(sanitizedUserInspectionObject.trailerNo), 55, 150);
     // 8
     const xMark = (checked, x, y) => {
         if (checked === true) {
@@ -407,17 +499,51 @@ async function generateDVIRPDF(sanitizedUserInspectionObject) {
 
     // 12
     if (sanitizedUserInspectionObject.mechanicDate) {
-        driverVehicleInspectionReport.text(String(sanitizedUserInspectionObject.mechanicDate), 165, 257);
+        driverVehicleInspectionReport.text(field(sanitizedUserInspectionObject.mechanicDate), 165, 257);
     }
     if (sanitizedUserInspectionObject.driverDate) {
-        driverVehicleInspectionReport.text(String(sanitizedUserInspectionObject.driverDate), 165, 266);
+        driverVehicleInspectionReport.text(field(sanitizedUserInspectionObject.driverDate), 165, 266);
     }
 
-    // 13
-    const remarksRaw = typeof sanitizedUserInspectionObject.remarks === 'string' ? decodeHTMLEntities(sanitizedUserInspectionObject.remarks) : '';
-    const remarksLines = driverVehicleInspectionReport.splitTextToSize(remarksRaw, 160);
-    if (remarksLines.length > 0) {
-        driverVehicleInspectionReport.text(remarksLines, 30, 190);
+    // 13. Remarks. The form has six ruled lines under "Remarks:", at these
+    // heights in mm (measured from dvir-template.png), and each line of text
+    // sits just above one. Longer remarks use five, say so on the sixth, and
+    // continue on a second page, so a defect note never runs over the
+    // certification section below.
+    const REMARK_RULES = [190.4, 195.6, 201.0, 206.2, 211.4, 216.9];
+    const remarksLines = driverVehicleInspectionReport.splitTextToSize(field(sanitizedUserInspectionObject.remarks), 160);
+    const fitsOnForm = remarksLines.length <= REMARK_RULES.length;
+    const linesOnForm = fitsOnForm ? remarksLines : remarksLines.slice(0, REMARK_RULES.length - 1);
+
+    linesOnForm.forEach((line, index) => {
+        driverVehicleInspectionReport.text(line, 30, REMARK_RULES[index] - 1);
+    });
+
+    if (!fitsOnForm) {
+        driverVehicleInspectionReport.setFont('helvetica', 'italic');
+        driverVehicleInspectionReport.text('Remarks continue on page 2.', 30, REMARK_RULES[REMARK_RULES.length - 1] - 1);
+
+        driverVehicleInspectionReport.addPage('letter', 'portrait');
+        driverVehicleInspectionReport.setFont('helvetica', 'bold');
+        driverVehicleInspectionReport.setFontSize(14);
+        driverVehicleInspectionReport.text('Remarks (continued)', 20, 25);
+        driverVehicleInspectionReport.setFont('helvetica', 'normal');
+        driverVehicleInspectionReport.setFontSize(11);
+        driverVehicleInspectionReport.text(`Truck / Tractor No. ${field(sanitizedUserInspectionObject.truckTractorNo)}    Date: ${field(sanitizedUserInspectionObject.date)}`, 20, 33);
+
+        // jsPDF reports line height in points; the document is laid out in mm
+        const lineHeight = driverVehicleInspectionReport.getLineHeight() / driverVehicleInspectionReport.internal.scaleFactor;
+        let y = 45;
+        remarksLines.slice(linesOnForm.length).forEach((line) => {
+            // Remarks are capped at 2000 characters, which fits on page 2,
+            // but keep going on a new page rather than off the bottom
+            if (y > 265) {
+                driverVehicleInspectionReport.addPage('letter', 'portrait');
+                y = 25;
+            }
+            driverVehicleInspectionReport.text(line, 20, y);
+            y += lineHeight;
+        });
     }
 
     return driverVehicleInspectionReport;
@@ -428,7 +554,7 @@ async function generateDVIRPDF(sanitizedUserInspectionObject) {
  * Skipped when the canvas is missing or the user prefers reduced motion.
  */
 function initHeroLetterBounceCanvas() {
-    const canvas = document.getElementById('hero-particles');
+    const canvas = document.querySelector('#hero-particles');
     const hero = document.querySelector('.hero');
     if (!canvas || !hero) return;
 
@@ -570,7 +696,7 @@ function initHeroLetterBounceCanvas() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const yearEl = document.getElementById('current-year');
+    const yearEl = document.querySelector('#current-year');
     if (yearEl) {
         yearEl.textContent = String(new Date().getFullYear());
     }
@@ -634,87 +760,82 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     /**************************************************************
-     * Shared inspection handler logic
-     * Extracted so both guest and authenticated buttons reuse it.
-     * Returns the sanitized object or null if validation fails.
-     * Guests increment after PDF generation. 
-     * Authenticated users only after a successful POST /inspections response.
+     * runInspection()
+     * Shared by the guest and signed-in buttons. It builds the PDF
+     * first and only then closes the modal, so if jsPDF or the form
+     * image fails to load, the driver's answers are still in the
+     * form and the modal says what happened.
+     * Returns the cleaned inspection, or null if no PDF was made.
      ***************************************************************/
     async function runInspection() {
-        const userInspectionObject = readFormData();
-        const sanitizedUserInspectionObject = validateAndSanitize(userInspectionObject);
+        const sanitizedUserInspectionObject = validateAndSanitize(readFormData());
         if (!sanitizedUserInspectionObject) {
             flagMissingTruckNumber();
             return null;
         }
 
-        sanitizedUserInspectionObject.id = Date.now().toString();
-        sanitizedUserInspectionObject.createdAt = new Date().toISOString();
-
-        closeModal();
-
-        let userInspectionReport = null;
         try {
-            userInspectionReport = await generateDVIRPDF(sanitizedUserInspectionObject);
-        } catch {
+            currentInspectionReport = await generateDVIRPDF(sanitizedUserInspectionObject);
+        } catch (err) {
+            console.error('PDF generation failed:', err);
+            showModalFlash('The PDF could not be created. Check your connection and try again.');
             return null;
         }
 
-        currentInspectionReport = userInspectionReport;
-
+        currentInspectionData = sanitizedUserInspectionObject;
+        closeModal();
         return sanitizedUserInspectionObject;
     }
 
-    // Guest: generate PDF only, then increment counter
-    if (submitInspectionBtn) {
-        submitInspectionBtn.addEventListener('click', async () => {
-            const result = await runInspection();
-            if (!result) return;
-
-            fetch('/inspections/count', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            }).catch(() => {});
-
-            openResultOverlay();
-        });
+    // Disables a button while its handler runs, so a double click can't
+    // build two PDFs or save the same inspection twice
+    function whileBusy(button, handler) {
+        return async () => {
+            if (button.disabled) return;
+            button.disabled = true;
+            try {
+                await handler();
+            } finally {
+                button.disabled = false;
+            }
+        };
     }
 
-    // Authenticated: generate PDF, save to MongoDB, then increment counter on success
-    if (saveInspectionBtn) {
-        saveInspectionBtn.addEventListener('click', async () => {
-            const result = await runInspection();
-            if (!result) return;
-
-            // POST the sanitized inspection object to the server.
-            // Counter only increments if the save returns a success response,
-            // so failed saves don't inflate the global count.
-            fetch('/inspections', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify(result),
-            })
-            .then((response) => {
-                if (response.ok) {
-                    fetch('/inspections/count', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    }).catch(() => {});
-                }
-            })
-            .catch(() => {
-                // Save failed silently — user still has their PDF
-                console.error('Failed to save inspection to account.');
-            });
-
+    // Guest: generate the PDF, then count it
+    if (submitInspectionBtn) {
+        submitInspectionBtn.addEventListener('click', whileBusy(submitInspectionBtn, async () => {
+            if (!(await runInspection())) return;
+            countInspection();
             openResultOverlay();
-        });
+        }));
+    }
+
+    // Signed in: generate the PDF, save it to the account, and count it only
+    // once the save succeeds, so failed saves don't inflate the count. The
+    // popup opens right away and then reports how the save went.
+    if (saveInspectionBtn) {
+        saveInspectionBtn.addEventListener('click', whileBusy(saveInspectionBtn, async () => {
+            const inspection = await runInspection();
+            if (!inspection) return;
+
+            showSaveStatus('Saving to your dashboard…', false);
+            openResultOverlay();
+
+            const saved = await saveInspection(inspection);
+            if (saved.ok) {
+                countInspection();
+                showSaveStatus('Saved to your dashboard.', false);
+                reloadOnResultClose = Boolean(document.querySelector('.dashboard'));
+            } else {
+                showSaveStatus(`Your PDF is ready, but it wasn't saved to your account. ${saved.message} Download the PDF now so you keep a copy.`, true);
+            }
+        }));
     }
 
     if (downloadPdfBtn) {
         downloadPdfBtn.addEventListener('click', () => {
             if (!currentInspectionReport) return;
-            currentInspectionReport.save('pretriq-inspection.pdf');
+            currentInspectionReport.save(pdfFileName(currentInspectionData && currentInspectionData.truckTractorNo, new Date()));
         });
     }
 
@@ -778,29 +899,35 @@ if (historyTable) {
         if (!btn) return;
 
         const id = btn.dataset.id;
-        if (!id) return;
+        if (!id || btn.disabled) return;
 
-        btn.textContent = '…';
+        // Keep the button's own label: its text changes while it works
+        btn.dataset.label = btn.dataset.label || btn.textContent.trim();
+        btn.textContent = 'Preparing…';
         btn.disabled = true;
 
         try {
             const response = await fetch(`/inspections/${id}`, {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                headers: JSON_HEADERS,
             });
 
             if (!response.ok) {
-                throw new Error('Failed to fetch inspection.');
+                throw new Error(`Failed to fetch inspection (${response.status}).`);
             }
 
             const inspection = await response.json();
             const pdf = await generateDVIRPDF(inspection);
-            pdf.save(`Drivers-Vehicle-Inspection-Report.pdf`);
+            pdf.save(pdfFileName(inspection.truckTractorNo, new Date(inspection.createdAt)));
+            btn.textContent = 'Downloaded';
         } catch(err) {
             console.error('Re-download failed:', err);
+            btn.textContent = 'Download failed. Try again';
         } finally {
-            btn.innerHTML = 'File saved!';
             btn.disabled = false;
+            setTimeout(() => {
+                btn.textContent = btn.dataset.label;
+            }, 3000);
         }
     });
 }

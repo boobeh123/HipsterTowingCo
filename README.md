@@ -33,6 +33,42 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.022
+📅 **Release Date:** October 11th, 2026
+
+## 📢 Developer's Notes - Full review with Claude Code: security, validation, dependencies & the inspection form
+
+- Claude Code reviewed the whole app & we worked through the findings in 4 PRs (#1–#4), one at a time
+- Security
+  - Password reset links are built from `BASE_URL` only, never from the request's Host header
+  - Gmail's TLS certificate is verified again when sending email
+  - Reset tokens no longer reach Google Analytics or the server logs
+  - Anonymous visitors (and bots) no longer get a session cookie & a session in MongoDB
+  - Logging out is a POST, so other sites can't log users out with a link
+  - Added `config/.env.example`, and `.gitignore` covers every `.env` file
+- Validation
+  - Every form & the inspection save are checked on the server with `express-validator`
+    - Missing or odd input shows a message instead of the 500 page
+    - The inspection save only keeps the form's own fields, with length limits
+  - The Terms of Use checkbox is required at signup
+  - Mongoose `sanitizeFilter` blocks query operators smuggled in through request data
+  - A password reset signs out every other device
+  - Rate limits on inspection saves (60 / 15 min) & profile photo uploads (10 / hour) per account
+- Server & dependencies
+  - The server starts after MongoDB connects, & sessions share that one connection
+  - Node 24, nodemailer 10, ejs 6, jsPDF 4.2.1 (loaded with an integrity hash), `node --watch` instead of nodemon
+  - `npm audit --omit=dev`: 0 vulnerabilities
+  - Footer icons are inline SVG instead of the Font Awesome kit, & the Content-Security-Policy no longer allows inline styles
+  - Profiles without a photo show a local placeholder instead of placeholder.pics
+- Inspection form
+  - Remarks, truck & trailer numbers keep what was typed ("Driver's side" no longer becomes "Drivers side")
+  - If the PDF can't be made, the form keeps your answers & says what happened
+  - Signed-in users see whether the inspection was saved to their dashboard, & the dashboard refreshes
+  - Remarks sit on the form's lines, & long remarks continue on a second page
+  - PDFs are named after the truck & date, e.g. `pretriq-TRK-100-2026-10-11.pdf`
+  - The history's Download PDF button reports success or failure correctly
+- 219/219 passing unit tests (up from 171)
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.021
 📅 **Release Date:** September 20th, 2026
 

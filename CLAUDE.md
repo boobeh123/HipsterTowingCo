@@ -9,6 +9,10 @@ Reports (DVIRs) digitally. The core flow works for **guests without an account**
 additionally get their reports stored in MongoDB and listed on a dashboard. Deployed on Railway at
 https://pretriq.com.
 
+README.md is mostly Bobby's patch log, newest first. It doesn't need updating on every push. After
+a batch of changes merges, add a Version History entry in the same format as the earlier ones
+(heading with the next patch number, release date, developer's notes, the dashed separator).
+
 ## Commands
 
 ```bash
@@ -29,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 221 passed, 17 suites, 0 failures
+### Expected test baseline: 219 passed, 17 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -190,21 +194,45 @@ refuses the file and no PDF can be made. Then:
 - **Authenticated**: same PDF, plus `POST /inspections`; the counter only increments after a
   successful save so failures don't inflate it.
 
+Details that are easy to break:
+
+- `runInspection()` builds the PDF **before** closing the modal. If jsPDF or the template image fails,
+  the form keeps the driver's answers and `showModalFlash()` explains. Closing the modal resets it.
+- The signed-in save is awaited by `saveInspection()`, which never throws. The result popup's
+  `#saveStatus` (`role="status"`, only rendered for signed-in users) reports the outcome through
+  `showSaveStatus()`. After a successful save on the dashboard, closing the popup reloads the page.
+- `whileBusy()` disables a Generate button while it works, so a double click can't save twice.
+- `returnFocus()` moves focus back to `modalOpener` (the clicked button, not `document.activeElement`:
+  Safari doesn't focus buttons on click) **before** a dialog gets `aria-hidden`.
+- Remarks are written one line per ruled line of the template, at the heights in `REMARK_RULES`
+  (measured from `dvir-template.png`; re-measure if the image changes). More than six lines put five
+  on the form, a "continue on page 2" note on the sixth, and the rest on a "Remarks (continued)" page.
+- Downloads are named by `pdfFileName()`, e.g. `pretriq-TRK-100-2026-10-11.pdf`.
+
 The `Counter` model holds a single global document (`name: 'inspectionCount'`) powering the public
 homepage count — it is not per-user.
 
 ### `public/js/utils.js` is loaded twice, two different ways
 
-`utils.js` holds `sanitizeText`, `validateAndSanitize` and `decodeHTMLEntities`. The browser loads it
-as a plain script from `views/partials/footer.ejs`, **deferred and before `main.js`**, so the
-functions are globals by the time `main.js`'s handlers call them. Jest `require()`s the same file.
-The `module.exports` at the bottom is wrapped in a `typeof module !== 'undefined'` guard so the
-browser doesn't throw on it — **keep that guard**.
+`utils.js` holds `FIELD_LIMITS`, `sanitizeText`, `validateAndSanitize`, `decodeHTMLEntities` and
+`pdfFileName`. The browser loads it as a plain script from `views/partials/footer.ejs`, **deferred and
+before `main.js`**, so the functions are globals by the time `main.js`'s handlers call them. Jest
+`require()`s the same file. The `module.exports` at the bottom is wrapped in a
+`typeof module !== 'undefined'` guard so the browser doesn't throw on it — **keep that guard**.
 
-These three functions must stay **pure** — no DOM access — or they stop being testable and stop
-working under `require()`. DOM feedback belongs in `main.js`; `flagMissingTruckNumber()` is the
-pattern to follow. That separation exists because the functions were previously duplicated in
-`main.js`, the copies drifted, and the tested version was not the shipped one.
+These functions must stay **pure** — no DOM access — or they stop being testable and stop working
+under `require()`. Their tests run in Jest's plain node environment (there is no jsdom). DOM
+feedback belongs in `main.js`; `flagMissingTruckNumber()` is the pattern to follow. That separation
+exists because the functions were previously duplicated in `main.js`, the copies drifted, and the
+tested version was not the shipped one.
+
+- `sanitizeText` only trims. It used to strip quotes, apostrophes, backticks, angle brackets and
+  backslashes, which mangled "Driver's side". jsPDF draws plain text and EJS escapes on output,
+  so keep characters as typed.
+- `validateAndSanitize` cuts each field to `FIELD_LIMITS`, the same numbers as `validateInspection`.
+- `decodeHTMLEntities` exists for inspections saved between June 2025 and January 2026, when an old
+  route stored text through `escape()` (`Driver&#x27;s`). It decodes entities only and leaves
+  tag-like text alone; never decode with `innerHTML` or `DOMParser`, which drop `<brake lines>`.
 
 ### Uploads (`middleware/multer.js` + `controllers/profile.js`)
 

@@ -25,6 +25,7 @@
   --color-footer-border: #cfd8dc;
   --color-focus-ring: #185a9d;
   --color-error: #e53935;
+  --color-error-text: #c62828; /* darker red for text: 5.6:1 on white, AA */
 
   --font-ui: "Roboto", system-ui, -apple-system, sans-serif;
   --font-brand: "Lato", var(--font-ui);
@@ -1184,6 +1185,11 @@ body.has-modal-open {
   line-height: 1.6;
   color: var(--color-text-muted);
   text-align: left;
+}
+
+/* Set by showSaveStatus() in main.js when a signed-in save fails */
+.result-dialog__status--error {
+  color: var(--color-error-text);
 }
 
 .result-dialog__actions {
