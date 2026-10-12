@@ -1,4 +1,4 @@
-require('dotenv').config({ path: './config/.env' })
+require('dotenv').config({ path: './config/.env', quiet: true }) // quiet: no dotenv tip line in the logs
 
 const express = require('express')
 const app = express()
