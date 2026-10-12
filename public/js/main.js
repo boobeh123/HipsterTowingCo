@@ -5,6 +5,7 @@ const downloadPdfBtn = document.querySelector('#downloadPdfBtn');
 const viewPdfBtn = document.querySelector('#viewPdfBtn');
 const closeResultBtn = document.querySelector('#closeResultBtn');
 const saveStatus = document.querySelector('#saveStatus');
+const filterTz = document.querySelector('#filter-tz');
 
 // Holds the most recently generated jsPDF doc, and the data it was built
 // from, so the download button can save it under a meaningful file name
@@ -696,6 +697,12 @@ function initHeroLetterBounceCanvas() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // The dashboard filter's From and To are the driver's local days, so the
+    // form sends the browser's time zone along (utils/inspectionFilter.js)
+    if (filterTz) {
+        filterTz.value = String(new Date().getTimezoneOffset());
+    }
+
     const yearEl = document.querySelector('#current-year');
     if (yearEl) {
         yearEl.textContent = String(new Date().getFullYear());

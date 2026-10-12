@@ -189,5 +189,120 @@ describe('dashboardController.getDashboard', () => {
     });
 });
 
+// ─────────────────────────────────────────────
+// getDashboard with filters (after validateDashboardQuery, as on the route)
+// ─────────────────────────────────────────────
+describe('dashboardController.getDashboard with filters', () => {
+    const { validateDashboardQuery } = require('../../../middleware/validators');
+    const runValidators = require('../helpers/runValidators');
+    let req, res, next, findChain;
+
+    // Runs the route's validators, then the controller
+    const getDashboard = async () => {
+        await runValidators(validateDashboardQuery, req);
+        await dashboardController.getDashboard(req, res, next);
+    };
+
+    beforeEach(() => {
+        req = { user: { _id: 'user123' }, query: {} };
+        res = { render: jest.fn() };
+        next = jest.fn();
+        findChain = {
+            sort: jest.fn().mockReturnThis(),
+            skip: jest.fn().mockReturnThis(),
+            limit: jest.fn().mockReturnThis(),
+            select: jest.fn().mockReturnThis(),
+            lean: jest.fn().mockResolvedValue([]),
+        };
+        Counter.findOne.mockResolvedValue({ value: 1 });
+        Inspection.findOne.mockReturnValue({
+            sort: jest.fn().mockReturnThis(),
+            select: jest.fn().mockReturnThis(),
+            lean: jest.fn().mockResolvedValue(null),
+        });
+        Inspection.find.mockReturnValue(findChain);
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should filter the history but keep the stats over every inspection', async () => {
+        req.query = { q: 'TRK', from: '2026-10-10', to: '2026-10-10', status: 'ok', tz: '600' };
+        Inspection.countDocuments.mockResolvedValueOnce(30).mockResolvedValueOnce(4);
+
+        await getDashboard();
+
+        // First the unfiltered total for the stats, then the filtered count
+        expect(Inspection.countDocuments).toHaveBeenNthCalledWith(1, { userId: 'user123' });
+        const filter = Inspection.countDocuments.mock.calls[1][0];
+        expect(filter).toEqual(expect.objectContaining({ userId: 'user123', conditionSatisfactory: true }));
+        expect(filter.$expr).toBeDefined();
+        expect(filter.createdAt.$gte.toISOString()).toBe('2026-10-10T10:00:00.000Z');
+        expect(Inspection.find).toHaveBeenCalledWith(filter);
+
+        const payload = res.render.mock.calls[0][1];
+        expect(payload).toEqual(expect.objectContaining({
+            totalInspections: 30,
+            matchingInspections: 4,
+            filtersActive: true,
+            filtersIgnored: false,
+            filters: { q: 'TRK', from: '2026-10-10', to: '2026-10-10', status: 'ok', tz: 600 },
+        }));
+    });
+
+    it('should keep the filters in the previous and next page links', async () => {
+        req.query = { q: 'TRK', tz: '600', page: '2' };
+        Inspection.countDocuments.mockResolvedValueOnce(40).mockResolvedValueOnce(25);
+
+        await getDashboard();
+
+        const payload = res.render.mock.calls[0][1];
+        expect(payload.currentPage).toBe(2);
+        expect(payload.totalPages).toBe(3);
+        expect(payload.prevUrl).toBe('/dashboard?q=TRK&tz=600');
+        expect(payload.nextUrl).toBe('/dashboard?q=TRK&tz=600&page=3');
+        expect(findChain.skip).toHaveBeenCalledWith(10);
+    });
+
+    it('should show the last page when the page number is past the end', async () => {
+        req.query = { page: '9' };
+        Inspection.countDocuments.mockResolvedValue(25);
+
+        await getDashboard();
+
+        const payload = res.render.mock.calls[0][1];
+        expect(payload.currentPage).toBe(3);
+        expect(payload.nextUrl).toBeNull();
+        expect(payload.prevUrl).toBe('/dashboard?page=2');
+        expect(findChain.skip).toHaveBeenCalledWith(20);
+    });
+
+    it('should ignore values that fail validation and say so', async () => {
+        req.query = { from: '10/1/2026', status: 'everything', q: ['a', 'b'] };
+        Inspection.countDocuments.mockResolvedValue(5);
+
+        await getDashboard();
+
+        const payload = res.render.mock.calls[0][1];
+        expect(payload.filtersIgnored).toBe(true);
+        expect(payload.filtersActive).toBe(false);
+        expect(payload.filters).toEqual({ q: '', from: '', to: '', status: '', tz: undefined });
+        expect(Inspection.find).toHaveBeenCalledWith({ userId: 'user123' });
+        expect(Inspection.countDocuments).toHaveBeenCalledTimes(1);
+    });
+
+    it('should render an empty, filtered history on page 1 when nothing matches', async () => {
+        req.query = { q: 'nothing-like-this' };
+        Inspection.countDocuments.mockResolvedValueOnce(12).mockResolvedValueOnce(0);
+
+        await getDashboard();
+
+        const payload = res.render.mock.calls[0][1];
+        expect(payload).toEqual(expect.objectContaining({ matchingInspections: 0, totalPages: 0, currentPage: 1, prevUrl: null, nextUrl: null }));
+        expect(findChain.skip).toHaveBeenCalledWith(0);
+    });
+});
+
 // getInspection moved to controllers/inspection.js in a409f7d.
 // Its tests now live in test/unit/controllers/inspectionController.test.js

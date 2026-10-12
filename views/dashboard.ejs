@@ -45,82 +45,127 @@
         <section class="dashboard__history" aria-labelledby="history-heading">
             <h2 id="history-heading" class="dashboard__sectionTitle">Inspection history</h2>
 
-            <% if (inspections.length === 0) { %>
+            <% if (totalInspections === 0) { %>
                 <div class="dashboard__empty">
                     <p class="dashboard__emptyText">No inspections saved yet.</p>
                     <p class="dashboard__emptyHint">Start a pretrip, and click <strong>Generate &amp; Save</strong> to start your history.</p>
                 </div>
             <% } else { %>
-                <div class="historyTable" role="region" aria-label="Inspection history" tabindex="0">
-                    <table class="historyTable__table">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="historyTable__th">Date</th>
-                                <th scope="col" class="historyTable__th">Truck / Tractor</th>
-                                <th scope="col" class="historyTable__th">Trailer</th>
-                                <th scope="col" class="historyTable__th">Condition</th>
-                                <th scope="col" class="historyTable__th">
-                                    <span class="sr-only">Actions</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% inspections.forEach((inspection) => { %>
-                                <tr class="historyTable__row">
-                                    <td class="historyTable__td" data-label="Date">
-                                        <%= inspection.date
-                                            ? inspection.date
-                                            : new Date(inspection.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
-                                    </td>
-                                    <td class="historyTable__td" data-label="Truck / Tractor"> <%= inspection.truckTractorNo %></td>
-                                    <td class="historyTable__td" data-label="Trailer"> <%= inspection.trailerNo || '—' %></td>
-                                    <td class="historyTable__td" data-label="Condition">
-                                        <% if (inspection.conditionSatisfactory) { %>
-                                            <span class="historyTable__badge historyTable__badge--ok">Satisfactory</span>
-                                        <% } else { %>
-                                            <span class="historyTable__badge historyTable__badge--flag">Defects noted</span>
-                                        <% } %>
-                                    </td>
-                                    <td class="historyTable__td historyTable__td--action">
-                                        <button
-                                            type="button"
-                                            class="btn btn--nav historyTable__redownload"
-                                            data-id="<%= inspection._id %>"
-                                            aria-label="Re-download inspection for truck <%= inspection.truckTractorNo %>"
-                                        >
-                                            Download PDF
-                                        </button>
-                                        <form
-                                            class="historyTable__deleteForm"
-                                            action="/inspections/<%= inspection._id %>?_method=DELETE"
-                                            method="POST"
-                                        >
-                                            <button
-                                                type="submit"
-                                                class="btn btn--danger historyTable__delete"
-                                                aria-label="Delete inspection for truck <%= inspection.truckTractorNo %>"
-                                            >
-                                                Delete
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <% }) %>
-                        </tbody>
-                    </table>
-                </div>
+                <form class="dashboard__filters" action="/dashboard" method="GET" role="search" aria-label="Filter inspection history">
+                    <div class="authPage__field dashboard__filterField dashboard__filterField--wide">
+                        <label for="filter-q" class="authPage__label">Truck or trailer no.</label>
+                        <input id="filter-q" class="authPage__input" type="search" name="q" value="<%= filters.q %>" maxlength="60" autocomplete="off" />
+                    </div>
+                    <div class="authPage__field dashboard__filterField">
+                        <label for="filter-from" class="authPage__label">From</label>
+                        <input id="filter-from" class="authPage__input" type="date" name="from" value="<%= filters.from %>" />
+                    </div>
+                    <div class="authPage__field dashboard__filterField">
+                        <label for="filter-to" class="authPage__label">To</label>
+                        <input id="filter-to" class="authPage__input" type="date" name="to" value="<%= filters.to %>" />
+                    </div>
+                    <div class="authPage__field dashboard__filterField">
+                        <label for="filter-status" class="authPage__label">Condition</label>
+                        <select id="filter-status" class="authPage__input dashboard__filterSelect" name="status">
+                            <option value="">All</option>
+                            <option value="defects"<% if (filters.status === 'defects') { %> selected<% } %>>Defects noted</option>
+                            <option value="ok"<% if (filters.status === 'ok') { %> selected<% } %>>Satisfactory</option>
+                        </select>
+                    </div>
+                    <%# main.js fills this with the browser's time zone, so From and To mean the driver's local days %>
+                    <input id="filter-tz" type="hidden" name="tz" value="<%= filters.tz === undefined ? '' : filters.tz %>" />
+                    <div class="dashboard__filterActions">
+                        <button type="submit" class="btn btn--primary">Filter</button>
+                        <% if (filtersActive) { %>
+                            <a href="/dashboard" class="btn btn--secondary">Clear</a>
+                        <% } %>
+                    </div>
+                </form>
 
-                <!-- Pagination -->
-                <% if (totalPages > 1) { %>
-                    <nav class="dashboard__pagination" aria-label="Inspection history pages">
-                        <% if (currentPage > 1) { %>
-                            <a href="/dashboard?page=<%= currentPage - 1 %>" class="btn btn--nav dashboard__pageBtn" aria-label="Previous page">&#8592; Prev</a>
-                        <% } %>
-                        <span class="dashboard__pageIndicator">Page <%= currentPage %> of <%= totalPages %></span>
-                        <% if (currentPage < totalPages) { %>
-                            <a href="/dashboard?page=<%= currentPage + 1 %>" class="btn btn--nav dashboard__pageBtn" aria-label="Next page">Next &#8594;</a>
-                        <% } %>
-                    </nav>
+                <% if (filtersIgnored) { %>
+                    <p class="dashboard__filterNote">Some filters weren't valid and were ignored.</p>
+                <% } %>
+                <% if (filtersActive) { %>
+                    <p class="dashboard__resultCount"><%= matchingInspections %> of <%= totalInspections %> inspections match these filters.</p>
+                <% } %>
+
+                <% if (inspections.length === 0) { %>
+                    <div class="dashboard__empty">
+                        <p class="dashboard__emptyText">No inspections match these filters.</p>
+                        <p class="dashboard__emptyHint"><a href="/dashboard">Clear the filters</a> to see your whole history.</p>
+                    </div>
+                <% } else { %>
+                    <div class="historyTable" role="region" aria-label="Inspection history" tabindex="0">
+                        <table class="historyTable__table">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="historyTable__th">Date</th>
+                                    <th scope="col" class="historyTable__th">Truck / Tractor</th>
+                                    <th scope="col" class="historyTable__th">Trailer</th>
+                                    <th scope="col" class="historyTable__th">Condition</th>
+                                    <th scope="col" class="historyTable__th">
+                                        <span class="sr-only">Actions</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% inspections.forEach((inspection) => { %>
+                                    <tr class="historyTable__row">
+                                        <td class="historyTable__td" data-label="Date">
+                                            <%= inspection.date
+                                                ? inspection.date
+                                                : new Date(inspection.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                                        </td>
+                                        <td class="historyTable__td" data-label="Truck / Tractor"> <%= inspection.truckTractorNo %></td>
+                                        <td class="historyTable__td" data-label="Trailer"> <%= inspection.trailerNo || '—' %></td>
+                                        <td class="historyTable__td" data-label="Condition">
+                                            <% if (inspection.conditionSatisfactory) { %>
+                                                <span class="historyTable__badge historyTable__badge--ok">Satisfactory</span>
+                                            <% } else { %>
+                                                <span class="historyTable__badge historyTable__badge--flag">Defects noted</span>
+                                            <% } %>
+                                        </td>
+                                        <td class="historyTable__td historyTable__td--action">
+                                            <button
+                                                type="button"
+                                                class="btn btn--nav historyTable__redownload"
+                                                data-id="<%= inspection._id %>"
+                                                aria-label="Re-download inspection for truck <%= inspection.truckTractorNo %>"
+                                            >
+                                                Download PDF
+                                            </button>
+                                            <form
+                                                class="historyTable__deleteForm"
+                                                action="/inspections/<%= inspection._id %>?_method=DELETE"
+                                                method="POST"
+                                            >
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn--danger historyTable__delete"
+                                                    aria-label="Delete inspection for truck <%= inspection.truckTractorNo %>"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination: the links keep the active filters -->
+                    <% if (totalPages > 1) { %>
+                        <nav class="dashboard__pagination" aria-label="Inspection history pages">
+                            <% if (prevUrl) { %>
+                                <a href="<%= prevUrl %>" class="btn btn--nav dashboard__pageBtn" aria-label="Previous page">&#8592; Prev</a>
+                            <% } %>
+                            <span class="dashboard__pageIndicator">Page <%= currentPage %> of <%= totalPages %></span>
+                            <% if (nextUrl) { %>
+                                <a href="<%= nextUrl %>" class="btn btn--nav dashboard__pageBtn" aria-label="Next page">Next &#8594;</a>
+                            <% } %>
+                        </nav>
+                    <% } %>
                 <% } %>
             <% } %>
         </section>

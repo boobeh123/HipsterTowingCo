@@ -1,4 +1,5 @@
-const { body, validationResult } = require('express-validator')
+const { body, query, validationResult } = require('express-validator')
+const { FILTER_STATUSES } = require('../utils/inspectionFilter')
 
 /**************************************************************
  * validators.js
@@ -111,6 +112,19 @@ module.exports = {
             .isString().withMessage('Please enter your current password.').bail()
             .notEmpty().withMessage('Please enter your current password.'),
         ...newPasswordFields(),
+    ],
+
+    // The dashboard's filter form, sent as a GET query. Empty fields are
+    // skipped. A value that doesn't fit is left out of matchedData(), and the
+    // controller tells the page some filters were ignored.
+    validateDashboardQuery: [
+        query('q').optional({ values: 'falsy' }).isString().bail().trim().isLength({ max: 60 }),
+        query('from').optional({ values: 'falsy' }).isDate({ format: 'YYYY-MM-DD', strictMode: true }),
+        query('to').optional({ values: 'falsy' }).isDate({ format: 'YYYY-MM-DD', strictMode: true }),
+        query('status').optional({ values: 'falsy' }).isIn(FILTER_STATUSES),
+        // The browser's getTimezoneOffset(): -840 (UTC+14) to 720 (UTC-12)
+        query('tz').optional({ values: 'falsy' }).isInt({ min: -840, max: 840 }).toInt(),
+        query('page').optional({ values: 'falsy' }).isInt({ min: 1 }).toInt(),
     ],
 
     // The JSON body that public/js/main.js posts after building the PDF.
