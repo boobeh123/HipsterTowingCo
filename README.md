@@ -33,6 +33,29 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.023
+📅 **Release Date:** October 12th, 2026
+
+## 📢 Developer's Notes - New features with Claude Code: profile edits, search & filters, CSV export, signatures
+
+- The second batch of the review (PRs #5–#8), one PR at a time
+- Profile
+  - Change your name & your password from the profile page
+  - Changing your password signs out your other devices, & they're told why when they try to load a page
+- Dashboard search & filters
+  - Search truck numbers, trailer numbers & remarks ("trk" finds TRK-100 and a trailer TRK-HAUL)
+  - Filter by date (your own time zone) & condition (defects noted / satisfactory)
+  - Search text is kept out of the server logs
+- CSV export
+  - Download all your inspections, or just the filtered ones, as a `.csv` that opens in Excel, Google Sheets & LibreOffice
+  - Defects are listed by the checklist's own names, & times are in your time zone
+  - Cells that look like spreadsheet formulas are exported as plain text
+- Signatures
+  - Sign the driver's & mechanic's lines on screen with a finger, stylus or mouse
+  - The signature is stamped on the PDF's line, & saved with the inspection so re-downloads include it
+  - Leave a pad blank to sign the printed copy by hand
+- 295/295 passing unit tests (up from 219)
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.022
 📅 **Release Date:** October 11th, 2026
 
