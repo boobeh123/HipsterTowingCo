@@ -230,9 +230,14 @@
     <div class="result-dialog">
         <div class="result-dialog__icon" aria-hidden="true">✓</div>
         <h3 id="result-heading" class="result-dialog__title">Inspection report generated!</h3>
-        <p class="result-dialog__text">
-            Guest inspections <strong>are not saved to our server</strong>. Please consider creating an account to store documents and access your history.
-        </p>
+        <% if (user) { %>
+            <%# Filled in by showSaveStatus() in main.js once the save finishes %>
+            <p id="saveStatus" class="result-dialog__text" role="status"></p>
+        <% } else { %>
+            <p class="result-dialog__text">
+                Guest inspections <strong>are not saved to our server</strong>. Please consider creating an account to store documents and access your history.
+            </p>
+        <% } %>
         <div class="result-dialog__actions">
             <button type="button" id="downloadPdfBtn" class="btn btn--primary">Download PDF</button>
             <button type="button" id="viewPdfBtn" class="btn btn--secondary">View PDF</button>
