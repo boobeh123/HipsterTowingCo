@@ -14,6 +14,7 @@ const mainRoutes = require('./routes/main')
 const viewLocals = require('./middleware/viewLocals')
 const { endStaleSessions } = require('./middleware/auth')
 const errorHandler = require('./middleware/errorHandler')
+const { redactUrl } = require('./utils/logUrl')
 
 // Passport config
 require('./config/passport')(passport)
@@ -73,12 +74,8 @@ app.use(helmet({
 }))
 
 // Logging: Apache's combined format in production, short colored lines locally.
-// Reset links carry a live token in the path. Log the route's shape instead,
-// so tokens never end up in Railway's logs.
-logger.token('url', (req) => {
-  const url = req.originalUrl || req.url
-  return url.startsWith('/reset/') ? '/reset/:token' : url
-})
+// redactUrl keeps reset tokens and dashboard search text out of Railway's logs.
+logger.token('url', (req) => redactUrl(req.originalUrl || req.url))
 app.use(logger(isProduction ? 'combined' : 'dev'))
 
 // Body parsing. No form uses nested field names, so the simple parser is
