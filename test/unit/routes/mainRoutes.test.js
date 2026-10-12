@@ -54,6 +54,7 @@ jest.mock('../../../controllers/inspection', () => ({
 
 jest.mock('../../../controllers/dashboard', () => ({
   getDashboard:   jest.fn((req, res) => res.json({ message: 'Dashboard page' })),
+  exportCsv:      jest.fn((req, res) => res.json({ message: 'CSV export' })),
   getInspection:  jest.fn((req, res) => res.json({ message: 'Inspection data' })),
 }));
 
@@ -334,6 +335,15 @@ describe('Main Routes', () => {
         .expect(401);
 
       expect(inspectionController.getInspection).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('GET /dashboard/export', () => {
+    it('should call dashboardController.exportCsv and return 200', async () => {
+      const response = await request(app).get('/dashboard/export?q=mirror').expect(200);
+
+      expect(dashboardController.exportCsv).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'CSV export' });
     });
   });
 

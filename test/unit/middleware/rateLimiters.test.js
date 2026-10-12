@@ -1,6 +1,6 @@
 const request = require('supertest');
 const express = require('express');
-const { inspectionSaveLimiter, photoUploadLimiter, passwordChangeLimiter } = require('../../../middleware/rateLimiters');
+const { inspectionSaveLimiter, photoUploadLimiter, passwordChangeLimiter, exportLimiter } = require('../../../middleware/rateLimiters');
 
 // The limiters keep their counts for the whole run, so every test uses its
 // own account ids.
@@ -82,5 +82,21 @@ describe('passwordChangeLimiter', () => {
     const response = await request(app).post('/target').set('x-user', 'pw-b');
 
     expect(response.status).toBe(200);
+  });
+});
+
+describe('exportLimiter', () => {
+  const flash = jest.fn();
+  const app = buildApp(exportLimiter, flash);
+
+  it('should send the 21st export in 15 minutes back to /dashboard with a message', async () => {
+    await postAs(app, 'export-a', 20);
+    expect(flash).not.toHaveBeenCalled();
+
+    const response = await request(app).post('/target').set('x-user', 'export-a');
+
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe('/dashboard');
+    expect(flash).toHaveBeenCalledWith('errors', [{ msg: 'Too many exports. Please wait a few minutes and try again.' }]);
   });
 });

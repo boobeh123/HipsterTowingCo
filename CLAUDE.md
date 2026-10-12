@@ -18,7 +18,7 @@ a batch of changes merges, add a Version History entry in the same format as the
 ```bash
 npm run dev      # node --watch server.js (restarts when a loaded file changes)
 npm start        # node server.js
-npm test         # jest — runs all 18 suites
+npm test         # jest — runs all 20 suites
 ```
 
 Run a single suite or a single test:
@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 251 passed, 18 suites, 0 failures
+### Expected test baseline: 284 passed, 20 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -177,10 +177,12 @@ so every other device is signed out and this one stays.
 itself comes from `buildInspectionFilter()` in `utils/inspectionFilter.js`, which is pure and meant
 to be shared with anything else that lists a user's inspections (the CSV export).
 
-- `q` matches truck **or** trailer numbers that *contain* it, ignoring case, through
-  `$indexOfCP` inside a `mongoose.trusted()` `$expr` (sanitizeFilter refuses an untrusted `$expr`).
-  There's no regex built from input, per the standards. The term is wrapped in `$literal`, or a
-  search like `$remarks` would be read as a field path and compare against that field.
+- `q` matches truck numbers, trailer numbers **or remarks** that *contain* it, ignoring case,
+  through `$indexOfCP` inside a `mongoose.trusted()` `$expr` (sanitizeFilter refuses an untrusted
+  `$expr`). There's no regex built from input, per the standards. The term is wrapped in
+  `$literal`, or a search like `$remarks` would be read as a field path and compare against that
+  field. Remarks saved between June 2025 and January 2026 hold HTML entities (`Driver&#x27;s`), so
+  a search containing an apostrophe or quote misses those; the stored data was left alone.
 - `from`/`to` are `YYYY-MM-DD` days in the **driver's** time zone. main.js fills the form's hidden
   `tz` with `getTimezoneOffset()` (Hawaii is 600), and `localDayStart()` turns days into UTC
   instants, so a 9 PM inspection in Hawaii counts as that day. A missing `tz` means UTC. The offset
@@ -189,6 +191,27 @@ to be shared with anything else that lists a user's inspections (the CSV export)
   count as defects, matching the "Defects noted" badge.
 - The stats at the top cover all of the user's inspections; only the history follows the filters.
   A page past the end shows the last page, and `prevUrl`/`nextUrl` keep the filters.
+
+### CSV export (`GET /dashboard/export`)
+
+The dashboard's "Download … as CSV" link (`exportUrl`, which keeps the filters; main.js adds the
+browser's `tz` on load) runs `exportCsv` in `controllers/dashboard.js`. It reads the same validated
+query as the dashboard, so the file holds exactly the inspections the history shows, newest first.
+
+- `utils/inspectionCsv.js` is pure: `DEFECT_LABELS` (the checklist's 48 labels, keyed like the
+  schema; add an item in both places), `CSV_COLUMNS` (12), `csvCell()`, `inspectionRow()`,
+  `localDateTime()` and `exportFileName()`.
+- Every cell is quoted with inner quotes doubled, and lines end in CRLF. The file starts with a
+  UTF-8 byte order mark, or Excel garbles accents and "–".
+- `csvCell()` decodes the 2025 HTML entities with `decodeHTMLEntities` from `public/js/utils.js`, and
+  prefixes `'` to a cell starting with `= + - @`, a tab or a CR, so a spreadsheet can't run it as a
+  formula (CSV injection).
+- Rows stream from a `.lean().cursor()`. The loop waits for `drain` (or stops on `close`) when
+  `res.write()` returns false. An error before the first write goes to `next(err)`; after it,
+  `res.destroy(err)` cuts the download off so a partial file can't pass for a whole one.
+- The response is `Cache-Control: no-store`, and the link is a plain link (no `download`
+  attribute): when `exportLimiter` redirects to the dashboard, its message shows there instead of
+  being saved as a file.
 
 ### Rate limits (`middleware/rateLimiters.js`)
 
@@ -200,6 +223,7 @@ to be shared with anything else that lists a user's inspections (the CSV export)
 | `inspectionSaveLimiter` | POST /inspections | 60 / 15 min | account | JSON 429 |
 | `photoUploadLimiter` | POST /profile/photo | 10 / hour | account | flash + redirect to /profile |
 | `passwordChangeLimiter` | POST /profile/password | 10 / 15 min | account | flash + redirect to /profile |
+| `exportLimiter` | GET /dashboard/export | 20 / 15 min | account | flash + redirect to /dashboard |
 
 The per-account limiters must run after `ensureAuth`/`ensureAuthApi`, which guarantee `req.user`.
 `photoUploadLimiter` runs before multer, so a blocked upload never writes a temp file. A route
@@ -211,8 +235,10 @@ with no GET page of its own passes `flashAndRedirect(message, redirectTo)` its d
   GET route, because another site could sign users out by linking to it. `.site-header__logoutBtn`
   resets the button so it looks exactly like the menu links.
 - A reset token is in the reset page's URL. `injectGA()` in `public/js/main.js` returns early on
-  `/reset/` paths, and `server.js` overrides morgan's `url` token so the log shows `/reset/:token`.
-  Keep both in step if the reset URL ever changes shape.
+  `/reset/` paths, and morgan's `url` token in `server.js` logs every URL through `redactUrl()`
+  (`utils/logUrl.js`), which shows `/reset/:token`. Keep both in step if the reset URL ever changes
+  shape. `redactUrl()` also logs any `q` search value as `q=***`, because a search can quote a
+  driver's remarks.
 
 ### Inspection flow — the PDF is built entirely client-side
 

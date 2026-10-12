@@ -292,6 +292,15 @@ describe('dashboardController.getDashboard with filters', () => {
         expect(Inspection.countDocuments).toHaveBeenCalledTimes(1);
     });
 
+    it('should pass an export link that keeps the filters', async () => {
+        req.query = { q: 'mirror', status: 'defects', tz: '600', page: '2' };
+        Inspection.countDocuments.mockResolvedValueOnce(30).mockResolvedValueOnce(12);
+
+        await getDashboard();
+
+        expect(res.render.mock.calls[0][1].exportUrl).toBe('/dashboard/export?q=mirror&status=defects&tz=600');
+    });
+
     it('should render an empty, filtered history on page 1 when nothing matches', async () => {
         req.query = { q: 'nothing-like-this' };
         Inspection.countDocuments.mockResolvedValueOnce(12).mockResolvedValueOnce(0);
@@ -301,6 +310,161 @@ describe('dashboardController.getDashboard with filters', () => {
         const payload = res.render.mock.calls[0][1];
         expect(payload).toEqual(expect.objectContaining({ matchingInspections: 0, totalPages: 0, currentPage: 1, prevUrl: null, nextUrl: null }));
         expect(findChain.skip).toHaveBeenCalledWith(0);
+    });
+});
+
+// ─────────────────────────────────────────────
+// exportCsv (after validateDashboardQuery, as on the route)
+// ─────────────────────────────────────────────
+describe('dashboardController.exportCsv', () => {
+    const { EventEmitter } = require('events');
+    const { validateDashboardQuery } = require('../../../middleware/validators');
+    const runValidators = require('../helpers/runValidators');
+    let req, res, next, findChain, written;
+
+    // Runs the route's validators, then the controller
+    const exportCsv = async () => {
+        await runValidators(validateDashboardQuery, req);
+        await dashboardController.exportCsv(req, res, next);
+    };
+
+    // A cursor that yields the given documents, or throws after them
+    const cursorOf = (docs, failAfter) => ({
+        async *[Symbol.asyncIterator]() {
+            for (const doc of docs) yield doc;
+            if (failAfter) throw failAfter;
+        },
+    });
+
+    beforeEach(() => {
+        written = [];
+        req = { user: { _id: 'user123' }, query: {} };
+        // Like Express's response: headers count as sent after the first write
+        res = Object.assign(new EventEmitter(), {
+            headersSent: false,
+            destroyed: false,
+            set: jest.fn(),
+            write: jest.fn((chunk) => { written.push(chunk); res.headersSent = true; return true; }),
+            end: jest.fn(),
+            destroy: jest.fn(),
+        });
+        next = jest.fn();
+        findChain = {
+            sort: jest.fn().mockReturnThis(),
+            select: jest.fn().mockReturnThis(),
+            lean: jest.fn().mockReturnThis(),
+            cursor: jest.fn(() => cursorOf([])),
+        };
+        Inspection.find.mockReturnValue(findChain);
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should send a private, dated CSV download that starts with a byte order mark and the header', async () => {
+        req.query = { tz: '600' };
+
+        await exportCsv();
+
+        const headers = res.set.mock.calls[0][0];
+        expect(headers['Content-Type']).toBe('text/csv; charset=utf-8');
+        expect(headers['Content-Disposition']).toMatch(/^attachment; filename="pretriq-inspections-\d{4}-\d{2}-\d{2}\.csv"$/);
+        expect(headers['Cache-Control']).toBe('no-store');
+        expect(written[0].startsWith('\uFEFF"Saved","Inspection date"')).toBe(true);
+        expect(res.end).toHaveBeenCalled();
+    });
+
+    it('should write one row per inspection, newest first, in the driver\'s time zone', async () => {
+        req.query = { tz: '600' };
+        findChain.cursor.mockReturnValue(cursorOf([
+            { createdAt: new Date('2026-10-11T07:00:00Z'), truckTractorNo: 'TRK-100', conditionSatisfactory: false },
+            { createdAt: new Date('2026-10-05T20:00:00Z'), truckTractorNo: 'trk-300', conditionSatisfactory: true },
+        ]));
+
+        await exportCsv();
+
+        expect(findChain.sort).toHaveBeenCalledWith({ createdAt: -1 });
+        expect(written).toHaveLength(3);
+        expect(written[1]).toContain('"2026-10-10 21:00"');
+        expect(written[1]).toContain('"TRK-100"');
+        expect(written[2]).toContain('"Satisfactory"');
+    });
+
+    it('should export with the same filters as the dashboard', async () => {
+        req.query = { q: 'mirror', status: 'defects', tz: '600' };
+
+        await exportCsv();
+
+        const filter = Inspection.find.mock.calls[0][0];
+        expect(filter.userId).toBe('user123');
+        expect(filter.$expr).toBeDefined();
+        expect(filter.conditionSatisfactory).toEqual(expect.objectContaining({ $ne: true }));
+    });
+
+    it('should export just the header when nothing matches', async () => {
+        await exportCsv();
+
+        expect(written).toHaveLength(1);
+        expect(res.end).toHaveBeenCalled();
+    });
+
+    // A slow connection: write() returns false until the response drains
+    it('should wait for the connection to drain before writing more', async () => {
+        findChain.cursor.mockReturnValue(cursorOf([{ truckTractorNo: 'A' }, { truckTractorNo: 'B' }]));
+        res.write = jest.fn((chunk) => {
+            written.push(chunk);
+            res.headersSent = true;
+            if (written.length === 2) {
+                setImmediate(() => res.emit('drain'));
+                return false;
+            }
+            return true;
+        });
+
+        await exportCsv();
+
+        expect(written).toHaveLength(3);
+        expect(res.end).toHaveBeenCalled();
+    });
+
+    it('should stop when the browser goes away mid-download', async () => {
+        findChain.cursor.mockReturnValue(cursorOf([{ truckTractorNo: 'A' }, { truckTractorNo: 'B' }]));
+        res.write = jest.fn((chunk) => {
+            written.push(chunk);
+            res.headersSent = true;
+            if (written.length === 2) {
+                setImmediate(() => { res.destroyed = true; res.emit('close'); });
+                return false;
+            }
+            return true;
+        });
+
+        await exportCsv();
+
+        expect(written).toHaveLength(2);
+    });
+
+    it('should hand an error to the error handler before anything is sent', async () => {
+        const error = new Error('db down');
+        findChain.cursor.mockImplementation(() => { throw error; });
+
+        await exportCsv();
+
+        expect(next).toHaveBeenCalledWith(error);
+        expect(res.destroy).not.toHaveBeenCalled();
+    });
+
+    // A cut-off download can't be mistaken for a complete file
+    it('should abort the download if the database fails part-way through', async () => {
+        const error = new Error('cursor lost');
+        findChain.cursor.mockReturnValue(cursorOf([{ truckTractorNo: 'A' }], error));
+
+        await exportCsv();
+
+        expect(res.destroy).toHaveBeenCalledWith(error);
+        expect(res.end).not.toHaveBeenCalled();
+        expect(next).not.toHaveBeenCalled();
     });
 });
 

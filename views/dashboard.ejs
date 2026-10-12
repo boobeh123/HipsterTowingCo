@@ -53,7 +53,7 @@
             <% } else { %>
                 <form class="dashboard__filters" action="/dashboard" method="GET" role="search" aria-label="Filter inspection history">
                     <div class="authPage__field dashboard__filterField dashboard__filterField--wide">
-                        <label for="filter-q" class="authPage__label">Truck or trailer no.</label>
+                        <label for="filter-q" class="authPage__label">Truck, trailer or remarks</label>
                         <input id="filter-q" class="authPage__input" type="search" name="q" value="<%= filters.q %>" maxlength="60" autocomplete="off" />
                     </div>
                     <div class="authPage__field dashboard__filterField">
@@ -85,8 +85,16 @@
                 <% if (filtersIgnored) { %>
                     <p class="dashboard__filterNote">Some filters weren't valid and were ignored.</p>
                 <% } %>
-                <% if (filtersActive) { %>
-                    <p class="dashboard__resultCount"><%= matchingInspections %> of <%= totalInspections %> inspections match these filters.</p>
+                <% if (filtersActive || matchingInspections > 0) { %>
+                    <div class="dashboard__historyTools">
+                        <% if (filtersActive) { %>
+                            <p class="dashboard__resultCount"><%= matchingInspections %> of <%= totalInspections %> inspections match these filters.</p>
+                        <% } %>
+                        <% if (matchingInspections > 0) { %>
+                            <%# A plain link, not download: if the export limit is hit, the redirect shows its message here %>
+                            <a href="<%= exportUrl %>" class="btn btn--secondary dashboard__exportBtn"><%= filtersActive ? 'Download these as CSV' : 'Download all as CSV' %></a>
+                        <% } %>
+                    </div>
                 <% } %>
 
                 <% if (inspections.length === 0) { %>
