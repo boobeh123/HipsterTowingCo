@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 284 passed, 20 suites, 0 failures
+### Expected test baseline: 295 passed, 20 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -266,6 +266,26 @@ Details that are easy to break:
   (measured from `dvir-template.png`; re-measure if the image changes). More than six lines put five
   on the form, a "continue on page 2" note on the sixth, and the rest on a "Remarks (continued)" page.
 - Downloads are named by `pdfFileName()`, e.g. `pretriq-TRK-100-2026-10-11.pdf`.
+
+### Signature pads (driver and mechanic)
+
+The modal has two optional pads (`.inspection-sig-pad`, `data-field` naming the inspection field).
+The acknowledgment line (the next driver, after repairs) has none, and stays blank for signing by hand.
+
+- `createSignaturePad()` in main.js draws with pointer events (finger, stylus and mouse). The canvas
+  has `touch-action: none` in style.css, or a finger scrolls the dialog instead of signing. Pads are
+  sized when the modal opens and cleared when it closes.
+- `toDataUrl()` crops to the ink and exports a PNG of at most 600×150 (shrinking if needed), which
+  `runInspection()` adds to the inspection as `driverSignature` / `mechanicSignature`.
+- `generateDVIRPDF()` stamps them at `SIGNATURE_BOXES` (measured from `dvir-template.png`), with
+  heights that stop about 1.5 mm under the printed line above. It calls `setPage(1)` first, because
+  long remarks leave jsPDF on page 2. Only values passing `isSignatureImage()` are drawn; old records
+  hold plain text in those fields, and a PNG that won't decode is skipped with a console error.
+- Signed-in saves store the data URL. `signatureField` in validators.js accepts only a PNG data URL
+  of up to `SIGNATURE_MAX_LENGTH` (60,000 characters, shared from `public/js/utils.js`), with valid
+  base64 that decodes to the PNG file signature. The schema has the same `maxLength`, and
+  `express.json` allows 200kb so two full-size signatures fit. Guests' signatures never leave the
+  browser. The CSV export leaves signatures out.
 
 The `Counter` model holds a single global document (`name: 'inspectionCount'`) powering the public
 homepage count — it is not per-user.
