@@ -11,8 +11,8 @@ const dashboardController = require('../controllers/dashboard')
 const profileController = require('../controllers/profile')
 const { uploadProfilePhoto } = require('../middleware/multer')
 const { ensureAuth, ensureAuthApi, ensureOnboarding } = require('../middleware/auth')
-const { authLimiter, passwordResetLimiter, counterLimiter, inspectionSaveLimiter, photoUploadLimiter } = require('../middleware/rateLimiters')
-const { validateLogin, validateSignup, validateForgot, validateReset, validateOnboard, validateInspection } = require('../middleware/validators')
+const { authLimiter, passwordResetLimiter, counterLimiter, inspectionSaveLimiter, photoUploadLimiter, passwordChangeLimiter } = require('../middleware/rateLimiters')
+const { validateLogin, validateSignup, validateForgot, validateReset, validateOnboard, validateInspection, validateProfileName, validateProfilePassword } = require('../middleware/validators')
 
 router.get('/', homeController.getIndex)
 router.get('/dashboard', ensureAuth, dashboardController.getDashboard)
@@ -26,6 +26,8 @@ router.post('/onboard', ensureOnboarding, validateOnboard, onboardController.pos
 
 router.get('/profile', ensureAuth, profileController.getProfile)
 router.post('/profile/photo', ensureAuth, photoUploadLimiter, uploadProfilePhoto, profileController.updatePhoto)
+router.post('/profile/name', ensureAuth, validateProfileName, profileController.updateName)
+router.post('/profile/password', ensureAuth, passwordChangeLimiter, validateProfilePassword, profileController.updatePassword)
 router.delete('/profile/delete', ensureAuth, profileController.deleteAccount)
 
 router.get('/login', authController.getLogin)

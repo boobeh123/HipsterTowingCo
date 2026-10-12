@@ -60,6 +60,8 @@ jest.mock('../../../controllers/dashboard', () => ({
 jest.mock('../../../controllers/profile', () => ({
   getProfile:    jest.fn((req, res) => res.json({ message: 'Profile page' })),
   updatePhoto:   jest.fn((req, res) => res.json({ message: 'Photo updated' })),
+  updateName:    jest.fn((req, res) => res.json({ message: 'Name updated' })),
+  updatePassword: jest.fn((req, res) => res.json({ message: 'Password updated' })),
   deleteAccount: jest.fn((req, res) => res.json({ message: 'Account deleted' })),
 }));
 
@@ -352,6 +354,30 @@ describe('Main Routes', () => {
 
       expect(profileController.updatePhoto).toHaveBeenCalledTimes(1);
       expect(response.body).toEqual({ message: 'Photo updated' });
+    });
+  });
+
+  describe('POST /profile/name', () => {
+    it('should call profileController.updateName and return 200', async () => {
+      const response = await request(app)
+        .post('/profile/name')
+        .send({ name: 'Jordan Rivera' })
+        .expect(200);
+
+      expect(profileController.updateName).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Name updated' });
+    });
+  });
+
+  describe('POST /profile/password', () => {
+    it('should call profileController.updatePassword and return 200', async () => {
+      const response = await request(app)
+        .post('/profile/password')
+        .send({ currentPassword: 'current-pass', password: 'brand-new-pass', confirmPassword: 'brand-new-pass' })
+        .expect(200);
+
+      expect(profileController.updatePassword).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Password updated' });
     });
   });
 

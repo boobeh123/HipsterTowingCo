@@ -1,6 +1,6 @@
 const request = require('supertest');
 const express = require('express');
-const { inspectionSaveLimiter, photoUploadLimiter } = require('../../../middleware/rateLimiters');
+const { inspectionSaveLimiter, photoUploadLimiter, passwordChangeLimiter } = require('../../../middleware/rateLimiters');
 
 // The limiters keep their counts for the whole run, so every test uses its
 // own account ids.
@@ -59,5 +59,28 @@ describe('photoUploadLimiter', () => {
     expect(response.status).toBe(302);
     expect(response.headers.location).toBe('/profile');
     expect(flash).toHaveBeenCalledWith('errors', [{ msg: 'Too many photo uploads. Please wait an hour and try again.' }]);
+  });
+});
+
+describe('passwordChangeLimiter', () => {
+  const flash = jest.fn();
+  const app = buildApp(passwordChangeLimiter, flash);
+
+  // Counted per account: someone holding a stolen session can't keep guessing
+  it('should send the 11th attempt in 15 minutes back to /profile with a message', async () => {
+    await postAs(app, 'pw-a', 10);
+    expect(flash).not.toHaveBeenCalled();
+
+    const response = await request(app).post('/target').set('x-user', 'pw-a');
+
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe('/profile');
+    expect(flash).toHaveBeenCalledWith('errors', [{ msg: 'Too many password change attempts. Please wait 15 minutes and try again.' }]);
+  });
+
+  it('should count each account separately', async () => {
+    const response = await request(app).post('/target').set('x-user', 'pw-b');
+
+    expect(response.status).toBe(200);
   });
 });

@@ -104,4 +104,21 @@ const photoUploadLimiter = rateLimit({
     handler: flashAndRedirect('Too many photo uploads. Please wait an hour and try again.', '/profile'),
 })
 
-module.exports = { authLimiter, passwordResetLimiter, counterLimiter, inspectionSaveLimiter, photoUploadLimiter }
+/**************************************************************
+ * passwordChangeLimiter
+ * Guards POST /profile/password. Someone holding a stolen session
+ * could otherwise guess the current password without limit, so
+ * this counts per account, not per IP. The route has no page of
+ * its own, so the user goes back to the profile page.
+ * 10 attempts per account per 15 minutes.
+ **************************************************************/
+const passwordChangeLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 10,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    keyGenerator: byAccount,
+    handler: flashAndRedirect('Too many password change attempts. Please wait 15 minutes and try again.', '/profile'),
+})
+
+module.exports = { authLimiter, passwordResetLimiter, counterLimiter, inspectionSaveLimiter, photoUploadLimiter, passwordChangeLimiter }

@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 219 passed, 17 suites, 0 failures
+### Expected test baseline: 234 passed, 17 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -154,7 +154,14 @@ A reset sets `passwordChangedAt` on the account. `endStaleSessions` (middleware/
 `passport.session()` in server.js) signs out any session whose `req.session.loginAt` is older, so
 whoever knew the old password loses access on every other device. Anything that logs a user in must
 call `markLoginTime(req)` inside the `req.login` callback. passport regenerates the session on login,
-so setting it earlier is lost. `postLogin`, `postSignup` and `postRecoverPassword` already do.
+so setting it earlier is lost. `postLogin`, `postSignup`, `postRecoverPassword` and the profile
+page's `updatePassword` already do.
+
+The profile page (`controllers/profile.js`) changes the name (`POST /profile/name`, the same rules
+as onboarding) and the password (`POST /profile/password`). A password change checks the current
+password against the stored hash (`req.user` leaves the hash out, so it loads the account), refuses
+a new password equal to the current one, sets `passwordChangedAt` and logs this browser in again,
+so every other device is signed out and this one stays.
 
 `GET /reset/:token` checks the link before showing the form and sends an unknown or expired one to
 `/forgot` with a flash.
@@ -168,6 +175,7 @@ so setting it earlier is lost. `postLogin`, `postSignup` and `postRecoverPasswor
 | `counterLimiter` | POST /inspections/count | 30 / 15 min | IP | JSON 429 |
 | `inspectionSaveLimiter` | POST /inspections | 60 / 15 min | account | JSON 429 |
 | `photoUploadLimiter` | POST /profile/photo | 10 / hour | account | flash + redirect to /profile |
+| `passwordChangeLimiter` | POST /profile/password | 10 / 15 min | account | flash + redirect to /profile |
 
 The per-account limiters must run after `ensureAuth`/`ensureAuthApi`, which guarantee `req.user`.
 `photoUploadLimiter` runs before multer, so a blocked upload never writes a temp file. A route

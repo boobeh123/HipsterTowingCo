@@ -71,10 +71,82 @@
                     </dd>
                 </div>
             </dl>
+        </section>
 
-            <div class="profileCard__actions">
-                <a href="/forgot" class="btn btn--secondary">Change password</a>
-            </div>
+        <!-- Name section -->
+        <section class="profileCard" aria-labelledby="name-heading">
+            <h2 id="name-heading" class="profileCard__title">Name</h2>
+
+            <form class="profileCard__form" action="/profile/name" method="POST" aria-labelledby="name-heading" novalidate>
+                <div class="authPage__field">
+                    <label for="profile-name" class="authPage__label">Your name</label>
+                    <input
+                        id="profile-name"
+                        class="authPage__input"
+                        type="text"
+                        name="name"
+                        value="<%= user.name %>"
+                        autocomplete="name"
+                        maxlength="60"
+                        required
+                    />
+                </div>
+                <div class="profileCard__formActions">
+                    <button type="submit" class="btn btn--primary">Save name</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Password section -->
+        <section class="profileCard" aria-labelledby="password-heading">
+            <h2 id="password-heading" class="profileCard__title">Change password</h2>
+
+            <form class="profileCard__form" action="/profile/password" method="POST" aria-labelledby="password-heading" novalidate>
+                <%# Lets password managers save the new password against this account %>
+                <input type="text" name="username" value="<%= user.email %>" autocomplete="username" hidden />
+
+                <div class="authPage__field">
+                    <label for="profile-currentPassword" class="authPage__label">Current password</label>
+                    <input
+                        id="profile-currentPassword"
+                        class="authPage__input"
+                        type="password"
+                        name="currentPassword"
+                        autocomplete="current-password"
+                        required
+                    />
+                </div>
+                <div class="authPage__field">
+                    <label for="profile-newPassword" class="authPage__label">New password</label>
+                    <input
+                        id="profile-newPassword"
+                        class="authPage__input"
+                        type="password"
+                        name="password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                        aria-describedby="profile-passwordHint"
+                    />
+                    <p id="profile-passwordHint" class="profileCard__fileHint">At least 8 characters. Your other devices will be signed out.</p>
+                </div>
+                <div class="authPage__field">
+                    <label for="profile-confirmPassword" class="authPage__label">Confirm new password</label>
+                    <input
+                        id="profile-confirmPassword"
+                        class="authPage__input"
+                        type="password"
+                        name="confirmPassword"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    />
+                </div>
+                <div class="profileCard__formActions">
+                    <button type="submit" class="btn btn--primary">Change password</button>
+                    <a href="/forgot" class="authPage__forgotLink">Forgot your current password?</a>
+                </div>
+            </form>
         </section>
 
         <!-- Danger zone -->
