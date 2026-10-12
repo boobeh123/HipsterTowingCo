@@ -69,12 +69,18 @@ jest.mock('../../../middleware/multer', () => ({
   uploadProfilePhoto: jest.fn((req, res, next) => next()),
 }));
 
-// Mock auth middleware so we control auth in route tests
+// Mock auth middleware so we control auth in route tests. The guards set
+// req.user the way passport would, because the per-account rate limiters
+// on POST /inspections and POST /profile/photo key on req.user._id.
 jest.mock('../../../middleware/auth', () => ({
-  ensureAuth:       jest.fn((req, res, next) => next()),
+  ensureAuth:       jest.fn((req, res, next) => {
+    req.user = { _id: 'user123' }
+    next()
+  }),
   ensureOnboarding: jest.fn((req, res, next) => next()),
   ensureAuthApi:    jest.fn((req, res, next) => {
     if (req.headers['x-test-auth'] === 'true') {
+      req.user = { _id: 'user123' }
       return next()
     }
     res.status(401).json({ error: 'Unauthorised' })

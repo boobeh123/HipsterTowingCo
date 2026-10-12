@@ -1,5 +1,7 @@
 const authController = require('../../../controllers/auth');
 const User = require('../../../models/User');
+const { validateLogin, validateSignup } = require('../../../middleware/validators');
+const runValidators = require('../helpers/runValidators');
 
 // Replace the User model entirely — no real database involved.
 // jest.mock auto-replaces all methods with jest.fn() stubs.
@@ -20,10 +22,16 @@ jest.mock('passport', () => ({
 const passport = require('passport');
 
 // ─────────────────────────────────────────────
-// postLogin
+// postLogin (after validateLogin, as on the route)
 // ─────────────────────────────────────────────
 describe('authController.postLogin', () => {
   let req, res, next;
+
+  // Runs the route's validators, then the controller
+  const postLogin = async () => {
+    await runValidators(validateLogin, req);
+    authController.postLogin(req, res, next);
+  };
 
   beforeEach(() => {
     req = {
@@ -45,25 +53,50 @@ describe('authController.postLogin', () => {
     jest.clearAllMocks();
   });
 
-  it('should flash errors and redirect to /login when email is invalid', () => {
+  it('should flash errors and redirect to /login when email is invalid', async () => {
     req.body.email = 'not-an-email';
 
-    authController.postLogin(req, res, next);
+    await postLogin();
 
-    expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
+    expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'Please enter a valid email address.' }]);
     expect(req.session.save).toHaveBeenCalled();
     expect(res.redirect).toHaveBeenCalledWith('/login');
+  });
+
+  // These used to throw inside validator.js and show the 500 page
+  it('should flash errors instead of failing when fields are missing or not text', async () => {
+    req.body = { email: { $ne: null }, password: ['a', 'b'] };
+
+    await postLogin();
+
+    expect(passport.authenticate).not.toHaveBeenCalled();
+    expect(req.flash).toHaveBeenCalledWith('errors', [
+      { msg: 'Please enter a valid email address.' },
+      { msg: 'Please enter your password.' },
+    ]);
+    expect(res.redirect).toHaveBeenCalledWith('/login');
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should hand passport the normalised email', async () => {
+    req.body.email = '  Test@Example.COM ';
+    req.__passportUser = null;
+
+    await postLogin();
+
+    expect(passport.authenticate).toHaveBeenCalled();
+    expect(req.body.email).toBe('test@example.com');
   });
 
   // Login deliberately has no password-length check. Accounts created before the
   // minimum was raised to 8 still have shorter passwords, and rejecting them here
   // would lock those users out. Passport decides whether the credentials are valid.
-  it('should NOT reject a short password at login — it goes to passport', () => {
+  it('should NOT reject a short password at login — it goes to passport', async () => {
     req.body.password = 'ab';
     req.__passportUser = { id: 'user123' };
     req.logIn = jest.fn((user, cb) => cb(null));
 
-    authController.postLogin(req, res, next);
+    await postLogin();
 
     expect(passport.authenticate).toHaveBeenCalled();
     expect(req.logIn).toHaveBeenCalled();
@@ -71,33 +104,33 @@ describe('authController.postLogin', () => {
     expect(res.redirect).toHaveBeenCalledWith('/');
   });
 
-  it('should still reject an invalid email regardless of password length', () => {
+  it('should still reject an invalid email regardless of password length', async () => {
     req.body.email = 'not-an-email';
     req.body.password = 'ab';
 
-    authController.postLogin(req, res, next);
+    await postLogin();
 
     expect(passport.authenticate).not.toHaveBeenCalled();
     expect(res.redirect).toHaveBeenCalledWith('/login');
   });
 
-  it('should flash errors and redirect to /login when credentials are incorrect', () => {
+  it('should flash errors and redirect to /login when credentials are incorrect', async () => {
     req.__passportUser = null;
     req.__passportInfo = { message: 'Incorrect email or password.' };
 
-    authController.postLogin(req, res, next);
+    await postLogin();
 
     expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
     expect(req.session.save).toHaveBeenCalled();
     expect(res.redirect).toHaveBeenCalledWith('/login');
   });
 
-  it('should flash success and redirect to / on valid credentials', () => {
+  it('should flash success and redirect to / on valid credentials', async () => {
     const mockUser = { id: 'user123', email: 'test@example.com' };
     req.__passportUser = mockUser;
     req.logIn = jest.fn((user, cb) => cb(null));
 
-    authController.postLogin(req, res, next);
+    await postLogin();
 
     expect(req.logIn).toHaveBeenCalled();
     expect(req.flash).toHaveBeenCalledWith('success', expect.any(String));
@@ -105,10 +138,21 @@ describe('authController.postLogin', () => {
     expect(res.redirect).toHaveBeenCalledWith('/');
   });
 
-  it('should call next with error if passport throws', () => {
+  // endStaleSessions compares this with the account's passwordChangedAt
+  it('should record when the session logged in', async () => {
+    req.__passportUser = { id: 'user123' };
+    req.logIn = jest.fn((user, cb) => cb(null));
+    const before = Date.now();
+
+    await postLogin();
+
+    expect(req.session.loginAt).toBeGreaterThanOrEqual(before);
+  });
+
+  it('should call next with error if passport throws', async () => {
     req.__passportErr = new Error('passport error');
 
-    authController.postLogin(req, res, next);
+    await postLogin();
 
     expect(next).toHaveBeenCalledWith(req.__passportErr);
     expect(res.redirect).not.toHaveBeenCalled();
@@ -116,10 +160,16 @@ describe('authController.postLogin', () => {
 });
 
 // ─────────────────────────────────────────────
-// postSignup
+// postSignup (after validateSignup, as on the route)
 // ─────────────────────────────────────────────
 describe('authController.postSignup', () => {
   let req, res, next;
+
+  // Runs the route's validators, then the controller
+  const postSignup = async () => {
+    await runValidators(validateSignup, req);
+    await authController.postSignup(req, res, next);
+  };
 
   beforeEach(() => {
     req = {
@@ -127,6 +177,7 @@ describe('authController.postSignup', () => {
         email: 'test@example.com',
         password: 'password12345',
         confirmPassword: 'password12345',
+        terms: 'on',
       },
       flash: jest.fn(),
       login: jest.fn((user, cb) => cb(null)),
@@ -143,7 +194,7 @@ describe('authController.postSignup', () => {
   it('should flash errors and redirect to /signup when email is invalid', async () => {
     req.body.email = 'not-an-email';
 
-    await authController.postSignup(req, res, next);
+    await postSignup();
 
     expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
     expect(req.session.save).toHaveBeenCalled();
@@ -154,9 +205,9 @@ describe('authController.postSignup', () => {
     req.body.password = 'abc';
     req.body.confirmPassword = 'abc';
 
-    await authController.postSignup(req, res, next);
+    await postSignup();
 
-    expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
+    expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'Password must be at least 8 characters long.' }]);
     expect(req.session.save).toHaveBeenCalled();
     expect(res.redirect).toHaveBeenCalledWith('/signup');
   });
@@ -164,20 +215,58 @@ describe('authController.postSignup', () => {
   it('should flash errors and redirect to /signup when passwords do not match', async () => {
     req.body.confirmPassword = 'different';
 
-    await authController.postSignup(req, res, next);
+    await postSignup();
 
-    expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
+    expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'Passwords do not match.' }]);
     expect(req.session.save).toHaveBeenCalled();
     expect(res.redirect).toHaveBeenCalledWith('/signup');
+  });
+
+  it('should refuse the signup when the Terms of Use box is not ticked', async () => {
+    delete req.body.terms;
+
+    await postSignup();
+
+    expect(User.prototype.save).not.toHaveBeenCalled();
+    expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'Please agree to the Terms of Use to create an account.' }]);
+    expect(res.redirect).toHaveBeenCalledWith('/signup');
+  });
+
+  // The flash goes into the session database, so it must never carry the
+  // password that was typed
+  it('should flash only messages, never the submitted values', async () => {
+    req.body.email = 'not-an-email';
+    req.body.password = 'short';
+    req.body.confirmPassword = 'shorter';
+
+    await postSignup();
+
+    const flashed = req.flash.mock.calls.find(([type]) => type === 'errors')[1];
+    expect(flashed.every((error) => Object.keys(error).join() === 'msg')).toBe(true);
+    expect(JSON.stringify(flashed)).not.toContain('short');
   });
 
   it('should flash errors and redirect to /signup when email already exists', async () => {
     User.findOne.mockResolvedValue({ email: 'test@example.com' });
 
-    await authController.postSignup(req, res, next);
+    await postSignup();
 
-    expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
+    expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'An account with that email address already exists.' }]);
     expect(req.session.save).toHaveBeenCalled();
+    expect(res.redirect).toHaveBeenCalledWith('/signup');
+  });
+
+  // Two signups for one address at once both pass the findOne check, and
+  // the unique index rejects the second save
+  it('should flash the same message when the save hits the unique email index', async () => {
+    User.findOne.mockResolvedValue(null);
+    const duplicate = Object.assign(new Error('E11000 duplicate key error'), { code: 11000 });
+    User.prototype.save = jest.fn().mockRejectedValue(duplicate);
+
+    await postSignup();
+
+    expect(next).not.toHaveBeenCalled();
+    expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'An account with that email address already exists.' }]);
     expect(res.redirect).toHaveBeenCalledWith('/signup');
   });
 
@@ -185,11 +274,26 @@ describe('authController.postSignup', () => {
     User.findOne.mockResolvedValue(null);
     User.prototype.save = jest.fn().mockResolvedValue();
 
-    await authController.postSignup(req, res, next);
+    await postSignup();
 
     expect(req.login).toHaveBeenCalled();
     expect(req.session.save).toHaveBeenCalled();
     expect(res.redirect).toHaveBeenCalledWith('/onboard');
+  });
+
+  it('should save the normalised email, record the Terms acceptance and the login time', async () => {
+    req.body.email = 'Test@Example.COM';
+    User.findOne.mockResolvedValue(null);
+    User.prototype.save = jest.fn().mockResolvedValue();
+    const before = Date.now();
+
+    await postSignup();
+
+    expect(User).toHaveBeenCalledWith(expect.objectContaining({
+      email: 'test@example.com',
+      termsAcceptedAt: expect.any(Date),
+    }));
+    expect(req.session.loginAt).toBeGreaterThanOrEqual(before);
   });
 });
 

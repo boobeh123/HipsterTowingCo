@@ -1,7 +1,27 @@
 const crypto = require('crypto')
-const validator = require('validator')
+const mongoose = require('mongoose')
+const { matchedData } = require('express-validator')
 const User = require('../models/User')
+const { formErrors } = require('../middleware/validators')
+const { markLoginTime } = require('../middleware/auth')
 const { createTransporter } = require('../utils/mailer')
+
+// Hash a token before storing or looking it up. The raw token only lives in
+// the email link, so a leaked database copy holds nothing usable.
+const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex')
+
+// The account a reset link belongs to, if the link hasn't expired.
+// mongoose.trusted() tells the sanitizeFilter guard in config/database.js
+// that this $gt is the app's own, not something sent in a request.
+// Without it the query fails with a CastError and every link shows the
+// 500 page.
+const findUserByResetToken = (token) => User.findOne({
+    resetPasswordToken: hashToken(token),
+    resetPasswordExpires: mongoose.trusted({ $gt: Date.now() }),
+})
+
+// Shown for a link that is unknown, already used, or older than an hour
+const LINK_EXPIRED = 'Password reset token is invalid or has expired.'
 
 module.exports = {
 
@@ -15,21 +35,19 @@ module.exports = {
 
     postPasswordReset: async (req, res, next) => {
         try {
-            const validationErrors = []
-            if (!validator.isEmail(req.body.email)) {
-                validationErrors.push({ msg: 'Please enter a valid email address.' })
-            }
-            if (validationErrors.length) {
-                req.flash('errors', validationErrors)
+            const errors = formErrors(req)
+            if (!errors.isEmpty()) {
+                req.flash('errors', errors.array())
                 return req.session.save((err) => {
                     if (err) { return next(err) }
                     res.redirect('/forgot')
                 })
             }
 
-            // Normalise before the lookup. An address typed with
-            // different capitalisation finds nothing and reset silently fails.
-            const email = validator.normalizeEmail(req.body.email, { gmail_remove_dots: false })
+            // Normalised by validateForgot. An address typed with different
+            // capitalisation would otherwise find nothing, and reset would
+            // silently fail.
+            const { email } = matchedData(req)
 
             // The reset link is built from BASE_URL only. The Host header comes from
             // the client, so a link built from it could point at someone else's
@@ -55,11 +73,7 @@ module.exports = {
                 // new URL() also copes with a trailing slash on BASE_URL
                 const resetUrl = new URL(`/reset/${token}`, process.env.BASE_URL).href
 
-                // Hash the token before storing — raw token only lives in the email link.
-                // If the database is ever compromised, hashed tokens cannot be used directly.
-                const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
-
-                user.resetPasswordToken = hashedToken
+                user.resetPasswordToken = hashToken(token)
                 user.resetPasswordExpires = Date.now() + 3600000 // 1 hour
                 await user.save()
 
@@ -128,6 +142,17 @@ module.exports = {
 
     getRecoverPassword: async (req, res, next) => {
         try {
+            // Check the link before showing the form, so nobody types a new
+            // password only to learn the link had already expired
+            const user = await findUserByResetToken(req.params.token)
+            if (!user) {
+                req.flash('errors', [{ msg: LINK_EXPIRED }])
+                return req.session.save((err) => {
+                    if (err) { return next(err) }
+                    res.redirect('/forgot')
+                })
+            }
+
             res.render('recover.ejs', { token: req.params.token })
         } catch(err) {
             next(err)
@@ -136,15 +161,9 @@ module.exports = {
 
     postRecoverPassword: async (req, res, next) => {
         try {
-            const validationErrors = []
-            if (!validator.isLength(req.body.password, { min: 8 })) {
-                validationErrors.push({ msg: 'Password must be at least 8 characters long.' })
-            }
-            if (req.body.password !== req.body.confirmPassword) {
-                validationErrors.push({ msg: 'Passwords do not match.' })
-            }
-            if (validationErrors.length) {
-                req.flash('errors', validationErrors)
+            const errors = formErrors(req)
+            if (!errors.isEmpty()) {
+                req.flash('errors', errors.array())
                 return req.session.save((err) => {
                     if (err) { return next(err) }
                     // Express 5 removed res.redirect('back')
@@ -154,17 +173,11 @@ module.exports = {
                 })
             }
 
-            // Hash the incoming token to match against the stored hash
-            const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
-
-            // Find user by valid, unexpired token
-            const user = await User.findOne({
-                resetPasswordToken: hashedToken,
-                resetPasswordExpires: { $gt: Date.now() }
-            })
+            const { password } = matchedData(req)
+            const user = await findUserByResetToken(req.params.token)
 
             if (!user) {
-                req.flash('errors', [{ msg: 'Password reset token is invalid or has expired.' }])
+                req.flash('errors', [{ msg: LINK_EXPIRED }])
                 return req.session.save((err) => {
                     if (err) { return next(err) }
                     res.redirect('/forgot')
@@ -172,14 +185,17 @@ module.exports = {
             }
 
             // Set new password and clear token fields
-            user.password = req.body.password
+            user.password = password
             user.resetPasswordToken = undefined
             user.resetPasswordExpires = undefined
+            // Signs the account out on every other device (see endStaleSessions)
+            user.passwordChangedAt = new Date()
             await user.save()
 
             // Log the user in automatically after reset
             req.login(user, function(err) {
                 if (err) { return next(err) }
+                markLoginTime(req)
                 req.flash('success', 'Your password has been updated.')
                 req.session.save((err) => {
                     if (err) { return next(err) }

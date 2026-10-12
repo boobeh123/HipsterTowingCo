@@ -1,4 +1,6 @@
+const { matchedData } = require('express-validator')
 const Inspection = require('../models/Inspection')
+const { formErrors } = require('../middleware/validators')
 
 module.exports = {
 
@@ -25,8 +27,15 @@ module.exports = {
 
     postInspection: async (req, res, next) => {
         try {
+            const errors = formErrors(req)
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ error: errors.array()[0].msg })
+            }
+
+            // Only the fields validateInspection checked. Spreading req.body let
+            // a client set createdAt, _id or the old signature fields.
             const inspection = new Inspection({
-                ...req.body,
+                ...matchedData(req),
                 userId: req.user._id,
             })
             await inspection.save()

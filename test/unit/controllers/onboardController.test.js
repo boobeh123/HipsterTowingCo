@@ -1,5 +1,7 @@
 const onboardController = require('../../../controllers/onboard');
 const User = require('../../../models/User');
+const { validateOnboard } = require('../../../middleware/validators');
+const runValidators = require('../helpers/runValidators');
 
 jest.mock('../../../models/User');
 
@@ -40,6 +42,12 @@ describe('onboardController.getOnboard', () => {
 describe('onboardController.postOnboard', () => {
     let req, res, next;
 
+    // Runs the route's validators, then the controller
+    const postOnboard = async () => {
+        await runValidators(validateOnboard, req);
+        await onboardController.postOnboard(req, res, next);
+    };
+
     beforeEach(() => {
         req = {
             body: { name: 'Jordan Rivera' },
@@ -58,7 +66,7 @@ describe('onboardController.postOnboard', () => {
     });
 
     it('should update user name, flash success, and redirect to /dashboard on valid input', async () => {
-        await onboardController.postOnboard(req, res, next);
+        await postOnboard();
 
         expect(User.findByIdAndUpdate).toHaveBeenCalledWith('user123', { name: 'Jordan Rivera' });
         expect(req.flash).toHaveBeenCalledWith('success', 'Welcome to pretriq, Jordan Rivera.');
@@ -67,7 +75,7 @@ describe('onboardController.postOnboard', () => {
     });
 
     it('should update req.user.name in memory after a successful DB update', async () => {
-        await onboardController.postOnboard(req, res, next);
+        await postOnboard();
 
         expect(req.user.name).toBe('Jordan Rivera');
     });
@@ -75,7 +83,7 @@ describe('onboardController.postOnboard', () => {
     it('should trim leading and trailing whitespace from name before saving', async () => {
         req.body.name = '  Jordan Rivera  ';
 
-        await onboardController.postOnboard(req, res, next);
+        await postOnboard();
 
         expect(User.findByIdAndUpdate).toHaveBeenCalledWith('user123', { name: 'Jordan Rivera' });
         expect(req.user.name).toBe('Jordan Rivera');
@@ -84,7 +92,7 @@ describe('onboardController.postOnboard', () => {
     it('should flash errors and redirect to /onboard when name is an empty string', async () => {
         req.body.name = '';
 
-        await onboardController.postOnboard(req, res, next);
+        await postOnboard();
 
         expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'Please enter your name to continue.' }]);
         expect(req.session.save).toHaveBeenCalled();
@@ -95,7 +103,7 @@ describe('onboardController.postOnboard', () => {
     it('should flash errors and redirect to /onboard when name is only whitespace', async () => {
         req.body.name = '   ';
 
-        await onboardController.postOnboard(req, res, next);
+        await postOnboard();
 
         expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'Please enter your name to continue.' }]);
         expect(res.redirect).toHaveBeenCalledWith('/onboard');
@@ -105,7 +113,17 @@ describe('onboardController.postOnboard', () => {
     it('should flash errors and redirect to /onboard when name is missing from request body', async () => {
         req.body = {};
 
-        await onboardController.postOnboard(req, res, next);
+        await postOnboard();
+
+        expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'Please enter your name to continue.' }]);
+        expect(res.redirect).toHaveBeenCalledWith('/onboard');
+        expect(User.findByIdAndUpdate).not.toHaveBeenCalled();
+    });
+
+    it('should flash errors instead of failing when name is not text', async () => {
+        req.body.name = { first: 'Jordan' };
+
+        await postOnboard();
 
         expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'Please enter your name to continue.' }]);
         expect(res.redirect).toHaveBeenCalledWith('/onboard');
@@ -115,7 +133,7 @@ describe('onboardController.postOnboard', () => {
     it('should flash errors and redirect to /onboard when name exceeds 60 characters', async () => {
         req.body.name = 'A'.repeat(61);
 
-        await onboardController.postOnboard(req, res, next);
+        await postOnboard();
 
         expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'Name must be between 1 and 60 characters.' }]);
         expect(req.session.save).toHaveBeenCalled();
@@ -126,7 +144,7 @@ describe('onboardController.postOnboard', () => {
     it('should accept a name that is exactly 60 characters', async () => {
         req.body.name = 'A'.repeat(60);
 
-        await onboardController.postOnboard(req, res, next);
+        await postOnboard();
 
         expect(User.findByIdAndUpdate).toHaveBeenCalled();
         expect(res.redirect).toHaveBeenCalledWith('/dashboard');
@@ -136,7 +154,7 @@ describe('onboardController.postOnboard', () => {
         const error = new Error('db error');
         User.findByIdAndUpdate.mockRejectedValue(error);
 
-        await onboardController.postOnboard(req, res, next);
+        await postOnboard();
 
         expect(next).toHaveBeenCalledWith(error);
         expect(res.redirect).not.toHaveBeenCalled();
@@ -146,7 +164,7 @@ describe('onboardController.postOnboard', () => {
         const error = new Error('session error');
         req.session.save = jest.fn(cb => cb(error));
 
-        await onboardController.postOnboard(req, res, next);
+        await postOnboard();
 
         expect(User.findByIdAndUpdate).toHaveBeenCalled();
         expect(next).toHaveBeenCalledWith(error);

@@ -1,4 +1,4 @@
-const { ensureAuth, ensureAuthApi, ensureOnboarding } = require('../../../middleware/auth');
+const { ensureAuth, ensureAuthApi, ensureOnboarding, markLoginTime, endStaleSessions } = require('../../../middleware/auth');
 
 describe('Auth Middleware', () => {
   let req, res, next;
@@ -157,6 +157,86 @@ describe('Auth Middleware', () => {
 
       expect(res.redirect).toHaveBeenCalledWith('/dashboard');
       expect(next).not.toHaveBeenCalled();
+    });
+  });
+
+  // ─────────────────────────────────────────────
+  // markLoginTime / endStaleSessions — sign out other devices after a reset
+  // ─────────────────────────────────────────────
+  describe('markLoginTime', () => {
+    it('should record the login time on the session', () => {
+      req.session = {};
+      const before = Date.now();
+
+      markLoginTime(req);
+
+      expect(req.session.loginAt).toBeGreaterThanOrEqual(before);
+    });
+  });
+
+  describe('endStaleSessions', () => {
+    const CHANGED_AT = new Date('2026-10-01T12:00:00Z');
+
+    beforeEach(() => {
+      req.session = {};
+      req.logout = jest.fn((cb) => cb());
+    });
+
+    it('should let a visitor through untouched', () => {
+      req.user = undefined;
+
+      endStaleSessions(req, res, next);
+
+      expect(req.logout).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith();
+    });
+
+    it('should let a user through when the password was never reset', () => {
+      req.user = { id: 'user123' };
+
+      endStaleSessions(req, res, next);
+
+      expect(req.logout).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith();
+    });
+
+    it('should keep a session that logged in after the last reset', () => {
+      req.user = { id: 'user123', passwordChangedAt: CHANGED_AT };
+      req.session.loginAt = CHANGED_AT.getTime() + 1000;
+
+      endStaleSessions(req, res, next);
+
+      expect(req.logout).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith();
+    });
+
+    it('should sign out a session that logged in before the last reset', () => {
+      req.user = { id: 'user123', passwordChangedAt: CHANGED_AT };
+      req.session.loginAt = CHANGED_AT.getTime() - 1000;
+
+      endStaleSessions(req, res, next);
+
+      expect(req.logout).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledTimes(1);
+    });
+
+    // Sessions from before this feature have no loginAt at all
+    it('should sign out a session with no recorded login time once a reset happens', () => {
+      req.user = { id: 'user123', passwordChangedAt: CHANGED_AT };
+
+      endStaleSessions(req, res, next);
+
+      expect(req.logout).toHaveBeenCalledTimes(1);
+    });
+
+    it('should pass a logout error on to the error handler', () => {
+      const error = new Error('session store down');
+      req.user = { id: 'user123', passwordChangedAt: CHANGED_AT };
+      req.logout = jest.fn((cb) => cb(error));
+
+      endStaleSessions(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 });

@@ -14,7 +14,7 @@ https://pretriq.com.
 ```bash
 npm run dev      # nodemon server.js
 npm start        # node server.js
-npm test         # jest — runs all 15 suites
+npm test         # jest — runs all 17 suites
 ```
 
 Run a single suite or a single test:
@@ -29,14 +29,21 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 180 passed, 15 suites, 0 failures
+### Expected test baseline: 221 passed, 17 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
 `TypeError: argument handler must be a function` — Express rejects an `undefined` handler, and that
 error names the route line, not the mock. This has bitten twice: once when `getInspection` moved to
 `controllers/inspection.js`, and once when `middleware/multer.js` changed from exporting a bare
-multer instance to `{ uploadProfilePhoto }`.
+multer instance to `{ uploadProfilePhoto }`. The guard mocks there also set `req.user`, because the
+per-account rate limiters key on `req.user._id`.
+
+Controller tests run the route's validator chain first through `test/unit/helpers/runValidators.js`,
+inside a small per-suite helper such as `postSignup()`. Write those helpers by hand: a bulk
+find-and-replace once rewrote the controller call inside the helper too, and the self-calling helper
+hung Jest at 100% CPU. An endless chain of awaited promises never lets the `testTimeout` timer
+fire, so run single suites under `timeout 120 npx jest --runInBand <file>` when in doubt.
 
 `jest.config.js` has no `setupFilesAfterEnv`. The old `test/setup/` directory was removed: its
 `testServer.js` was unreferenced, and its `setup.js` only loaded a `config/test.env` that doesn't
@@ -48,7 +55,8 @@ exist and set `NODE_ENV`, which no test reads. `testPathIgnorePatterns` still na
 ### Request pipeline (`server.js`) — order is load-bearing
 
 `trust proxy` → helmet/CSP → static → body parsers → `method-override` → session → passport →
-connect-flash → **`viewLocals`** → `routes/main.js` → 404 handler → `errorHandler`.
+**`endStaleSessions`** → connect-flash → **`viewLocals`** → `routes/main.js` → 404 handler →
+`errorHandler`.
 
 - **`app.set('trust proxy', 1)` must come before any `app.use`.** Railway proxies requests; without
   it `req.ip` is the proxy, so rate limiters count every visitor as one client and `secure` session
@@ -77,6 +85,38 @@ return req.session.save((err) => {
 
 `views/partials/flash.ejs` accepts either a bare string or `{ msg }`.
 
+### Validation (`middleware/validators.js`)
+
+One express-validator chain per form, plus `validateInspection` for the JSON save. Routes run the
+chain before the controller:
+
+```js
+router.post('/signup', authLimiter, validateSignup, authController.postSignup)
+```
+
+- Every text field starts with `.isString()`: a form field can arrive as an object or a list, and
+  before this a missing or non-string field made `validator.js` throw and show the 500 page.
+- Controllers start with `const errors = formErrors(req)`. Form routes flash `errors.array()` and
+  redirect back to their own form; `postInspection` returns a JSON 400 with the first message.
+  `formErrors` keeps only `{ msg }`. The default error objects carry the typed value, and flashing
+  them would store passwords in the session database.
+- Controllers then read input with `matchedData(req)`, never `req.body`. That is what stops a
+  client from setting `createdAt`, `_id` or the old signature fields on an inspection.
+- `emailField()` trims and runs `normalizeEmail({ gmail_remove_dots: false })`, the clean-up the app
+  has always used, and rewrites `req.body.email` in place. passport-local reads that field, so
+  login sees the normalized address. Changing the options would stop existing accounts from matching.
+- Signup requires the Terms checkbox (`terms` is `"on"` when ticked) and records `termsAcceptedAt`.
+- The inspection modal's `maxlength` attributes mirror `validateInspection` and the schema's
+  `maxLength`s (truck 30, trailer 60, remarks 2000, dates 20). Change all three together.
+
+### MongoDB guard (`config/database.js`)
+
+`mongoose.set('sanitizeFilter', true)` neutralizes `$` operators that arrive in request data. Every
+operator the app writes into a query filter must be wrapped, as in `findUserByResetToken` in
+`controllers/reset.js`: `resetPasswordExpires: mongoose.trusted({ $gt: Date.now() })`. Unwrapped,
+it is rewritten to `{ $eq: { $gt: ... } }`, which fails to cast on a Date path, and the page shows a
+500. Updates such as the counter's `$inc` aren't filters and aren't affected.
+
 ### Two auth guards, and the JSON/HTML split (`middleware/auth.js`)
 
 - `ensureAuth` — page routes. Redirects to `/login`, or to `/onboard` if the user has no `name`.
@@ -92,6 +132,31 @@ for routes without the flag (`POST /inspections/count` is unauthenticated and ha
 Controllers convert Mongoose `CastError` (a malformed `:id` in the URL) into the same response the
 not-found path produces — a JSON 404 in `getInspection`, a flash+redirect in `deleteInspection` —
 rather than letting it become a 500.
+
+### Sessions end after a password reset
+
+A reset sets `passwordChangedAt` on the account. `endStaleSessions` (middleware/auth.js, right after
+`passport.session()` in server.js) signs out any session whose `req.session.loginAt` is older, so
+whoever knew the old password loses access on every other device. Anything that logs a user in must
+call `markLoginTime(req)` inside the `req.login` callback. passport regenerates the session on login,
+so setting it earlier is lost. `postLogin`, `postSignup` and `postRecoverPassword` already do.
+
+`GET /reset/:token` checks the link before showing the form and sends an unknown or expired one to
+`/forgot` with a flash.
+
+### Rate limits (`middleware/rateLimiters.js`)
+
+| Limiter | Routes | Limit | Keyed by | Response |
+|---|---|---|---|---|
+| `authLimiter` | POST /login, /signup | 20 / 15 min | IP | flash + redirect to the same path |
+| `passwordResetLimiter` | POST /forgot, /reset/:token | 5 / hour | IP | flash + redirect |
+| `counterLimiter` | POST /inspections/count | 30 / 15 min | IP | JSON 429 |
+| `inspectionSaveLimiter` | POST /inspections | 60 / 15 min | account | JSON 429 |
+| `photoUploadLimiter` | POST /profile/photo | 10 / hour | account | flash + redirect to /profile |
+
+The per-account limiters must run after `ensureAuth`/`ensureAuthApi`, which guarantee `req.user`.
+`photoUploadLimiter` runs before multer, so a blocked upload never writes a temp file. A route
+with no GET page of its own passes `flashAndRedirect(message, redirectTo)` its destination.
 
 ### Logout is POST, and reset tokens stay out of logs and analytics
 

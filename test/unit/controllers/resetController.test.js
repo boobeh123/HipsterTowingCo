@@ -1,5 +1,9 @@
+const crypto = require('crypto');
+const mongoose = require('mongoose');
 const resetController = require('../../../controllers/reset');
 const User = require('../../../models/User');
+const { validateForgot, validateReset } = require('../../../middleware/validators');
+const runValidators = require('../helpers/runValidators');
 
 
 jest.mock('../../../models/User');
@@ -21,6 +25,12 @@ jest.mock('../../../utils/mailer', () => ({
 describe('resetController.postPasswordReset', () => {
     let req, res, next;
     const originalBaseUrl = process.env.BASE_URL;
+
+    // Runs the route's validators, then the controller
+    const postPasswordReset = async () => {
+        await runValidators(validateForgot, req);
+        await resetController.postPasswordReset(req, res, next);
+    };
 
     beforeEach(() => {
         process.env.BASE_URL = 'https://pretriq.test';
@@ -48,11 +58,21 @@ describe('resetController.postPasswordReset', () => {
     it('should flash errors and redirect to /forgot when email is invalid', async () => {
         req.body.email = 'not-an-email';
 
-        await resetController.postPasswordReset(req, res, next);
+        await postPasswordReset();
 
         expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
         expect(req.session.save).toHaveBeenCalled();
         expect(res.redirect).toHaveBeenCalledWith('/forgot');
+    });
+
+    it('should flash errors instead of failing when the email is missing', async () => {
+        delete req.body.email;
+
+        await postPasswordReset();
+
+        expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'Please enter a valid email address.' }]);
+        expect(res.redirect).toHaveBeenCalledWith('/forgot');
+        expect(next).not.toHaveBeenCalled();
     });
 
     // An unregistered address must be indistinguishable from a registered one,
@@ -60,7 +80,7 @@ describe('resetController.postPasswordReset', () => {
     it('should give an unregistered email the same response as a registered one', async () => {
         User.findOne.mockResolvedValue(null);
 
-        await resetController.postPasswordReset(req, res, next);
+        await postPasswordReset();
 
         expect(req.flash).toHaveBeenCalledWith('info', expect.any(Array));
         expect(req.flash).not.toHaveBeenCalledWith('errors', expect.any(Array));
@@ -70,7 +90,7 @@ describe('resetController.postPasswordReset', () => {
     it('should not send any email when the address is not registered', async () => {
         User.findOne.mockResolvedValue(null);
 
-        await resetController.postPasswordReset(req, res, next);
+        await postPasswordReset();
 
         expect(mockSendMail).not.toHaveBeenCalled();
     });
@@ -79,7 +99,7 @@ describe('resetController.postPasswordReset', () => {
         req.body.email = 'TEST@Example.COM';
         User.findOne.mockResolvedValue(null);
 
-        await resetController.postPasswordReset(req, res, next);
+        await postPasswordReset();
 
         // Mongoose does not run the schema's lowercase setter on query filters,
         // so the controller must normalise or a differently-cased address
@@ -96,7 +116,7 @@ describe('resetController.postPasswordReset', () => {
         };
         User.findOne.mockResolvedValue(mockUser);
 
-        await resetController.postPasswordReset(req, res, next);
+        await postPasswordReset();
 
         // Token and expiry were set on the user document
         expect(mockUser.resetPasswordToken).toBeDefined();
@@ -122,7 +142,7 @@ describe('resetController.postPasswordReset', () => {
         };
         User.findOne.mockResolvedValue(mockUser);
 
-        await resetController.postPasswordReset(req, res, next);
+        await postPasswordReset();
 
         const { html } = mockSendMail.mock.calls[0][0];
         // BASE_URL, then /reset/, then the 40-character hex token
@@ -138,7 +158,7 @@ describe('resetController.postPasswordReset', () => {
         };
         User.findOne.mockResolvedValue(mockUser);
 
-        await resetController.postPasswordReset(req, res, next);
+        await postPasswordReset();
 
         expect(next).toHaveBeenCalledWith(expect.any(Error));
         expect(mockUser.save).not.toHaveBeenCalled();
@@ -150,7 +170,7 @@ describe('resetController.postPasswordReset', () => {
         const error = new Error('db error');
         User.findOne.mockRejectedValue(error);
 
-        await resetController.postPasswordReset(req, res, next);
+        await postPasswordReset();
 
         expect(next).toHaveBeenCalledWith(error);
         expect(res.redirect).not.toHaveBeenCalled();
@@ -168,7 +188,7 @@ describe('resetController.postPasswordReset', () => {
         const error = new Error('smtp error');
         mockSendMail.mockRejectedValueOnce(error);
 
-        await resetController.postPasswordReset(req, res, next);
+        await postPasswordReset();
 
         expect(next).toHaveBeenCalledWith(error);
     });
@@ -181,19 +201,54 @@ describe('resetController.getRecoverPassword', () => {
     let req, res, next;
 
     beforeEach(() => {
-        req = { params: { token: 'abc123' } };
+        req = {
+            params: { token: 'abc123' },
+            flash: jest.fn(),
+            session: { save: jest.fn(cb => cb(null)) },
+        };
         res = { render: jest.fn(), redirect: jest.fn() };
         next = jest.fn();
+        User.findOne.mockResolvedValue({ email: 'test@example.com' });
     });
 
     afterEach(() => {
         jest.clearAllMocks();
     });
 
-    it('should render recover.ejs with the token', async () => {
+    it('should render recover.ejs with the token when the link is valid', async () => {
         await resetController.getRecoverPassword(req, res, next);
 
         expect(res.render).toHaveBeenCalledWith('recover.ejs', { token: 'abc123' });
+    });
+
+    it('should look the link up by the hash of its token', async () => {
+        await resetController.getRecoverPassword(req, res, next);
+
+        const hash = crypto.createHash('sha256').update('abc123').digest('hex');
+        expect(User.findOne).toHaveBeenCalledWith(expect.objectContaining({ resetPasswordToken: hash }));
+    });
+
+    // sanitizeFilter (config/database.js) rewrites any operator that isn't
+    // wrapped in mongoose.trusted(), which would break the expiry check
+    it('should build an expiry check that survives sanitizeFilter', async () => {
+        await resetController.getRecoverPassword(req, res, next);
+
+        const filter = User.findOne.mock.calls[0][0];
+        const sanitized = mongoose.sanitizeFilter({ ...filter });
+        // An untrusted operator comes back wrapped as { $eq: { $gt: ... } }
+        expect(sanitized.resetPasswordExpires).not.toHaveProperty('$eq');
+        expect(sanitized.resetPasswordExpires.$gt).toEqual(expect.any(Number));
+    });
+
+    it('should send an unknown or expired link to /forgot without showing the form', async () => {
+        User.findOne.mockResolvedValue(null);
+
+        await resetController.getRecoverPassword(req, res, next);
+
+        expect(res.render).not.toHaveBeenCalled();
+        expect(req.flash).toHaveBeenCalledWith('errors', [{ msg: 'Password reset token is invalid or has expired.' }]);
+        expect(req.session.save).toHaveBeenCalled();
+        expect(res.redirect).toHaveBeenCalledWith('/forgot');
     });
 
     it('should call next with error if render throws', async () => {
@@ -210,6 +265,12 @@ describe('resetController.getRecoverPassword', () => {
 // ─────────────────────────────────────────────
 describe('resetController.postRecoverPassword', () => {
     let req, res, next;
+
+    // Runs the route's validators, then the controller
+    const postRecoverPassword = async () => {
+        await runValidators(validateReset, req);
+        await resetController.postRecoverPassword(req, res, next);
+    };
 
     beforeEach(() => {
         req = {
@@ -232,7 +293,7 @@ describe('resetController.postRecoverPassword', () => {
         req.body.password = 'ab';
         req.body.confirmPassword = 'ab';
 
-        await resetController.postRecoverPassword(req, res, next);
+        await postRecoverPassword();
 
         expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
         expect(req.session.save).toHaveBeenCalled();
@@ -242,18 +303,30 @@ describe('resetController.postRecoverPassword', () => {
     it('should flash errors and redirect to the reset form when passwords do not match', async () => {
         req.body.confirmPassword = 'different';
 
-        await resetController.postRecoverPassword(req, res, next);
+        await postRecoverPassword();
 
         expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
         expect(req.session.save).toHaveBeenCalled();
         expect(res.redirect).toHaveBeenCalledWith('/reset/abc123');
     });
 
+    it('should flash errors instead of failing when the password is not text', async () => {
+        req.body.password = { length: 9 };
+
+        await postRecoverPassword();
+
+        expect(req.flash).toHaveBeenCalledWith('errors', expect.arrayContaining([
+            { msg: 'Password must be at least 8 characters long.' },
+        ]));
+        expect(res.redirect).toHaveBeenCalledWith('/reset/abc123');
+        expect(next).not.toHaveBeenCalled();
+    });
+
     it('should flash errors and redirect to /forgot when token is invalid or expired', async () => {
         // findOne returns null — token not found or expired
         User.findOne.mockResolvedValue(null);
 
-        await resetController.postRecoverPassword(req, res, next);
+        await postRecoverPassword();
 
         expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array));
         expect(req.session.save).toHaveBeenCalled();
@@ -269,13 +342,17 @@ describe('resetController.postRecoverPassword', () => {
         };
         User.findOne.mockResolvedValue(mockUser);
 
-        await resetController.postRecoverPassword(req, res, next);
+        await postRecoverPassword();
 
         // Password updated and token fields cleared
         expect(mockUser.password).toBe('newpass123');
         expect(mockUser.resetPasswordToken).toBeUndefined();
         expect(mockUser.resetPasswordExpires).toBeUndefined();
         expect(mockUser.save).toHaveBeenCalled();
+
+        // Other devices get signed out (endStaleSessions), this one stays in
+        expect(mockUser.passwordChangedAt).toBeInstanceOf(Date);
+        expect(req.session.loginAt).toBeGreaterThanOrEqual(mockUser.passwordChangedAt.getTime());
 
         // Logged in, flashed, redirected
         expect(req.login).toHaveBeenCalled();
@@ -288,7 +365,7 @@ describe('resetController.postRecoverPassword', () => {
         const error = new Error('db error');
         User.findOne.mockRejectedValue(error);
 
-        await resetController.postRecoverPassword(req, res, next);
+        await postRecoverPassword();
 
         expect(next).toHaveBeenCalledWith(error);
         expect(res.redirect).not.toHaveBeenCalled();

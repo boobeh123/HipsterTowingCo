@@ -39,6 +39,7 @@
                             type="text"
                             id="truckTractorNo"
                             name="truckTractorNo"
+                            maxlength="30"
                             required
                             autocomplete="off"
                             placeholder="USDOT #"
@@ -115,7 +116,7 @@
                         <h3 id="defects-trailer-heading" class="inspection-section__title">Trailer(s) Defects</h3>
                         <div class="inspection-field inspection-field--trailer-no">
                             <label for="trailerNo">Trailer No(s).</label>
-                            <input type="text" id="trailerNo" name="trailerNo" autocomplete="off" />
+                            <input type="text" id="trailerNo" name="trailerNo" maxlength="60" autocomplete="off" />
                         </div>
                     </div>
 
@@ -148,7 +149,7 @@
                     <h3 id="remarks-heading" class="inspection-section__title">Remarks</h3>
                     <div class="inspection-field">
                         <label for="remarks">Details / Notes</label>
-                        <textarea id="remarks" name="remarks" rows="3" placeholder="Describe any defects or notes here…"></textarea>
+                        <textarea id="remarks" name="remarks" rows="3" maxlength="2000" placeholder="Describe any defects or notes here…"></textarea>
                     </div>
                 </section>
 
@@ -184,7 +185,7 @@
                         </div>
                         <div class="inspection-field inspection-field--date">
                             <label for="mechanicDate">Date</label>
-                            <input type="text" id="mechanicDate" name="mechanicDate" autocomplete="off" />
+                            <input type="text" id="mechanicDate" name="mechanicDate" maxlength="20" autocomplete="off" />
                         </div>
                     </div>
 
@@ -195,7 +196,7 @@
                         </div>
                         <div class="inspection-field inspection-field--date">
                             <label for="driverDate">Date</label>
-                            <input type="text" id="driverDate" name="driverDate" autocomplete="off" />
+                            <input type="text" id="driverDate" name="driverDate" maxlength="20" autocomplete="off" />
                         </div>
                     </div>
                 </section>

@@ -1,6 +1,10 @@
 const passport = require('passport')
-const validator = require('validator')
+const { matchedData } = require('express-validator')
 const User = require('../models/User')
+const { formErrors } = require('../middleware/validators')
+const { markLoginTime } = require('../middleware/auth')
+
+const EMAIL_TAKEN = 'An account with that email address already exists.'
 
 module.exports = {
 
@@ -16,18 +20,17 @@ module.exports = {
   },
 
   postLogin: (req, res, next) => {
-    const validationErrors = []
-    if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' })
-
-    if (validationErrors.length) {
-      req.flash('errors', validationErrors)
+    const errors = formErrors(req)
+    if (!errors.isEmpty()) {
+      req.flash('errors', errors.array())
       return req.session.save((err) => {
         if (err) { return next(err) }
         res.redirect('/login')
       })
     }
-    req.body.email = validator.normalizeEmail(req.body.email, { gmail_remove_dots: false })
 
+    // validateLogin has already normalised req.body.email, the field
+    // passport-local reads
     passport.authenticate('local', (err, user, info) => {
       if (err) { return next(err) }
       if (!user) {
@@ -39,6 +42,7 @@ module.exports = {
       }
       req.logIn(user, (err) => {
         if (err) { return next(err) }
+        markLoginTime(req)
         req.flash('success', 'Welcome back.')
         req.session.save((err) => {
           if (err) { return next(err) }
@@ -70,24 +74,21 @@ module.exports = {
   },
 
   postSignup: async (req, res, next) => {
-    const validationErrors = []
-    if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' })
-    if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push({ msg: 'Password must be at least 8 characters long.' })
-    if (req.body.password !== req.body.confirmPassword) validationErrors.push({ msg: 'Passwords do not match.' })
-
-    if (validationErrors.length) {
-      req.flash('errors', validationErrors)
+    const errors = formErrors(req)
+    if (!errors.isEmpty()) {
+      req.flash('errors', errors.array())
       return req.session.save((err) => {
         if (err) { return next(err) }
         res.redirect('/signup')
       })
     }
-    req.body.email = validator.normalizeEmail(req.body.email, { gmail_remove_dots: false })
+
+    const { email, password } = matchedData(req)
 
     try {
-      const existingUser = await User.findOne({ email: req.body.email })
+      const existingUser = await User.findOne({ email })
       if (existingUser) {
-        req.flash('errors', [{ msg: 'An account with that email address already exists.' }])
+        req.flash('errors', [{ msg: EMAIL_TAKEN }])
         return req.session.save((err) => {
           if (err) { return next(err) }
           res.redirect('/signup')
@@ -96,23 +97,35 @@ module.exports = {
 
       const user = new User({
         role: 'user',
-        email: req.body.email,
-        password: req.body.password,
+        email,
+        password,
         name: '',
         image: '',
         cloudinaryId: '',
+        // validateSignup only lets the form through with the box ticked
+        termsAcceptedAt: new Date(),
       })
 
       await user.save()
 
       req.login(user, function(err) {
         if (err) { return next(err) }
+        markLoginTime(req)
         req.session.save((err) => {
           if (err) { return next(err) }
           res.redirect('/onboard')
         })
       })
     } catch(err) {
+      // Two signups for the same address at once: the unique email index
+      // rejects the second, which gets the same message as the check above
+      if (err.code === 11000) {
+        req.flash('errors', [{ msg: EMAIL_TAKEN }])
+        return req.session.save((saveErr) => {
+          if (saveErr) { return next(saveErr) }
+          res.redirect('/signup')
+        })
+      }
       return next(err)
     }
   },
