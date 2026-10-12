@@ -12,7 +12,7 @@ https://pretriq.com.
 ## Commands
 
 ```bash
-npm run dev      # nodemon server.js
+npm run dev      # node --watch server.js (restarts when a loaded file changes)
 npm start        # node server.js
 npm test         # jest — runs all 17 suites
 ```
@@ -54,9 +54,20 @@ exist and set `NODE_ENV`, which no test reads. `testPathIgnorePatterns` still na
 
 ### Request pipeline (`server.js`) — order is load-bearing
 
-`trust proxy` → helmet/CSP → static → body parsers → `method-override` → session → passport →
-**`endStaleSessions`** → connect-flash → **`viewLocals`** → `routes/main.js` → 404 handler →
-`errorHandler`.
+`trust proxy` → helmet/CSP → morgan → body parsers → static → `method-override` → session →
+passport → **`endStaleSessions`** → connect-flash → **`viewLocals`** → `routes/main.js` → 404
+handler → `errorHandler`.
+
+- `config/database.js` connects once and returns Mongoose's client. The session store reuses it
+  (`MongoStore.create({ clientPromise })`), and `app.listen` runs only after the connection
+  succeeds. If MongoDB can't be reached, the server logs the error and exits (Railway restarts
+  it). `PORT` defaults to 3000.
+- morgan logs in the `combined` format in production and `dev` locally. Static assets are
+  logged too, because morgan runs before `express.static`.
+- `express.urlencoded({ extended: false })`: no form uses nested field names (the inspection
+  modal's bracketed names are only read by `readFormData()` and posted as JSON), so a field like
+  `email[$ne]` stays a plain string key instead of becoming an object.
+- Both `dotenv.config()` calls pass `quiet: true`; dotenv 17 otherwise logs a tip line.
 
 - **`app.set('trust proxy', 1)` must come before any `app.use`.** Railway proxies requests; without
   it `req.ip` is the proxy, so rate limiters count every visitor as one client and `secure` session
@@ -170,7 +181,10 @@ with no GET page of its own passes `flashAndRedirect(message, redirectTo)` its d
 ### Inspection flow — the PDF is built entirely client-side
 
 `public/js/main.js` reads the modal form, sanitizes it, and generates the DVIR PDF with **jsPDF
-loaded from cdnjs** (`views/partials/footer.ejs`), not the npm package. Then:
+loaded from cdnjs** (`views/partials/footer.ejs`), not the npm package. The script tag pins
+4.2.1 with an `integrity` hash: **changing the version means changing the hash too** (cdnjs
+publishes it, `https://api.cdnjs.com/libraries/jspdf/<version>?fields=sri`), or the browser
+refuses the file and no PDF can be made. Then:
 
 - **Guest**: PDF only, then `POST /inspections/count` to bump the global counter.
 - **Authenticated**: same PDF, plus `POST /inspections`; the counter only increments after a
@@ -217,6 +231,14 @@ with the controller's payload over reasoning about it.
 That means **an inline `onclick`/`onsubmit` will silently not fire** — use `addEventListener` in
 `public/js/main.js` instead. `.profileCard__deleteForm` is the pattern to copy.
 
+`styleSrc` has no `'unsafe-inline'` either, so **a `style="..."` attribute or `<style>` block is
+silently ignored**; put styles in `public/css/style.css`. Setting `element.style.x` from JS is
+still allowed. The only outside hosts left are Google Analytics/Tag Manager, Google Fonts, cdnjs
+(jsPDF) and Cloudinary images. The footer's social icons are inline SVG (Font Awesome Free
+paths, license comment kept in `footer.ejs`), not the Font Awesome kit, and a profile without a
+photo shows `/imgs/avatarPlaceholder.svg`. Any XML comment in an SVG file must not contain `--`,
+or the browser can't parse the image.
+
 The one inline `<script>` is the JSON-LD block in `head.ejs`, allowed by a SHA-256 hash in
 `server.js`. **Editing that block — even its whitespace — invalidates the hash and silently blocks
 the structured data.** Regenerate with:
@@ -245,10 +267,16 @@ entities. Reserve `<%-` for `include()`.
 - **`BASE_URL` is required for password reset emails.** The link is built from it only, never from
   the `Host` header, which the client controls. Without it, `POST /forgot` fails with a 500 and
   `server.js` logs a warning at startup in production.
-- **`engines: { node: "22.x" }` in `package.json` is load-bearing — do not remove it.** Railway's
+- **`engines: { node: "24.x" }` in `package.json` is load-bearing — do not remove it.** Railway's
   Nixpacks reads it to pick a Node version. `mongodb`/`mongoose` require `>=20.19.0` and call the
   global `crypto.getRandomValues`, which does not exist on Node 18. Without the pin, Railway
   defaulted to Node 18 and production crash-looped on `ReferenceError: crypto is not defined`.
+  nodemailer 10 also needs Node 20 or newer.
+- Dependency updates: take versions at least a week old, and run `npm audit fix` only after
+  checking its lockfile diff (in this repo it once tried to rewrite thousands of unrelated lines;
+  `npm update <package>` fixed the one vulnerable package instead). Never `npm audit fix --force`:
+  it would downgrade jest and reinstall old tooling. The remaining audit findings are 19 moderate
+  ones inside Jest, dev-only, with no fix released yet.
 - A push to `main` is a production deploy. The `pretriq` Railway service owns `pretriq.com`.
   A second service, `permissible-wool`, builds from this same repo but has no domain and points at a
   different database.
