@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const { matchedData } = require('express-validator')
 const User = require('../models/User')
 const { formErrors } = require('../middleware/validators')
+const { markLoginTime } = require('../middleware/auth')
 const { createTransporter } = require('../utils/mailer')
 
 // Hash a token before storing or looking it up. The raw token only lives in
@@ -187,11 +188,14 @@ module.exports = {
             user.password = password
             user.resetPasswordToken = undefined
             user.resetPasswordExpires = undefined
+            // Signs the account out on every other device (see endStaleSessions)
+            user.passwordChangedAt = new Date()
             await user.save()
 
             // Log the user in automatically after reset
             req.login(user, function(err) {
                 if (err) { return next(err) }
+                markLoginTime(req)
                 req.flash('success', 'Your password has been updated.')
                 req.session.save((err) => {
                     if (err) { return next(err) }

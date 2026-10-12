@@ -34,6 +34,9 @@ const UserSchema = new mongoose.Schema({
   resetPasswordExpires: Date,
   // Set when the Terms of Use checkbox is ticked at signup
   termsAcceptedAt: Date,
+  // Set by a password reset. Sessions that logged in before it are signed
+  // out (see endStaleSessions in middleware/auth.js)
+  passwordChangedAt: Date,
   // lastLogin: {
   //   type: Date,
   //   default: Date.now

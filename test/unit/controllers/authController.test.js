@@ -138,6 +138,17 @@ describe('authController.postLogin', () => {
     expect(res.redirect).toHaveBeenCalledWith('/');
   });
 
+  // endStaleSessions compares this with the account's passwordChangedAt
+  it('should record when the session logged in', async () => {
+    req.__passportUser = { id: 'user123' };
+    req.logIn = jest.fn((user, cb) => cb(null));
+    const before = Date.now();
+
+    await postLogin();
+
+    expect(req.session.loginAt).toBeGreaterThanOrEqual(before);
+  });
+
   it('should call next with error if passport throws', async () => {
     req.__passportErr = new Error('passport error');
 
@@ -270,10 +281,11 @@ describe('authController.postSignup', () => {
     expect(res.redirect).toHaveBeenCalledWith('/onboard');
   });
 
-  it('should save the normalised email and record the Terms acceptance', async () => {
+  it('should save the normalised email, record the Terms acceptance and the login time', async () => {
     req.body.email = 'Test@Example.COM';
     User.findOne.mockResolvedValue(null);
     User.prototype.save = jest.fn().mockResolvedValue();
+    const before = Date.now();
 
     await postSignup();
 
@@ -281,6 +293,7 @@ describe('authController.postSignup', () => {
       email: 'test@example.com',
       termsAcceptedAt: expect.any(Date),
     }));
+    expect(req.session.loginAt).toBeGreaterThanOrEqual(before);
   });
 });
 

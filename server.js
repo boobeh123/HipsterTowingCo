@@ -12,6 +12,7 @@ const passport = require('passport')
 const flash = require('connect-flash')
 const mainRoutes = require('./routes/main')
 const viewLocals = require('./middleware/viewLocals')
+const { endStaleSessions } = require('./middleware/auth')
 const errorHandler = require('./middleware/errorHandler')
 // const todoRoutes = require('./routes/todos')
 // const profileRoutes = require('./routes/profile')
@@ -105,6 +106,8 @@ app.use(
 // Passport middleware
 app.use(passport.initialize())
 app.use(passport.session())
+// Signs out sessions that logged in before the account's last password reset
+app.use(endStaleSessions)
 
 app.use(flash())
 

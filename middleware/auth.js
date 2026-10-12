@@ -41,4 +41,26 @@ const ensureOnboarding = (req, res, next) => {
     return next()
 }
 
-module.exports = { ensureAuth, ensureAuthApi, ensureOnboarding }
+/**************************************************************
+ * markLoginTime / endStaleSessions
+ * A password reset sets passwordChangedAt on the account, and
+ * every login records loginAt on its session (markLoginTime).
+ * endStaleSessions runs on every request, right after passport.
+ * A session that logged in before the last password change is
+ * signed out, so whoever knew the old password loses access on
+ * every other device. The request carries on as a visitor's.
+ * Anything new that logs a user in must call markLoginTime.
+ **************************************************************/
+const markLoginTime = (req) => {
+    req.session.loginAt = Date.now()
+}
+
+const endStaleSessions = (req, res, next) => {
+    const changedAt = req.user && req.user.passwordChangedAt
+    if (!changedAt || (req.session.loginAt || 0) >= changedAt.getTime()) {
+        return next()
+    }
+    req.logout((err) => next(err))
+}
+
+module.exports = { ensureAuth, ensureAuthApi, ensureOnboarding, markLoginTime, endStaleSessions }

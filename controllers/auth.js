@@ -2,6 +2,7 @@ const passport = require('passport')
 const { matchedData } = require('express-validator')
 const User = require('../models/User')
 const { formErrors } = require('../middleware/validators')
+const { markLoginTime } = require('../middleware/auth')
 
 const EMAIL_TAKEN = 'An account with that email address already exists.'
 
@@ -41,6 +42,7 @@ module.exports = {
       }
       req.logIn(user, (err) => {
         if (err) { return next(err) }
+        markLoginTime(req)
         req.flash('success', 'Welcome back.')
         req.session.save((err) => {
           if (err) { return next(err) }
@@ -108,6 +110,7 @@ module.exports = {
 
       req.login(user, function(err) {
         if (err) { return next(err) }
+        markLoginTime(req)
         req.session.save((err) => {
           if (err) { return next(err) }
           res.redirect('/onboard')

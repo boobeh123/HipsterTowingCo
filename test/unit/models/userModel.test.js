@@ -150,17 +150,20 @@ describe('User Model', () => {
 // ─────────────────────────────────────────────
 // Fields added with server-side validation
 // ─────────────────────────────────────────────
-describe('User Model — terms and name length', () => {
+describe('User Model — terms, password changes and name length', () => {
 
-  it('should store when the Terms of Use were accepted', () => {
+  it('should store when the Terms of Use were accepted and when the password last changed', () => {
     const acceptedAt = new Date('2026-10-01T00:00:00Z');
+    const changedAt = new Date('2026-10-02T00:00:00Z');
     const user = new User({
       email: 'test@example.com',
       password: 'password123',
       termsAcceptedAt: acceptedAt,
+      passwordChangedAt: changedAt,
     });
 
     expect(user.termsAcceptedAt).toEqual(acceptedAt);
+    expect(user.passwordChangedAt).toEqual(changedAt);
   });
 
   it('should reject a name longer than 60 characters', async () => {

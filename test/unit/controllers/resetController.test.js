@@ -350,6 +350,10 @@ describe('resetController.postRecoverPassword', () => {
         expect(mockUser.resetPasswordExpires).toBeUndefined();
         expect(mockUser.save).toHaveBeenCalled();
 
+        // Other devices get signed out (endStaleSessions), this one stays in
+        expect(mockUser.passwordChangedAt).toBeInstanceOf(Date);
+        expect(req.session.loginAt).toBeGreaterThanOrEqual(mockUser.passwordChangedAt.getTime());
+
         // Logged in, flashed, redirected
         expect(req.login).toHaveBeenCalled();
         expect(req.flash).toHaveBeenCalledWith('success', expect.any(String));
