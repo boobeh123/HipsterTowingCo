@@ -40,7 +40,8 @@ const fieldContains = (field, term) => ({
  * Parameters: userId — the signed-in user's _id
  *             filters — { q, from, to, status, tz }, any of them
  *             missing:
- *               q: text the truck or trailer number contains
+ *               q: text the truck number, trailer number or
+ *                  remarks contain
  *               from, to: YYYY-MM-DD local days (inclusive)
  *               status: 'defects' or 'ok'
  *               tz: the browser's time zone offset in minutes
@@ -51,10 +52,16 @@ const buildInspectionFilter = (userId, filters = {}) => {
     let { from, to } = filters
     const filter = { userId }
 
-    // A plain contains-match without a regex built from user input
+    // A plain contains-match without a regex built from user input. Remarks
+    // saved between June 2025 and January 2026 hold HTML entities
+    // (Driver&#x27;s), so a search with an apostrophe or quote misses those.
     if (q) {
         filter.$expr = mongoose.trusted({
-            $or: [fieldContains('$truckTractorNo', q), fieldContains('$trailerNo', q)],
+            $or: [
+                fieldContains('$truckTractorNo', q),
+                fieldContains('$trailerNo', q),
+                fieldContains('$remarks', q),
+            ],
         })
     }
 

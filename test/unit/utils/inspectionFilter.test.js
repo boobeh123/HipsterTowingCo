@@ -26,7 +26,7 @@ describe('buildInspectionFilter()', () => {
     expect(buildInspectionFilter(userId)).toEqual({ userId });
   });
 
-  it('should match truck or trailer numbers containing the text, ignoring case', () => {
+  it('should match truck numbers, trailer numbers or remarks containing the text, ignoring case', () => {
     const filter = buildInspectionFilter(userId, { q: 'TrK' });
 
     expect(filter.userId).toBe(userId);
@@ -34,6 +34,7 @@ describe('buildInspectionFilter()', () => {
       $or: [
         { $gte: [{ $indexOfCP: [{ $toLower: '$truckTractorNo' }, { $literal: 'trk' }] }, 0] },
         { $gte: [{ $indexOfCP: [{ $toLower: '$trailerNo' }, { $literal: 'trk' }] }, 0] },
+        { $gte: [{ $indexOfCP: [{ $toLower: '$remarks' }, { $literal: 'trk' }] }, 0] },
       ],
     });
   });
