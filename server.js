@@ -7,7 +7,7 @@ const logger = require('morgan')
 const connectDB = require('./config/database')
 const methodOverride = require('method-override')
 const session = require('express-session')
-const MongoStore = require('connect-mongo').default
+const { MongoStore } = require('connect-mongo')
 const passport = require('passport')
 const flash = require('connect-flash')
 const mainRoutes = require('./routes/main')
@@ -21,6 +21,7 @@ const errorHandler = require('./middleware/errorHandler')
 // Passport config
 require('./config/passport')(passport)
 
+const PORT = process.env.PORT || 3000
 const isProduction = process.env.NODE_ENV === 'production'
 
 // Password reset emails build their link from BASE_URL (controllers/reset.js)
@@ -28,7 +29,9 @@ if (isProduction && !process.env.BASE_URL) {
   console.error('BASE_URL is not set: password reset emails will fail until it is.')
 }
 
-connectDB()
+// Connect once. The session store reuses this connection, and the server
+// starts listening only after it succeeds (see the bottom of this file).
+const clientPromise = connectDB()
 
 // Railway routes requests through a proxy. Without this, req.ip is the proxy's
 // address — so the rate limiters would count every visitor as one client — and
@@ -81,19 +84,13 @@ app.use(logger('dev'))
 // Use forms for put / delete
 app.use(methodOverride('_method'))
 
-// Sessions (mongoOptions avoids indefinite hangs if DB is unreachable)
+// Sessions, stored in MongoDB over the same connection as Mongoose
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.DB_STRING,
-      mongoOptions: {
-        serverSelectionTimeoutMS: 10_000,
-        connectTimeoutMS: 10_000,
-      },
-    }),
+    store: MongoStore.create({ clientPromise }),
     cookie: {
       httpOnly: true,                    // Not readable by document.cookie
       sameSite: 'lax',                   // Blocks most cross-site request forgery
@@ -127,6 +124,15 @@ app.use((req, res) => {
 // Central error handler — must be last -> routes -> 404 handler - > error handler
 app.use(errorHandler)
 
-app.listen(process.env.PORT, () => {
-  console.log('Server is running, you better catch it!')
-})
+// Requests arriving before the database is up would only fail, and a server
+// that can't reach its database at all should stop so Railway restarts it
+clientPromise
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}, you better catch it!`)
+    })
+  })
+  .catch((err) => {
+    console.error('MongoDB connection failed:', err)
+    process.exit(1)
+  })
