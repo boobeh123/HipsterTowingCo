@@ -97,10 +97,13 @@ const InspectionSchema = new mongoose.Schema({
     },
 
     // Driver section
-    // driverSignature kept for backwards compatibility — old records may have this field
+    // A drawn signature from the form's pad, as a PNG data URL (checked by
+    // validateInspection). Old records may hold plain text here instead,
+    // which the PDF leaves out.
     driverSignature: {
         type: String,
         trim: true,
+        maxLength: [60000, 'A signature was too large.'],
     },
     driverDate: {
         type: String,
@@ -117,10 +120,11 @@ const InspectionSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    // mechanicSignature kept for backwards compatibility — old records may have this field
+    // Same as driverSignature, for the mechanic's pad
     mechanicSignature: {
         type: String,
         trim: true,
+        maxLength: [60000, 'A signature was too large.'],
     },
     mechanicDate: {
         type: String,
