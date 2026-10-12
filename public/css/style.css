@@ -1792,6 +1792,20 @@ body.has-modal-open {
   border-top: 1px solid var(--color-footer-border);
 }
 
+/* Name and password forms (the inputs reuse the authPage__ field styles) */
+.profileCard__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.profileCard__formActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
 /* Danger zone */
 .profileCard__dangerText {
   margin: 0 0 var(--space-4);

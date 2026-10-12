@@ -44,12 +44,12 @@ const newPasswordFields = () => [
         .custom((value, { req }) => value === req.body.password).withMessage('Passwords do not match.'),
 ]
 
-// The name set during onboarding
-const nameField = () =>
+// The name set during onboarding and changed on the profile page
+const nameField = (missingMessage) =>
     body('name')
-        .isString().withMessage('Please enter your name to continue.').bail()
+        .isString().withMessage(missingMessage).bail()
         .trim()
-        .notEmpty().withMessage('Please enter your name to continue.').bail()
+        .notEmpty().withMessage(missingMessage).bail()
         .isLength({ max: 60 }).withMessage('Name must be between 1 and 60 characters.')
 
 // Optional text on the inspection form: empty is fine, too long is not
@@ -97,7 +97,20 @@ module.exports = {
     validateReset: newPasswordFields(),
 
     validateOnboard: [
-        nameField(),
+        nameField('Please enter your name to continue.'),
+    ],
+
+    validateProfileName: [
+        nameField('Please enter your name.'),
+    ],
+
+    // The profile page's change-password form. The controller checks the
+    // current password against the account before changing anything.
+    validateProfilePassword: [
+        body('currentPassword')
+            .isString().withMessage('Please enter your current password.').bail()
+            .notEmpty().withMessage('Please enter your current password.'),
+        ...newPasswordFields(),
     ],
 
     // The JSON body that public/js/main.js posts after building the PDF.
