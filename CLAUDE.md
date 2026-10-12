@@ -18,7 +18,7 @@ a batch of changes merges, add a Version History entry in the same format as the
 ```bash
 npm run dev      # node --watch server.js (restarts when a loaded file changes)
 npm start        # node server.js
-npm test         # jest — runs all 17 suites
+npm test         # jest — runs all 18 suites
 ```
 
 Run a single suite or a single test:
@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 234 passed, 17 suites, 0 failures
+### Expected test baseline: 251 passed, 18 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -59,7 +59,7 @@ exist and set `NODE_ENV`, which no test reads. `testPathIgnorePatterns` still na
 ### Request pipeline (`server.js`) — order is load-bearing
 
 `trust proxy` → helmet/CSP → morgan → body parsers → static → `method-override` → session →
-passport → **`endStaleSessions`** → connect-flash → **`viewLocals`** → `routes/main.js` → 404
+passport → connect-flash → **`endStaleSessions`** → **`viewLocals`** → `routes/main.js` → 404
 handler → `errorHandler`.
 
 - `config/database.js` connects once and returns Mongoose's client. The session store reuses it
@@ -150,9 +150,12 @@ rather than letting it become a 500.
 
 ### Sessions end after a password reset
 
-A reset sets `passwordChangedAt` on the account. `endStaleSessions` (middleware/auth.js, right after
-`passport.session()` in server.js) signs out any session whose `req.session.loginAt` is older, so
-whoever knew the old password loses access on every other device. Anything that logs a user in must
+A reset sets `passwordChangedAt` on the account. `endStaleSessions` (middleware/auth.js, after
+passport and connect-flash in server.js) signs out any session whose `req.session.loginAt` is older,
+so whoever knew the old password loses access on every other device. It then answers the request
+itself: a page request is sent straight to `/login` with an info flash saying why, and a `fetch()`
+caller gets a JSON 401 with the same message. It must not call `next()` for pages: `viewLocals`
+would read the flash into that response and the message would be gone before the redirect. Anything that logs a user in must
 call `markLoginTime(req)` inside the `req.login` callback. passport regenerates the session on login,
 so setting it earlier is lost. `postLogin`, `postSignup`, `postRecoverPassword` and the profile
 page's `updatePassword` already do.
@@ -165,6 +168,27 @@ so every other device is signed out and this one stays.
 
 `GET /reset/:token` checks the link before showing the form and sends an unknown or expired one to
 `/forgot` with a flash.
+
+### Dashboard search and filters
+
+`GET /dashboard` takes `q`, `from`, `to`, `status`, `tz` and `page`, checked by
+`validateDashboardQuery`. Empty fields are skipped, and a value that fails is dropped by
+`matchedData()`, with "Some filters weren't valid and were ignored." on the page. The filter
+itself comes from `buildInspectionFilter()` in `utils/inspectionFilter.js`, which is pure and meant
+to be shared with anything else that lists a user's inspections (the CSV export).
+
+- `q` matches truck **or** trailer numbers that *contain* it, ignoring case, through
+  `$indexOfCP` inside a `mongoose.trusted()` `$expr` (sanitizeFilter refuses an untrusted `$expr`).
+  There's no regex built from input, per the standards. The term is wrapped in `$literal`, or a
+  search like `$remarks` would be read as a field path and compare against that field.
+- `from`/`to` are `YYYY-MM-DD` days in the **driver's** time zone. main.js fills the form's hidden
+  `tz` with `getTimezoneOffset()` (Hawaii is 600), and `localDayStart()` turns days into UTC
+  instants, so a 9 PM inspection in Hawaii counts as that day. A missing `tz` means UTC. The offset
+  is today's, so a range crossing a DST change can be off by an hour at its edges.
+- `status=defects` is `conditionSatisfactory: { $ne: true }`, so old inspections without the field
+  count as defects, matching the "Defects noted" badge.
+- The stats at the top cover all of the user's inspections; only the history follows the filters.
+  A page past the end shows the last page, and `prevUrl`/`nextUrl` keep the filters.
 
 ### Rate limits (`middleware/rateLimiters.js`)
 

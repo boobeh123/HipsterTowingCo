@@ -1413,6 +1413,54 @@ body.has-modal-open {
   padding: var(--space-2) var(--space-4);
 }
 
+/* History filters (the inputs reuse the authPage__ field styles). The search
+   box takes its own row; the other fields share rows as the width allows,
+   and the buttons keep their natural width at the end. */
+.dashboard__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  padding: var(--space-6);
+  background-color: var(--color-footer-bg);
+  border: 1px solid var(--color-footer-border);
+  border-radius: var(--radius-sm);
+}
+
+.dashboard__filterField {
+  flex: 1 1 10rem;
+}
+
+.dashboard__filterField--wide {
+  flex-basis: 100%;
+}
+
+/* authPage__input turns off the native look, which hides a select's arrow.
+   Two classes, so this wins over .authPage__input further down the file. */
+.dashboard__filters .dashboard__filterSelect {
+  appearance: auto;
+}
+
+.dashboard__filterActions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+/* Date inputs, selects and buttons each size themselves differently, so give
+   every control in the row the date input's height and the labels line up */
+.dashboard__filters .authPage__input,
+.dashboard__filterActions .btn {
+  height: 3.25rem;
+}
+
+.dashboard__resultCount,
+.dashboard__filterNote {
+  margin: 0 0 var(--space-4);
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
 /**************************************************************
  * Auth pages (login.ejs, signup.ejs)
  **************************************************************/

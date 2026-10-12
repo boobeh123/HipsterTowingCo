@@ -178,8 +178,10 @@ describe('Auth Middleware', () => {
     const CHANGED_AT = new Date('2026-10-01T12:00:00Z');
 
     beforeEach(() => {
-      req.session = {};
+      req.session = { save: jest.fn((cb) => cb(null)) };
       req.logout = jest.fn((cb) => cb());
+      req.flash = jest.fn();
+      req.accepts = jest.fn(() => 'html');
     });
 
     it('should let a visitor through untouched', () => {
@@ -210,14 +212,42 @@ describe('Auth Middleware', () => {
       expect(next).toHaveBeenCalledWith();
     });
 
-    it('should sign out a session that logged in before the last reset', () => {
+    // Straight to /login, so the message isn't read into this response by
+    // viewLocals and lost before the redirect
+    it('should sign out a session that logged in before the last reset and send it to /login with the reason', () => {
       req.user = { id: 'user123', passwordChangedAt: CHANGED_AT };
       req.session.loginAt = CHANGED_AT.getTime() - 1000;
 
       endStaleSessions(req, res, next);
 
       expect(req.logout).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
+      expect(req.flash).toHaveBeenCalledWith('info', 'Your password was changed, so you were signed out. Please log in again.');
+      expect(req.session.save).toHaveBeenCalled();
+      expect(res.redirect).toHaveBeenCalledWith('/login');
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it('should answer a fetch() call with a JSON 401 instead of a redirect', () => {
+      req.user = { id: 'user123', passwordChangedAt: CHANGED_AT };
+      req.accepts = jest.fn(() => 'json');
+
+      endStaleSessions(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(401);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Your password was changed, so you were signed out. Please log in again.' });
+      expect(req.flash).not.toHaveBeenCalled();
+      expect(res.redirect).not.toHaveBeenCalled();
+    });
+
+    it('should pass a session save error on to the error handler', () => {
+      const error = new Error('session store down');
+      req.user = { id: 'user123', passwordChangedAt: CHANGED_AT };
+      req.session.save = jest.fn((cb) => cb(error));
+
+      endStaleSessions(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+      expect(res.redirect).not.toHaveBeenCalled();
     });
 
     // Sessions from before this feature have no loginAt at all

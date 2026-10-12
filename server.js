@@ -110,10 +110,12 @@ app.use(
 // Passport middleware
 app.use(passport.initialize())
 app.use(passport.session())
-// Signs out sessions that logged in before the account's last password reset
-app.use(endStaleSessions)
 
 app.use(flash())
+
+// Signs out sessions that logged in before the account's last password
+// change, with a flash saying why (so it runs after connect-flash)
+app.use(endStaleSessions)
 
 // Flash + request context for all views (must run after session + connect-flash)
 app.use(viewLocals)
