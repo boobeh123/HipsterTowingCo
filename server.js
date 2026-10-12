@@ -43,20 +43,24 @@ app.set('view engine', 'ejs')
 // Strict-Transport-Security — forces HTTPS on browsers that have visited before
 // X-DNS-Prefetch-Control — controls DNS prefetching
 // Referrer-Policy — controls what's sent in the Referer header
-// CSP is configured explicitly to allow Google Analytics, Google Fonts, Cloudinary images, and our own assets while blocking everything else.
+// CSP is configured explicitly to allow Google Analytics, Google Fonts, jsPDF from cdnjs, Cloudinary images, and our own assets while blocking everything else.
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc:     ["'self'"],
-            // No 'unsafe-inline'
-            scriptSrc:      ["'self'", "'sha256-NDhfFC8SsrynpH/33WORDEVUNZTNzuIZ98Qxx9z7BJY='", "https://www.googletagmanager.com", "https://www.google-analytics.com", "https://cdnjs.cloudflare.com", "https://kit.fontawesome.com"],
+            // No 'unsafe-inline'. The hash is the JSON-LD block in head.ejs, and
+            // cdnjs serves jsPDF (pinned with an integrity hash in footer.ejs).
+            scriptSrc:      ["'self'", "'sha256-NDhfFC8SsrynpH/33WORDEVUNZTNzuIZ98Qxx9z7BJY='", "https://www.googletagmanager.com", "https://www.google-analytics.com", "https://cdnjs.cloudflare.com"],
             // scriptSrcAttr is absent — it defaults to 'none', 
             // which blocks inline handlers like onclick/onsubmit. 
             // The two this app had were replaced with addEventListener.
-            styleSrc:       ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
-            fontSrc:        ["'self'", "https://fonts.gstatic.com", "https://kit.fontawesome.com", "https://ka-f.fontawesome.com"],
-            imgSrc:         ["'self'", "data:", "https://res.cloudinary.com", "https://www.google-analytics.com", "https://placeholder.pics"],
-            connectSrc:     ["'self'", "https://www.google-analytics.com", "https://analytics.google.com", "https://ka-f.fontawesome.com"],
+            // No 'unsafe-inline' for styles either: no page uses a style
+            // attribute or <style> block. Setting element.style from JS is
+            // still allowed.
+            styleSrc:       ["'self'", "https://fonts.googleapis.com"],
+            fontSrc:        ["'self'", "https://fonts.gstatic.com"],
+            imgSrc:         ["'self'", "data:", "https://res.cloudinary.com", "https://www.google-analytics.com"],
+            connectSrc:     ["'self'", "https://www.google-analytics.com", "https://analytics.google.com"],
             frameSrc:       ["'none'"],
             objectSrc:      ["'none'"],
             upgradeInsecureRequests: isProduction ? [] : null,
