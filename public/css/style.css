@@ -1461,6 +1461,23 @@ body.has-modal-open {
   color: var(--color-text-muted);
 }
 
+/* The match count and the CSV download, above the history table */
+.dashboard__historyTools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.dashboard__historyTools .dashboard__resultCount {
+  margin: 0;
+}
+
+.dashboard__exportBtn {
+  margin-left: auto;
+}
+
 /**************************************************************
  * Auth pages (login.ejs, signup.ejs)
  **************************************************************/

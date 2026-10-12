@@ -6,6 +6,7 @@ const viewPdfBtn = document.querySelector('#viewPdfBtn');
 const closeResultBtn = document.querySelector('#closeResultBtn');
 const saveStatus = document.querySelector('#saveStatus');
 const filterTz = document.querySelector('#filter-tz');
+const exportLink = document.querySelector('.dashboard__exportBtn');
 
 // Holds the most recently generated jsPDF doc, and the data it was built
 // from, so the download button can save it under a meaningful file name
@@ -698,9 +699,16 @@ function initHeroLetterBounceCanvas() {
 
 document.addEventListener('DOMContentLoaded', () => {
     // The dashboard filter's From and To are the driver's local days, so the
-    // form sends the browser's time zone along (utils/inspectionFilter.js)
+    // form sends the browser's time zone along (utils/inspectionFilter.js).
+    // The CSV export needs it too, for its local "Saved" times and file name.
+    const timezoneOffset = String(new Date().getTimezoneOffset());
     if (filterTz) {
-        filterTz.value = String(new Date().getTimezoneOffset());
+        filterTz.value = timezoneOffset;
+    }
+    if (exportLink) {
+        const exportUrl = new URL(exportLink.href);
+        exportUrl.searchParams.set('tz', timezoneOffset);
+        exportLink.href = exportUrl.pathname + exportUrl.search;
     }
 
     const yearEl = document.querySelector('#current-year');

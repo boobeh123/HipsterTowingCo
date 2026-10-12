@@ -121,4 +121,20 @@ const passwordChangeLimiter = rateLimit({
     handler: flashAndRedirect('Too many password change attempts. Please wait 15 minutes and try again.', '/profile'),
 })
 
-module.exports = { authLimiter, passwordResetLimiter, counterLimiter, inspectionSaveLimiter, photoUploadLimiter, passwordChangeLimiter }
+/**************************************************************
+ * exportLimiter
+ * Guards GET /dashboard/export. Each export reads every matching
+ * inspection, so this caps how often one account can run it.
+ * 20 exports per account per 15 minutes, then back to the
+ * dashboard with a message.
+ **************************************************************/
+const exportLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 20,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    keyGenerator: byAccount,
+    handler: flashAndRedirect('Too many exports. Please wait a few minutes and try again.', '/dashboard'),
+})
+
+module.exports = { authLimiter, passwordResetLimiter, counterLimiter, inspectionSaveLimiter, photoUploadLimiter, passwordChangeLimiter, exportLimiter }
