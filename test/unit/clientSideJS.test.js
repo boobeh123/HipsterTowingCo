@@ -1,38 +1,20 @@
-/**
- * @jest-environment jsdom
- */
-
-const { sanitizeText, validateAndSanitize, decodeHTMLEntities } = require('../../public/js/utils.js');
-
-
+// public/js/utils.js has no DOM access, so these run in Jest's plain node environment
+const { FIELD_LIMITS, sanitizeText, validateAndSanitize, decodeHTMLEntities, pdfFileName } = require('../../public/js/utils.js');
 
 // ─────────────────────────────────────────────
 // sanitizeText
 // ─────────────────────────────────────────────
 describe('sanitizeText()', () => {
 
-  it('should remove < and > characters', () => {
-    expect(sanitizeText('<script>')).toBe('script');
-  });
-
-  it('should remove double quotes', () => {
-    expect(sanitizeText('say "hello"')).toBe('say hello');
-  });
-
-  it('should remove backticks', () => {
-    expect(sanitizeText('hello `world`')).toBe('hello world');
-  });
-
-  it('should remove single quotes', () => {
-    expect(sanitizeText("it's a test")).toBe('its a test');
-  });
-
-  it('should remove backslashes', () => {
-    expect(sanitizeText('C:\\Program Files\\')).toBe('C:Program Files');
-  });
-
   it('should trim leading and trailing whitespace', () => {
     expect(sanitizeText('  hello world  ')).toBe('hello world');
+  });
+
+  // These used to be stripped, which turned "Driver's side" into "Drivers side".
+  // jsPDF draws plain text and the dashboard escapes output, so they're harmless.
+  it('should keep quotes, apostrophes, angle brackets, backticks and backslashes as typed', () => {
+    expect(sanitizeText("Driver's side mirror")).toBe("Driver's side mirror");
+    expect(sanitizeText('5\'6" clearance, pressure <30 psi, `noted`, C:\\path')).toBe('5\'6" clearance, pressure <30 psi, `noted`, C:\\path');
   });
 
   it('should return an empty string when given a non-string', () => {
@@ -46,17 +28,6 @@ describe('sanitizeText()', () => {
     expect(sanitizeText('')).toBe('');
   });
 
-  it('should leave safe characters untouched', () => {
-    expect(sanitizeText('Truck #1234 / Unit 5')).toBe('Truck #1234 / Unit 5');
-  });
-
-  it('should match the documented examples', () => {
-    expect(sanitizeText('<img src="#" onerror=alert(1)')).toBe('img src=# onerror=alert(1)');
-    expect(sanitizeText("'; DROP TABLE users; --")).toBe('; DROP TABLE users; --');
-    expect(sanitizeText('     hello `world`     ')).toBe('hello world');
-    expect(sanitizeText('C:\\Program Files\\')).toBe('C:Program Files');
-  });
-
 });
 
 // ─────────────────────────────────────────────
@@ -65,6 +36,7 @@ describe('sanitizeText()', () => {
 describe('validateAndSanitize()', () => {
 
   const validInput = {
+    date: '3/1/2026',
     truckTractorNo: '1234567',
     trailerNo: '89012',
     remarks: 'All clear',
@@ -76,7 +48,7 @@ describe('validateAndSanitize()', () => {
     },
   };
 
-  it('should return a sanitized object on valid input', () => {
+  it('should return a cleaned object on valid input', () => {
     const result = validateAndSanitize(validInput);
 
     expect(result).not.toBeNull();
@@ -86,91 +58,117 @@ describe('validateAndSanitize()', () => {
   });
 
   it('should return null when truckTractorNo is empty', () => {
-    const result = validateAndSanitize({ ...validInput, truckTractorNo: '' });
-    expect(result).toBeNull();
+    expect(validateAndSanitize({ ...validInput, truckTractorNo: '' })).toBeNull();
   });
 
-  it('should return null when truckTractorNo is only XSS characters', () => {
-    const result = validateAndSanitize({ ...validInput, truckTractorNo: '<>"' });
-    expect(result).toBeNull();
+  it('should return null when truckTractorNo is only whitespace', () => {
+    expect(validateAndSanitize({ ...validInput, truckTractorNo: '   ' })).toBeNull();
   });
 
-  it('should sanitize XSS characters from truckTractorNo', () => {
-    const result = validateAndSanitize({ ...validInput, truckTractorNo: "<12\\345'67>" });
-    expect(result.truckTractorNo).toBe('1234567');
+  it('should trim every text field', () => {
+    const result = validateAndSanitize({ ...validInput, truckTractorNo: '  TRK-1  ', trailerNo: ' TRL-2 ', remarks: '  Brakes soft  ' });
+
+    expect(result.truckTractorNo).toBe('TRK-1');
+    expect(result.trailerNo).toBe('TRL-2');
+    expect(result.remarks).toBe('Brakes soft');
   });
 
-  it('should sanitize XSS characters from trailerNo', () => {
-    const result = validateAndSanitize({ ...validInput, trailerNo: '<89\\012>' });
-    expect(result.trailerNo).toBe('89012');
+  it('should keep the remarks exactly as typed apart from trimming', () => {
+    const remarks = "Driver's side mirror cracked; <b> isn't markup here";
+    expect(validateAndSanitize({ ...validInput, remarks }).remarks).toBe(remarks);
   });
 
-  it('should sanitize XSS characters from remarks', () => {
-    const result = validateAndSanitize({ ...validInput, remarks: '<b>bold</b>' });
-    expect(result.remarks).toBe('bbold/b');
-  });
-
-  it('should preserve the defects object unchanged', () => {
-    const result = validateAndSanitize(validInput);
-    expect(result.defects).toEqual(validInput.defects);
-  });
-
-  it('should handle empty optional fields without error', () => {
+  // The modal's maxlength attributes already stop longer input; this is the safety net
+  it('should cut each text field to the length the server accepts', () => {
     const result = validateAndSanitize({
       ...validInput,
-      trailerNo: '',
-      remarks: '',
-      mechanicDate: '',
-      driverDate: '',
+      truckTractorNo: 'T'.repeat(40),
+      trailerNo: 'R'.repeat(70),
+      remarks: 'x'.repeat(2500),
+      mechanicDate: 'd'.repeat(25),
+      driverDate: 'd'.repeat(25),
     });
-    expect(result).not.toBeNull();
-    expect(result.trailerNo).toBe('');
-    expect(result.remarks).toBe('');
+
+    Object.entries(FIELD_LIMITS).forEach(([field, maxLength]) => {
+      expect(result[field]).toHaveLength(maxLength);
+    });
   });
 
-  it('should match the documented example', () => {
-    const input = {
-      date: '3/1/2026',
-      truckTractorNo: "<12\\345'67>",
-      defects: { truckTractor: { airCompressor: true, springs: true, mirrors: true } },
-      trailerNo: 'C:\\Program Files\\',
-      remarks: '',
-      mechanicDate: '',
-      driverDate: '',
-    };
+  it('should match the server limits in middleware/validators.js', () => {
+    expect(FIELD_LIMITS).toEqual({ truckTractorNo: 30, trailerNo: 60, remarks: 2000, mechanicDate: 20, driverDate: 20 });
+  });
+
+  it('should leave the defects and the date untouched and not change its input', () => {
+    const input = JSON.parse(JSON.stringify(validInput));
     const result = validateAndSanitize(input);
-    expect(result.truckTractorNo).toBe('1234567');
-    expect(result.trailerNo).toBe('C:Program Files');
-    expect(result.defects.truckTractor.airCompressor).toBe(true);
+
+    expect(result.defects).toEqual(validInput.defects);
+    expect(result.date).toBe('3/1/2026');
+    expect(input).toEqual(validInput);
+  });
+
+  it('should turn missing optional fields into empty strings', () => {
+    const result = validateAndSanitize({ truckTractorNo: '1234567' });
+
+    expect(result.trailerNo).toBe('');
+    expect(result.remarks).toBe('');
+    expect(result.mechanicDate).toBe('');
   });
 
 });
 
 // ─────────────────────────────────────────────
-// decodeHTMLEntities
+// decodeHTMLEntities — for inspections saved through escape() in 2025
 // ─────────────────────────────────────────────
 describe('decodeHTMLEntities()', () => {
 
-  it('should decode &lt; and &gt;', () => {
-    expect(decodeHTMLEntities('&lt;script&gt;')).toBe('<script>');
+  it('should decode the entities express-validator escape() produced', () => {
+    expect(decodeHTMLEntities('Driver&#x27;s side')).toBe("Driver's side");
+    expect(decodeHTMLEntities('TRL-1&#x2F;2')).toBe('TRL-1/2');
+    expect(decodeHTMLEntities('&lt;b&gt; &amp; &quot;q&quot; &#96;t&#96; C:&#x5C;')).toBe('<b> & "q" `t` C:\\');
   });
 
-  it('should decode &amp;', () => {
-    expect(decodeHTMLEntities('Tom &amp; Jerry')).toBe('Tom & Jerry');
-  });
-
-  it('should decode &quot;', () => {
-    expect(decodeHTMLEntities('say &quot;hello&quot;')).toBe('say "hello"');
+  it('should decode decimal and named entities', () => {
+    expect(decodeHTMLEntities('it&#39;s Tom &amp; Jerry')).toBe("it's Tom & Jerry");
   });
 
   it('should return a plain string unchanged', () => {
     expect(decodeHTMLEntities('no entities here')).toBe('no entities here');
   });
 
-  it('should decode a full XSS entity string', () => {
-    expect(
-      decodeHTMLEntities('&lt;script&gt;alert(&quot;test&quot;)&lt;/script&gt;')
-    ).toBe('<script>alert("test")</script>');
+  // The old version parsed the text as HTML, which drops anything tag-shaped
+  it('should keep tag-like text as typed', () => {
+    expect(decodeHTMLEntities('check <brake lines> and <b>pads</b>')).toBe('check <brake lines> and <b>pads</b>');
+  });
+
+  it('should leave unknown or invalid entities alone', () => {
+    expect(decodeHTMLEntities('&nbsp; &#0; &#x110000; R&R')).toBe('&nbsp; &#0; &#x110000; R&R');
+  });
+
+  it('should return an empty string when given a non-string', () => {
+    expect(decodeHTMLEntities(undefined)).toBe('');
+  });
+
+});
+
+// ─────────────────────────────────────────────
+// pdfFileName
+// ─────────────────────────────────────────────
+describe('pdfFileName()', () => {
+
+  it('should name the file after the truck number and the local date', () => {
+    expect(pdfFileName('TRK-100', new Date(2026, 9, 11, 23, 30))).toBe('pretriq-TRK-100-2026-10-11.pdf');
+  });
+
+  it('should turn characters that are unsafe in file names into dashes', () => {
+    expect(pdfFileName('Unit 5 / "A"', new Date(2026, 0, 2))).toBe('pretriq-Unit-5-A--2026-01-02.pdf');
+  });
+
+  it('should fall back to "inspection" without a truck number and to today without a valid date', () => {
+    const today = new Date();
+    const expectedDay = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, '0'), String(today.getDate()).padStart(2, '0')].join('-');
+
+    expect(pdfFileName('', new Date('not a date'))).toBe(`pretriq-inspection-${expectedDay}.pdf`);
   });
 
 });

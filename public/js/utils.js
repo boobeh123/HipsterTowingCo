@@ -1,72 +1,47 @@
 /**************************************************************
  * utils.js - client-side javascript functions extracted from main.js (/public/js/main.js)
- * These functions will be tested with jest (/test/unit/clientSideJS.test.js)
- 
- * TEST RESULTS
-    Test Suites: 1 passed, 1 total
-    Tests:       24 passed, 24 total
-   sanitizeText()
-    √ should remove < and > characters (3 ms)                                                                                                                                                                                                 
-    √ should remove double quotes (1 ms)                                                                                                                                                                                                      
-    √ should remove backticks (1 ms)                                                                                                                                                                                                          
-    √ should remove single quotes (1 ms)                                                                                                                                                                                                      
-    √ should remove backslashes (4 ms)                                                                                                                                                                                                        
-    √ should trim leading and trailing whitespace (1 ms)                                                                                                                                                                                      
-    √ should return an empty string when given a non-string (1 ms)                                                                                                                                                                            
-    √ should return an empty string when given an empty string (1 ms)                                                                                                                                                                         
-    √ should leave safe characters untouched (1 ms)                                                                                                                                                                                           
-    √ should match the documented examples (1 ms)                                                                                                                                                                                             
-  validateAndSanitize()                                                                                                                                                                                                                       
-    √ should return a sanitized object on valid input (1 ms)                                                                                                                                                                                  
-    √ should return null when truckTractorNo is empty                                                                                                                                                                                         
-    √ should return null when truckTractorNo is only XSS characters (1 ms)                                                                                                                                                                    
-    √ should sanitize XSS characters from truckTractorNo (1 ms)                                                                                                                                                                               
-    √ should sanitize XSS characters from trailerNo (1 ms)                                                                                                                                                                                    
-    √ should sanitize XSS characters from remarks                                                                                                                                                                                             
-    √ should preserve the defects object unchanged                                                                                                                                                                                            
-    √ should handle empty optional fields without error (2 ms)                                                                                                                                                                                
-    √ should match the documented example (1 ms)                                                                                                                                                                                              
-  decodeHTMLEntities()                                                                                                                                                                                                                        
-    √ should decode &lt; and &gt; (4 ms)                                                                                                                                                                                                      
-    √ should decode &amp; (1 ms)                                                                                                                                                                                                              
-    √ should decode &quot; (1 ms)                                                                                                                                                                                                             
-    √ should return a plain string unchanged (1 ms)                                                                                                                                                                                           
-    √ should decode a full XSS entity string (1 ms)    
+ * Tested with jest (/test/unit/clientSideJS.test.js). They stay pure,
+ * with no DOM access, so the browser and Jest run the same code.
  **************************************************************/
 
 /**************************************************************
+ * FIELD_LIMITS
+ * The longest value the server accepts for each text field
+ * (validateInspection in middleware/validators.js). The modal's
+ * maxlength attributes hold the same numbers.
+ **************************************************************/
+const FIELD_LIMITS = {
+    truckTractorNo: 30,
+    trailerNo: 60,
+    remarks: 2000,
+    mechanicDate: 20,
+    driverDate: 20,
+};
+
+/**************************************************************
  * sanitizeText()
- * Strips characters used in XSS attacks from a string.
- * Parameters: string — the value to sanitize
- * Returns: a sanitized string, or '' if input is not a string
- * Examples:
- * '<img src="#" onerror=alert(1)'  -> 'img src=# onerror=alert(1)'
- * "'; DROP TABLE users; --"        -> '; DROP TABLE users; --'
- * '     hello `world`     '        -> 'hello world'
- * 'C:\Program Files\'              -> 'C:Program Files'
+ * Cleans one text field: trims it, and turns anything that isn't
+ * a string into ''. Characters are kept exactly as typed, so
+ * "Driver's side" stays "Driver's side". Nothing typed here can
+ * run as code: jsPDF draws plain text, and the dashboard escapes
+ * every value with <%= %>.
+ * Parameters: string — the value to clean
+ * Returns: a trimmed string, or '' if input is not a string
  **************************************************************/
 function sanitizeText(string) {
-    let sanitized = '';
-    const arrayOfStrings = ['<', '>', '"', '`', "'", '\\'];
-
-    if (typeof string === 'string') {
-        for (let i = 0; i < string.length; i++) {
-            if (!arrayOfStrings.includes(string[i])) {
-                sanitized += string[i];
-            }
-        }
-    } else {
+    if (typeof string !== 'string') {
         return '';
     }
-    return sanitized.trim();
+    return string.trim();
 }
 
 /**************************************************************
  * validateAndSanitize()
- * Sanitizes all string fields on an inspection object.
- * Returns null if truckTractorNo is missing after sanitization.
+ * Cleans every text field on an inspection object and cuts each
+ * one to the server's limit.
+ * Returns null if truckTractorNo is empty after cleaning.
  * Parameters: userInspectionObject — raw object from readFormData()
- * Returns: sanitized object, or null if truck number is missing
+ * Returns: a new cleaned object, or null if truck number is missing
  **************************************************************/
 function validateAndSanitize(userInspectionObject) {
     const truckNo = sanitizeText(userInspectionObject.truckTractorNo);
@@ -75,31 +50,61 @@ function validateAndSanitize(userInspectionObject) {
         return null;
     }
 
-    const sanitizedUserInspectionObject = {
-        ...userInspectionObject,
-        truckTractorNo: truckNo,
-        trailerNo: sanitizeText(userInspectionObject.trailerNo),
-        remarks: sanitizeText(userInspectionObject.remarks),
-        mechanicDate: sanitizeText(userInspectionObject.mechanicDate),
-        driverDate: sanitizeText(userInspectionObject.driverDate),
-    };
-
-    return sanitizedUserInspectionObject;
+    const cleaned = { ...userInspectionObject };
+    Object.entries(FIELD_LIMITS).forEach(([field, maxLength]) => {
+        cleaned[field] = sanitizeText(userInspectionObject[field]).slice(0, maxLength);
+    });
+    return cleaned;
 }
 
 /**************************************************************
  * decodeHTMLEntities()
- * Decodes HTML entities in a string via a detached textarea.
- * The detached element is never inserted into the live DOM
- * so there is no XSS risk.
- * Note: this function requires a DOM environment (browser or jsdom).
- * Parameters: remarks — a string that may contain HTML entities
- * Returns: decoded string
+ * Turns HTML entities back into the characters they stand for.
+ * Inspections saved between June 2025 and January 2026 went
+ * through express-validator's escape(), so a stored remark can
+ * read "Driver&#x27;s side". Only entities change: anything that
+ * looks like a tag stays as typed text, so "check <brake lines>"
+ * comes back unchanged.
+ * Parameters: text — a string that may contain HTML entities
+ * Returns: the decoded string ('' if input is not a string)
  **************************************************************/
-function decodeHTMLEntities(remarks) {
-    const textArea = document.createElement('textarea');
-    textArea.innerHTML = remarks;
-    return textArea.value;
+const NAMED_ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+
+function decodeHTMLEntities(text) {
+    if (typeof text !== 'string') {
+        return '';
+    }
+    // Matches &#x27; (hex), &#39; (decimal) and &amp;-style named entities
+    return text.replace(/&(#x[0-9a-f]+|#[0-9]+|[a-z]+);/gi, (entity, code) => {
+        if (code[0] !== '#') {
+            const named = NAMED_ENTITIES[code.toLowerCase()];
+            return named === undefined ? entity : named;
+        }
+        const isHex = code[1] === 'x' || code[1] === 'X';
+        const codePoint = parseInt(code.slice(isHex ? 2 : 1), isHex ? 16 : 10);
+        return codePoint > 0 && codePoint <= 0x10ffff ? String.fromCodePoint(codePoint) : entity;
+    });
+}
+
+/**************************************************************
+ * pdfFileName()
+ * Builds the download name for an inspection PDF from its truck
+ * number and date, for example pretriq-TRK-100-2026-10-11.pdf.
+ * Parameters: truckNo — the truck / tractor number
+ *             date — a Date (the inspection's local calendar day);
+ *                    today is used if it's missing or invalid
+ * Returns: a file name that is safe on every operating system
+ **************************************************************/
+function pdfFileName(truckNo, when) {
+    const date = when instanceof Date && !Number.isNaN(when.getTime()) ? when : new Date();
+    // Anything other than letters, digits and dashes becomes a dash
+    const truck = sanitizeText(String(truckNo || '')).replace(/[^A-Za-z0-9-]+/g, '-').slice(0, 30) || 'inspection';
+    const day = [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, '0'),
+        String(date.getDate()).padStart(2, '0'),
+    ].join('-');
+    return `pretriq-${truck}-${day}.pdf`;
 }
 
 /**************************************************************
@@ -108,5 +113,5 @@ function decodeHTMLEntities(remarks) {
  * "module is not defined" on the export below.
  **************************************************************/
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { sanitizeText, validateAndSanitize, decodeHTMLEntities };
+    module.exports = { FIELD_LIMITS, sanitizeText, validateAndSanitize, decodeHTMLEntities, pdfFileName };
 }
