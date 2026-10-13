@@ -1,0 +1,35 @@
+<%# The note for one checklist item (utils/dvirChecklist.js), shown as a card over the form when its ?
+    is pressed. The <dialog> itself has no padding, so a click whose target is the dialog landed on the
+    dimmed area around the card, and main.js closes it. The photo shows only once the note has one. %>
+<dialog id="<%= noteId %>" class="inspection-card" aria-labelledby="<%= noteId %>-title">
+    <div class="inspection-card__body">
+        <div class="inspection-card__head">
+            <h4 id="<%= noteId %>-title" class="inspection-card__title"><%= item.label %></h4>
+            <button type="button" class="inspection-card__close">Close</button>
+        </div>
+        <% if (item.note.applies) { %>
+            <p class="inspection-card__applies"><%= item.note.applies %></p>
+        <% } %>
+        <% if (item.note.photo) { %>
+            <img class="inspection-card__photo" src="<%= item.note.photo.src %>" alt="<%= item.note.photo.alt %>" width="<%= item.note.photo.width %>" height="<%= item.note.photo.height %>" loading="lazy" />
+        <% } %>
+        <% if (item.note.where) { %>
+            <p><strong>Where it is:</strong> <%= item.note.where %></p>
+        <% } %>
+        <p class="inspection-card__label"><strong>Check that:</strong></p>
+        <ul class="inspection-card__checks">
+            <% item.note.check.forEach((line) => { %>
+                <li><%= line %></li>
+            <% }) %>
+        </ul>
+        <% if (item.note.more) { %>
+            <p><%= item.note.more %></p>
+        <% } %>
+        <% if (item.note.remark) { %>
+            <p><strong>Example remark:</strong> “<%= item.note.remark %>”</p>
+        <% } %>
+        <% if (item.note.source) { %>
+            <p class="inspection-help__source">Source: <%= item.note.source %></p>
+        <% } %>
+    </div>
+</dialog>

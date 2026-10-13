@@ -64,66 +64,11 @@
                     </div>
                     <div id="help-defects" class="inspection-help" hidden>
                         <p>Tick only the items with a defect, then describe each one under Remarks.</p>
+                        <p>Tap the ? beside a box to see what to check and what counts as a defect.</p>
                         <p>No box fits? Tick Other. A parking brake problem goes under Brakes.</p>
                         <p>Most modern trucks have no carburetor or tachograph, so leave those unticked unless yours does.</p>
                     </div>
-                    <div class="inspection-checklist" role="group" aria-label="Truck and tractor defect items">
-                        <label><input type="checkbox" name="defects[truckTractor][airCompressor]" value="true" /><span>Air Compressor</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][horn]" value="true" /><span>Horn</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][springs]" value="true" /><span>Springs</span></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][airLines]" value="true" /><span>Air Lines</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][lights]" value="true" /><span>Lights</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][starter]" value="true" /><span>Starter</span></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][battery]" value="true" /><span>Battery</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][mirrors]" value="true" /><span>Mirrors</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][steering]" value="true" /><span>Steering</span></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][brakeAccessories]" value="true" /><span>Brake Accessories</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][muffler]" value="true" /><span>Muffler</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][tachograph]" value="true" /><span>Tachograph</span></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][brakes]" value="true" /><span>Brakes</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][oilPressure]" value="true" /><span>Oil Pressure</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][tires]" value="true" /><span>Tires</span></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][carburetor]" value="true" /><span>Carburetor</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][onBoardRecorder]" value="true" /><span>On-Board Recorder</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][transmission]" value="true" /><span>Transmission</span></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][clutch]" value="true" /><span>Clutch</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][radiator]" value="true" /><span>Radiator</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][wheels]" value="true" /><span>Wheels</span></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][defroster]" value="true" /><span>Defroster</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][rearEnd]" value="true" /><span>Rear End</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][windows]" value="true" /><span>Windows</span></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][driveLine]" value="true" /><span>Drive Line</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][reflectors]" value="true" /><span>Reflectors</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][windshieldWipers]" value="true" /><span>Windshield Wipers</span></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][engine]" value="true" /><span>Engine</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][safetyEquipment]" value="true" /><span>Safety Equipment</span></label>
-                        <label><input type="checkbox" name="defects[truckTractor][other]" value="true" /><span>Other</span></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][fifthWheel]" value="true" /><span>Fifth Wheel</span></label>
-                        <label></label>
-                        <label></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][frontAxle]" value="true" /><span>Front Axle</span></label>
-                        <label></label>
-                        <label></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][fuelTanks]" value="true" /><span>Fuel Tanks</span></label>
-                        <label></label>
-                        <label></label>
-
-                        <label><input type="checkbox" name="defects[truckTractor][heater]" value="true" /><span>Heater</span></label>
-                        <label></label>
-                        <label></label>
-                    </div>
+                    <%- include('checklistSection', { section: 'truckTractor', groupLabel: 'Truck and tractor defect items' }) %>
                 </section>
 
                 <hr class="inspection-divider" />
@@ -138,27 +83,7 @@
                     </div>
                     <p class="inspection-note">No trailer? Leave this section blank.</p>
 
-                    <div class="inspection-checklist" role="group" aria-label="Trailer defect items">
-                        <label><input type="checkbox" name="defects[trailer][brakeConnections]" value="true" /><span>Brake Connections</span></label>
-                        <label><input type="checkbox" name="defects[trailer][hitch]" value="true" /><span>Hitch</span></label>
-                        <label><input type="checkbox" name="defects[trailer][tarpaulin]" value="true" /><span>Tarpaulin</span></label>
-
-                        <label><input type="checkbox" name="defects[trailer][brakes]" value="true" /><span>Brakes</span></label>
-                        <label><input type="checkbox" name="defects[trailer][landingGear]" value="true" /><span>Landing Gear</span></label>
-                        <label><input type="checkbox" name="defects[trailer][tires]" value="true" /><span>Tires</span></label>
-
-                        <label><input type="checkbox" name="defects[trailer][couplingChains]" value="true" /><span>Coupling Chains</span></label>
-                        <label><input type="checkbox" name="defects[trailer][lightsAll]" value="true" /><span>Lights – All</span></label>
-                        <label><input type="checkbox" name="defects[trailer][wheels]" value="true" /><span>Wheels</span></label>
-
-                        <label><input type="checkbox" name="defects[trailer][couplingPin]" value="true" /><span>Coupling (King) Pin</span></label>
-                        <label><input type="checkbox" name="defects[trailer][roof]" value="true" /><span>Roof</span></label>
-                        <label><input type="checkbox" name="defects[trailer][other]" value="true" /><span>Other</span></label>
-
-                        <label><input type="checkbox" name="defects[trailer][doors]" value="true" /><span>Doors</span></label>
-                        <label><input type="checkbox" name="defects[trailer][springs]" value="true" /><span>Springs</span></label>
-                        <label></label>
-                    </div>
+                    <%- include('checklistSection', { section: 'trailer', groupLabel: 'Trailer defect items' }) %>
                 </section>
 
                 <hr class="inspection-divider" />

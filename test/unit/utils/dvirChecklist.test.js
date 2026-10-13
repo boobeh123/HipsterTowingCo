@@ -37,6 +37,15 @@ const FORM_ORDER = {
   ],
 };
 
+// The first batch of notes: what's checked under the hood and in the cab
+const WITH_NOTES = [
+  'battery', 'brakes', 'carburetor', 'clutch', 'defroster', 'engine', 'heater', 'horn', 'mirrors', 'oilPressure',
+  'onBoardRecorder', 'radiator', 'safetyEquipment', 'starter', 'steering', 'tachograph', 'transmission', 'windows',
+  'windshieldWipers',
+];
+
+const NOTE_FIELDS = ['applies', 'where', 'check', 'more', 'remark', 'source', 'photo'];
+
 describe('dvirChecklist', () => {
 
   describe.each(['truckTractor', 'trailer'])('%s', (section) => {
@@ -54,6 +63,40 @@ describe('dvirChecklist', () => {
 
     it('should lay the grid out in the same order as the hand-written form did', () => {
       expect(formOrder(section).map((item) => item.key)).toEqual(FORM_ORDER[section]);
+    });
+
+  });
+
+  describe('notes', () => {
+
+    const withNotes = (section) => items(section).filter((item) => item.note);
+
+    it('should cover the under-the-hood and in-cab boxes, and nothing else yet', () => {
+      expect(withNotes('truckTractor').map((item) => item.key).sort()).toEqual([...WITH_NOTES].sort());
+      expect(withNotes('trailer')).toEqual([]);
+    });
+
+    it.each(WITH_NOTES)('should give %s a well-formed note', (key) => {
+      const { note } = items('truckTractor').find((item) => item.key === key);
+
+      Object.keys(note).forEach((field) => expect(NOTE_FIELDS).toContain(field));
+      expect(note.check.length).toBeGreaterThan(0);
+      note.check.forEach((line) => expect(line).toMatch(/^\S.*[.:]$/));
+      // A note says where the part is, or who it's for when most trucks don't have it
+      expect(note.where || note.applies).toBeTruthy();
+      ['applies', 'where', 'more', 'remark', 'source'].forEach((field) => {
+        if (note[field] !== undefined) {
+          expect(typeof note[field]).toBe('string');
+          expect(note[field].trim()).toBe(note[field]);
+        }
+      });
+    });
+
+    it('should keep the photos it has under public/imgs, each with alt text', () => {
+      items('truckTractor').concat(items('trailer')).filter((item) => item.note && item.note.photo).forEach(({ note }) => {
+        expect(note.photo.src).toMatch(/^\/imgs\//);
+        expect(note.photo.alt).toBeTruthy();
+      });
     });
 
   });

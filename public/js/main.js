@@ -118,6 +118,7 @@ function closeModal() {
     }
     signaturePads.forEach((pad) => pad.clear());
     closeAllHelp();
+    closeChecklistNotes();
 }
 
 /**************************************************************
@@ -136,6 +137,31 @@ function setHelpOpen(button, open) {
 function closeAllHelp() {
     if (!form) return;
     form.querySelectorAll('.inspection-help-toggle').forEach((button) => setHelpOpen(button, false));
+}
+
+/**************************************************************
+ * Checklist notes
+ * The ? beside a checklist item (.inspection-check__help) opens
+ * its note, the <dialog> named in aria-controls, as a card over
+ * the form. The card closes with its Close button, with Escape,
+ * or with a tap on the dimmed area around it, and the browser puts
+ * focus back on the ?. While a card is open, Escape closes only
+ * the card: the keydown handler below leaves the form open.
+ **************************************************************/
+function openChecklistNote(button) {
+    const card = form && form.querySelector(`#${button.getAttribute('aria-controls')}`);
+    if (card && !card.open) {
+        card.showModal();
+    }
+}
+
+function checklistNoteOpen() {
+    return Boolean(form && form.querySelector('dialog.inspection-card[open]'));
+}
+
+function closeChecklistNotes() {
+    if (!form) return;
+    form.querySelectorAll('dialog.inspection-card[open]').forEach((card) => card.close());
 }
 
 /**************************************************************
@@ -960,13 +986,24 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    // One listener for every ? button in the form, and one for the defect
-    // checkboxes, which show or hide the repair section
+    // One listener for every ? button and checklist note in the form, and one
+    // for the defect checkboxes, which show or hide the repair section
     if (form) {
         form.addEventListener('click', (event) => {
             const helpButton = event.target.closest('.inspection-help-toggle');
             if (helpButton) {
                 setHelpOpen(helpButton, helpButton.getAttribute('aria-expanded') !== 'true');
+                return;
+            }
+            const noteButton = event.target.closest('.inspection-check__help');
+            if (noteButton) {
+                openChecklistNote(noteButton);
+                return;
+            }
+            // A tap on the dimmed area around a card lands on the <dialog> itself
+            const card = event.target.closest('dialog.inspection-card');
+            if (card && (event.target === card || event.target.closest('.inspection-card__close'))) {
+                card.close();
             }
         });
         form.addEventListener('change', (event) => {
@@ -977,7 +1014,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && overlay && overlay.classList.contains('is-open')) {
+        // Escape over a checklist note closes just the note: the browser
+        // does that, after this listener, and the form stays open
+        if (event.key === 'Escape' && overlay && overlay.classList.contains('is-open') && !checklistNoteOpen()) {
             closeModal();
         }
     });

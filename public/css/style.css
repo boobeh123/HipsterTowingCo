@@ -1034,8 +1034,19 @@ body.has-modal-open {
   gap: var(--space-1) var(--space-4);
 }
 
-.inspection-checklist label:empty {
-  display: none;
+/* One checklist item: its checkbox label, and a ? when the item has a note.
+   The ? sits right after the label's text: at the far edge of the cell it
+   looked like it belonged to the next column's checkbox. */
+.inspection-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.inspection-check label {
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 .inspection-checklist label {
@@ -1170,7 +1181,8 @@ body.has-modal-open {
   margin-bottom: var(--space-1);
 }
 
-.inspection-help-toggle {
+.inspection-help-toggle,
+.inspection-check__help {
   flex: none;
   width: 1.5rem;
   height: 1.5rem;
@@ -1188,7 +1200,8 @@ body.has-modal-open {
 
 /* Hover only where there's a real pointer: on a phone it would stick after a tap */
 @media (hover: hover) {
-  .inspection-help-toggle:hover {
+  .inspection-help-toggle:hover,
+  .inspection-check__help:hover {
     color: #fff;
     background-color: var(--color-focus-ring);
     border-color: var(--color-focus-ring);
@@ -1201,7 +1214,8 @@ body.has-modal-open {
   border-color: var(--color-focus-ring);
 }
 
-.inspection-help-toggle:focus-visible {
+.inspection-help-toggle:focus-visible,
+.inspection-check__help:focus-visible {
   outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
@@ -1258,6 +1272,106 @@ body.has-modal-open {
   margin: 0;
   padding-bottom: 0;
   border-bottom: none;
+}
+
+/* The item ? sits level with the first line of its label */
+.inspection-check__help {
+  margin-top: 0.125rem;
+}
+
+/* A checklist item's note: a <dialog> card over the form (main.js opens it).
+   The dialog itself has no padding, so a click whose target is the dialog came
+   from the dimmed area around the card. */
+.inspection-card {
+  width: min(28rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  padding: 0;
+  color: var(--color-text);
+  background-color: var(--color-modal-input-bg);
+  border: 1px solid var(--color-modal-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 16px 48px rgba(15, 23, 20, 0.35);
+}
+
+.inspection-card::backdrop {
+  background-color: rgba(15, 23, 20, 0.6);
+}
+
+.inspection-card__body {
+  padding: var(--space-4);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.inspection-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-text);
+}
+
+.inspection-card__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.inspection-card__close {
+  flex: none;
+  padding: var(--space-1) var(--space-3);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: var(--color-text);
+  background-color: var(--color-modal-surface);
+  border: 1px solid var(--color-modal-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.inspection-card__close:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.inspection-card__body p {
+  margin: 0 0 var(--space-3);
+}
+
+.inspection-card__body p:last-child {
+  margin-bottom: 0;
+}
+
+.inspection-card__applies {
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-modal-surface);
+  border-left: 3px solid var(--color-focus-ring);
+  border-radius: var(--radius-sm);
+}
+
+.inspection-card__body .inspection-card__label {
+  margin-bottom: var(--space-1);
+}
+
+.inspection-card__checks {
+  margin: 0 0 var(--space-3);
+  padding-left: 1.25rem;
+}
+
+.inspection-card__checks li + li {
+  margin-top: var(--space-1);
+}
+
+.inspection-card__photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-sm);
 }
 
 /**************************************************************

@@ -39,6 +39,10 @@ const clientPromise = connectDB()
 app.set('trust proxy', 1)
 app.set('view engine', 'ejs')
 
+// The DVIR checklist's items and notes, for the inspection form on every page
+// that includes it (views/partials/checklistSection.ejs)
+app.locals.dvirChecklist = require('./utils/dvirChecklist')
+
 // X-Content-Type-Options: nosniff — prevents MIME sniffing attacks
 // X-Frame-Options: SAMEORIGIN — prevents clickjacking via iframes
 // Strict-Transport-Security — forces HTTPS on browsers that have visited before
