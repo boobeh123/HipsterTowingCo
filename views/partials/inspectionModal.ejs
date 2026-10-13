@@ -206,54 +206,59 @@
                         <p id="signatureHint" class="inspection-sig-hint">Sign with your finger, a stylus or the mouse, or leave it blank to sign the printed copy by hand.</p>
                     </div>
 
-                    <label class="inspection-condition">
-                        <input type="checkbox" name="defectsCorrected" value="true" />
-                        <span>Above Defects Corrected</span>
-                    </label>
+                    <%# The mechanic's and next driver's part only applies once the report lists a defect, so main.js
+                       (updateRepairSection) shows it when a defect is ticked, in place of the note above it %>
+                    <p id="repairNote" class="inspection-note">The mechanic's and next driver's lines appear once you tick a defect. A report without defects needs only your signature.</p>
+                    <div id="repairSection" class="inspection-repair" hidden>
+                        <label class="inspection-condition">
+                            <input type="checkbox" name="defectsCorrected" value="true" />
+                            <span>Above Defects Corrected</span>
+                        </label>
 
-                    <label class="inspection-condition">
-                        <input type="checkbox" name="defectsNotCorrected" value="true" />
-                        <span>Above Defects Need NOT Be Corrected For Safe Operation Of Vehicle</span>
-                    </label>
+                        <label class="inspection-condition">
+                            <input type="checkbox" name="defectsNotCorrected" value="true" />
+                            <span>Above Defects Need NOT Be Corrected For Safe Operation Of Vehicle</span>
+                        </label>
 
-                    <div class="inspection-sig-grid">
-                        <div class="inspection-sig-block">
-                            <div class="inspection-label-row">
-                                <span id="mechanicSignatureLabel" class="inspection-sig-block__label">Mechanic's Signature (optional)</span>
-                                <button type="button" class="inspection-help-toggle" aria-expanded="false" aria-controls="help-mechanicSignature" aria-label="About the mechanic's signature">?</button>
+                        <div class="inspection-sig-grid">
+                            <div class="inspection-sig-block">
+                                <div class="inspection-label-row">
+                                    <span id="mechanicSignatureLabel" class="inspection-sig-block__label">Mechanic's Signature (optional)</span>
+                                    <button type="button" class="inspection-help-toggle" aria-expanded="false" aria-controls="help-mechanicSignature" aria-label="About the mechanic's signature">?</button>
+                                </div>
+                                <div id="help-mechanicSignature" class="inspection-help" hidden>
+                                    <p>For whoever repairs the defects, or decides they don't need repair, before the truck is driven again. They tick one of the two boxes above, then sign and date.</p>
+                                    <p>If that happens later at the shop, leave this blank. They can sign the printed copy.</p>
+                                    <p class="inspection-help__source">Source: 49 CFR 396.11(a)(3)</p>
+                                </div>
+                                <div class="inspection-sig-pad" data-field="mechanicSignature">
+                                    <canvas class="inspection-sig-pad__canvas" role="img" aria-labelledby="mechanicSignatureLabel" aria-describedby="signatureHint"></canvas>
+                                    <button type="button" class="inspection-sig-pad__clear" aria-label="Clear the mechanic's signature">Clear</button>
+                                </div>
                             </div>
-                            <div id="help-mechanicSignature" class="inspection-help" hidden>
-                                <p>For whoever repairs the defects, or decides they don't need repair, before the truck is driven again. They tick one of the two boxes above, then sign and date.</p>
-                                <p>If that happens later at the shop, leave this blank. They can sign the printed copy.</p>
-                                <p class="inspection-help__source">Source: 49 CFR 396.11(a)(3)</p>
-                            </div>
-                            <div class="inspection-sig-pad" data-field="mechanicSignature">
-                                <canvas class="inspection-sig-pad__canvas" role="img" aria-labelledby="mechanicSignatureLabel" aria-describedby="signatureHint"></canvas>
-                                <button type="button" class="inspection-sig-pad__clear" aria-label="Clear the mechanic's signature">Clear</button>
+                            <div class="inspection-field inspection-field--date">
+                                <label for="mechanicDate">Date</label>
+                                <input type="text" id="mechanicDate" name="mechanicDate" maxlength="20" autocomplete="off" />
                             </div>
                         </div>
-                        <div class="inspection-field inspection-field--date">
-                            <label for="mechanicDate">Date</label>
-                            <input type="text" id="mechanicDate" name="mechanicDate" maxlength="20" autocomplete="off" />
-                        </div>
-                    </div>
 
-                    <div class="inspection-sig-grid">
-                        <div class="inspection-sig-block">
-                            <div class="inspection-label-row">
-                                <span class="inspection-sig-block__label">Next Driver's Signature (acknowledgment)</span>
-                                <button type="button" class="inspection-help-toggle" aria-expanded="false" aria-controls="help-acknowledgment" aria-label="About the next driver's signature">?</button>
+                        <div class="inspection-sig-grid">
+                            <div class="inspection-sig-block">
+                                <div class="inspection-label-row">
+                                    <span class="inspection-sig-block__label">Next Driver's Signature (acknowledgment)</span>
+                                    <button type="button" class="inspection-help-toggle" aria-expanded="false" aria-controls="help-acknowledgment" aria-label="About the next driver's signature">?</button>
+                                </div>
+                                <div id="help-acknowledgment" class="inspection-help" hidden>
+                                    <p>For the next person to drive this truck. Before driving, they review this report and sign to confirm the repairs were certified.</p>
+                                    <p>That can be you on a later day. It's signed on the printed copy.</p>
+                                    <p class="inspection-help__source">Source: 49 CFR 396.13</p>
+                                </div>
+                                <div class="inspection-sig-line" aria-hidden="true"></div>
                             </div>
-                            <div id="help-acknowledgment" class="inspection-help" hidden>
-                                <p>For the next person to drive this truck. Before driving, they review this report and sign to confirm the repairs were certified.</p>
-                                <p>That can be you on a later day. It's signed on the printed copy.</p>
-                                <p class="inspection-help__source">Source: 49 CFR 396.13</p>
+                            <div class="inspection-field inspection-field--date">
+                                <label for="driverDate">Date</label>
+                                <input type="text" id="driverDate" name="driverDate" maxlength="20" autocomplete="off" />
                             </div>
-                            <div class="inspection-sig-line" aria-hidden="true"></div>
-                        </div>
-                        <div class="inspection-field inspection-field--date">
-                            <label for="driverDate">Date</label>
-                            <input type="text" id="driverDate" name="driverDate" maxlength="20" autocomplete="off" />
                         </div>
                     </div>
                 </section>

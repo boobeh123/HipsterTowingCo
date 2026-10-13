@@ -1,5 +1,5 @@
 // public/js/utils.js has no DOM access, so these run in Jest's plain node environment
-const { FIELD_LIMITS, SIGNATURE_MAX_LENGTH, sanitizeText, validateAndSanitize, decodeHTMLEntities, pdfFileName, isSignatureImage } = require('../../public/js/utils.js');
+const { FIELD_LIMITS, SIGNATURE_MAX_LENGTH, REPAIR_FIELDS, sanitizeText, validateAndSanitize, decodeHTMLEntities, pdfFileName, isSignatureImage, hasDefects, withoutRepairFields } = require('../../public/js/utils.js');
 
 // ─────────────────────────────────────────────
 // sanitizeText
@@ -195,6 +195,73 @@ describe('isSignatureImage()', () => {
     const prefix = 'data:image/png;base64,';
     expect(isSignatureImage(prefix + 'A'.repeat(SIGNATURE_MAX_LENGTH - prefix.length))).toBe(true);
     expect(isSignatureImage(prefix + 'A'.repeat(SIGNATURE_MAX_LENGTH - prefix.length + 1))).toBe(false);
+  });
+
+});
+
+// ─────────────────────────────────────────────
+// hasDefects — whether the modal shows the repair section
+// ─────────────────────────────────────────────
+describe('hasDefects()', () => {
+
+  it('should be false when nothing is ticked', () => {
+    expect(hasDefects({})).toBe(false);
+    expect(hasDefects({ defects: {} })).toBe(false);
+    expect(hasDefects(null)).toBe(false);
+  });
+
+  // Saved inspections list every item, true or false
+  it('should be false when every item is false', () => {
+    expect(hasDefects({ defects: { truckTractor: { brakes: false, tires: false }, trailer: { lightsAll: false } } })).toBe(false);
+  });
+
+  it('should be true when a truck or a trailer item is ticked', () => {
+    expect(hasDefects({ defects: { truckTractor: { brakes: true } } })).toBe(true);
+    expect(hasDefects({ defects: { trailer: { landingGear: true } } })).toBe(true);
+  });
+
+  it('should count only true, not other truthy values', () => {
+    expect(hasDefects({ defects: { truckTractor: { brakes: 'true', tires: 1 } } })).toBe(false);
+  });
+
+});
+
+// ─────────────────────────────────────────────
+// withoutRepairFields — a report without defects has nothing to repair
+// ─────────────────────────────────────────────
+describe('withoutRepairFields()', () => {
+
+  const repairs = {
+    defectsCorrected: true,
+    defectsNotCorrected: true,
+    mechanicSignature: 'data:image/png;base64,iVBORw0KGgo=',
+    mechanicDate: '10/12/2026',
+    driverDate: '10/13/2026',
+  };
+
+  it('should keep the repair fields on a report that lists a defect', () => {
+    const inspection = { truckTractorNo: 'TRK-1', defects: { truckTractor: { brakes: true } }, ...repairs };
+    expect(withoutRepairFields(inspection)).toEqual(inspection);
+  });
+
+  it('should drop every repair field from a report without defects', () => {
+    const result = withoutRepairFields({ truckTractorNo: 'TRK-1', defects: {}, ...repairs });
+    expect(REPAIR_FIELDS).toHaveLength(5);
+    REPAIR_FIELDS.forEach((field) => {
+      expect(result).not.toHaveProperty(field);
+    });
+  });
+
+  it("should keep the truck number, remarks, condition and the driver's signature", () => {
+    const driverSignature = 'data:image/png;base64,iVBORw0KGgo=';
+    const inspection = { truckTractorNo: 'TRK-1', remarks: 'All good', conditionSatisfactory: true, driverSignature, ...repairs };
+    expect(withoutRepairFields(inspection)).toEqual({ truckTractorNo: 'TRK-1', remarks: 'All good', conditionSatisfactory: true, driverSignature });
+  });
+
+  it('should not change the object it was given', () => {
+    const inspection = { truckTractorNo: 'TRK-1', ...repairs };
+    withoutRepairFields(inspection);
+    expect(inspection).toEqual({ truckTractorNo: 'TRK-1', ...repairs });
   });
 
 });

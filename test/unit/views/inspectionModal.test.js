@@ -43,6 +43,18 @@ describe('inspectionModal.ejs help', () => {
     expect(html).toContain('The rule states the report must identify the vehicle.');
   });
 
+  // main.js shows it once a defect is ticked (updateRepairSection)
+  it("should start with the mechanic's and next driver's part hidden, and a note in its place", () => {
+    const section = html.match(/<div id="repairSection" class="inspection-repair" hidden>([\s\S]*?)<\/section>/);
+
+    expect(section).not.toBeNull();
+    ['name="defectsCorrected"', 'name="defectsNotCorrected"', 'data-field="mechanicSignature"', 'name="mechanicDate"', 'name="driverDate"'].forEach((field) => {
+      expect(section[1]).toContain(field);
+    });
+    expect(section[1]).not.toContain('data-field="driverSignature"');
+    expect(html).toContain('<p id="repairNote" class="inspection-note">');
+  });
+
   it('should render the same help for a signed-in user', async () => {
     const signedIn = await renderModal({ _id: 'user-1', name: 'Driver' });
 
