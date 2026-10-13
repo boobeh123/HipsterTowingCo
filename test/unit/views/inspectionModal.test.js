@@ -1,12 +1,15 @@
 const path = require('path');
 const ejs = require('ejs');
+const dvirChecklist = require('../../../utils/dvirChecklist');
 
 // The inspection modal, rendered from the real partial. Its ? buttons open
 // their help notes by id (setHelpOpen() in public/js/main.js), so a typo in
-// aria-controls would leave a button that does nothing.
+// aria-controls would leave a button that does nothing. server.js supplies
+// dvirChecklist through app.locals; these renders pass it the same way.
 const VIEW = path.join(__dirname, '../../../views/partials/inspectionModal.ejs');
+const NOTE_VIEW = path.join(__dirname, '../../../views/partials/checklistNote.ejs');
 
-const renderModal = (user) => ejs.renderFile(VIEW, { user, inspectionCount: 0 });
+const renderModal = (user) => ejs.renderFile(VIEW, { user, inspectionCount: 0, dvirChecklist });
 
 describe('inspectionModal.ejs help', () => {
 
@@ -60,6 +63,80 @@ describe('inspectionModal.ejs help', () => {
 
     expect(signedIn.match(/class="inspection-help-toggle"/g)).toHaveLength(html.match(/class="inspection-help-toggle"/g).length);
     expect(signedIn).toContain('id="saveInspectionBtn"');
+  });
+
+});
+
+describe('inspectionModal.ejs checklist', () => {
+
+  let html;
+
+  beforeAll(async () => {
+    html = await renderModal(null);
+  });
+
+  // The order is pinned to the old hand-written form in dvirChecklist.test.js
+  it.each(['truckTractor', 'trailer'])('should render every %s checkbox in the form order', (section) => {
+    const names = [...html.matchAll(new RegExp(`name="defects\\[${section}\\]\\[(\\w+)\\]"`, 'g'))].map((match) => match[1]);
+
+    expect(names).toEqual(dvirChecklist.formOrder(section).map((item) => item.key));
+  });
+
+  it('should give each item with a note a ? that opens its own dialog', () => {
+    const buttons = html.match(/<button[^>]*class="inspection-check__help"[^>]*>/g);
+    const withNotes = dvirChecklist.items('truckTractor').filter((item) => item.note);
+
+    expect(buttons).toHaveLength(withNotes.length);
+    buttons.forEach((button) => {
+      const id = button.match(/aria-controls="([^"]+)"/)[1];
+      expect(button).toContain('type="button"');
+      expect(button).toContain('aria-haspopup="dialog"');
+      expect(button).toMatch(/aria-label="About [^"]+"/);
+      expect(html).toContain(`<dialog id="${id}" class="inspection-card" aria-labelledby="${id}-title">`);
+      expect(html).toContain(`id="${id}-title"`);
+    });
+  });
+
+  it('should show a note\'s parts in its card', () => {
+    const brakes = dvirChecklist.items('truckTractor').find((item) => item.key === 'brakes');
+    const card = html.match(/<dialog id="note-truckTractor-brakes"[\s\S]*?<\/dialog>/)[0];
+
+    expect(card).toContain('class="inspection-card__close"');
+    expect(card).toContain('Where it is:');
+    expect(card.match(/<li>/g)).toHaveLength(brakes.note.check.length);
+    expect(card).toContain(`“${brakes.note.remark}”`);
+    expect(card).toContain(`Source: ${brakes.note.source}`);
+  });
+
+  it('should leave the items without a note as a plain checkbox', () => {
+    expect(html).not.toContain('aria-controls="note-truckTractor-tires"');
+    expect(html).not.toContain('id="note-trailer-');
+  });
+
+});
+
+describe('checklistNote.ejs', () => {
+
+  const note = { where: 'Under the hood.', check: ['It works.'] };
+
+  // The photo slot stays out of the card until a note has a photo
+  it('should show a photo only when the note has one', async () => {
+    const without = await ejs.renderFile(NOTE_VIEW, { noteId: 'note-x', item: { label: 'Battery', note } });
+    const withPhoto = await ejs.renderFile(NOTE_VIEW, {
+      noteId: 'note-x',
+      item: { label: 'Battery', note: { ...note, photo: { src: '/imgs/notes/battery.webp', alt: 'Battery under the hood', width: 800, height: 600 } } },
+    });
+
+    expect(without).not.toContain('<img');
+    expect(withPhoto).toContain('<img class="inspection-card__photo" src="/imgs/notes/battery.webp" alt="Battery under the hood" width="800" height="600" loading="lazy" />');
+  });
+
+  it('should escape note text', async () => {
+    const card = await ejs.renderFile(NOTE_VIEW, { noteId: 'note-x', item: { label: 'A <b>', note: { where: '<script>', check: ['"quoted"'] } } });
+
+    expect(card).not.toContain('<script>');
+    expect(card).not.toContain('<b>');
+    expect(card).toContain('&lt;script&gt;');
   });
 
 });

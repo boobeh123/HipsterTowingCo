@@ -1,4 +1,5 @@
 const { decodeHTMLEntities } = require('../public/js/utils')
+const { labelsFor } = require('./dvirChecklist')
 
 /**************************************************************
  * inspectionCsv.js
@@ -9,61 +10,12 @@ const { decodeHTMLEntities } = require('../public/js/utils')
  * order mark so Excel reads accents and "–" correctly.
  **************************************************************/
 
-// The checklist's own labels, as inspectionModal.ejs shows them, keyed like
-// the schema in models/Inspection.js. A defects cell lists the ticked ones.
+// The checklist's labels, keyed like the schema in models/Inspection.js and
+// in the paper form's order. They live in utils/dvirChecklist.js, which the
+// inspection form uses too. A defects cell lists the ticked ones.
 const DEFECT_LABELS = {
-    truckTractor: {
-        airCompressor: 'Air Compressor',
-        airLines: 'Air Lines',
-        battery: 'Battery',
-        brakeAccessories: 'Brake Accessories',
-        brakes: 'Brakes',
-        carburetor: 'Carburetor',
-        clutch: 'Clutch',
-        defroster: 'Defroster',
-        driveLine: 'Drive Line',
-        engine: 'Engine',
-        fifthWheel: 'Fifth Wheel',
-        frontAxle: 'Front Axle',
-        fuelTanks: 'Fuel Tanks',
-        heater: 'Heater',
-        horn: 'Horn',
-        lights: 'Lights',
-        mirrors: 'Mirrors',
-        muffler: 'Muffler',
-        oilPressure: 'Oil Pressure',
-        onBoardRecorder: 'On-Board Recorder',
-        radiator: 'Radiator',
-        rearEnd: 'Rear End',
-        reflectors: 'Reflectors',
-        safetyEquipment: 'Safety Equipment',
-        springs: 'Springs',
-        starter: 'Starter',
-        steering: 'Steering',
-        tachograph: 'Tachograph',
-        tires: 'Tires',
-        transmission: 'Transmission',
-        wheels: 'Wheels',
-        windows: 'Windows',
-        windshieldWipers: 'Windshield Wipers',
-        other: 'Other',
-    },
-    trailer: {
-        brakeConnections: 'Brake Connections',
-        brakes: 'Brakes',
-        couplingChains: 'Coupling Chains',
-        couplingPin: 'Coupling (King) Pin',
-        doors: 'Doors',
-        hitch: 'Hitch',
-        landingGear: 'Landing Gear',
-        lightsAll: 'Lights – All',
-        roof: 'Roof',
-        springs: 'Springs',
-        tarpaulin: 'Tarpaulin',
-        tires: 'Tires',
-        wheels: 'Wheels',
-        other: 'Other',
-    },
+    truckTractor: labelsFor('truckTractor'),
+    trailer: labelsFor('trailer'),
 }
 
 const CSV_COLUMNS = [

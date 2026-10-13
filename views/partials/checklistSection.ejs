@@ -1,0 +1,16 @@
+<%# One checklist section (section: 'truckTractor' or 'trailer'), built from utils/dvirChecklist.js,
+    which server.js puts on app.locals. The checkboxes keep the paper form's columns; an item with a
+    note gets a ? that opens it (main.js), and the notes follow the grid as <dialog>s. %>
+<div class="inspection-checklist" role="group" aria-label="<%= groupLabel %>">
+    <% dvirChecklist.formOrder(section).forEach((item) => { %>
+        <div class="inspection-check">
+            <label><input type="checkbox" name="defects[<%= section %>][<%= item.key %>]" value="true" /><span><%= item.label %></span></label>
+            <% if (item.note) { %>
+                <button type="button" class="inspection-check__help" aria-haspopup="dialog" aria-controls="note-<%= section %>-<%= item.key %>" aria-label="About <%= item.label %>">?</button>
+            <% } %>
+        </div>
+    <% }) %>
+</div>
+<% dvirChecklist.items(section).filter((item) => item.note).forEach((item) => { %>
+    <%- include('checklistNote', { noteId: `note-${section}-${item.key}`, item }) %>
+<% }) %>

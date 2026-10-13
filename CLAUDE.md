@@ -18,7 +18,7 @@ a batch of changes merges, add a Version History entry in the same format as the
 ```bash
 npm run dev      # node --watch server.js (restarts when a loaded file changes)
 npm start        # node server.js
-npm test         # jest — runs all 22 suites
+npm test         # jest — runs all 23 suites
 ```
 
 Run a single suite or a single test:
@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 317 passed, 22 suites, 0 failures
+### Expected test baseline: 352 passed, 23 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -219,9 +219,9 @@ The dashboard's "Download … as CSV" link (`exportUrl`, which keeps the filters
 browser's `tz` on load) runs `exportCsv` in `controllers/dashboard.js`. It reads the same validated
 query as the dashboard, so the file holds exactly the inspections the history shows, newest first.
 
-- `utils/inspectionCsv.js` is pure: `DEFECT_LABELS` (the checklist's 48 labels, keyed like the
-  schema; add an item in both places), `CSV_COLUMNS` (12), `csvCell()`, `inspectionRow()`,
-  `localDateTime()` and `exportFileName()`.
+- `utils/inspectionCsv.js` is pure: `DEFECT_LABELS` (the checklist's 48 labels, read from
+  `utils/dvirChecklist.js` in the paper form's order), `CSV_COLUMNS` (12), `csvCell()`,
+  `inspectionRow()`, `localDateTime()` and `exportFileName()`.
 - Every cell is quoted with inner quotes doubled, and lines end in CRLF. The file starts with a
   UTF-8 byte order mark, or Excel garbles accents and "–".
 - `csvCell()` decodes the 2025 HTML entities with `decodeHTMLEntities` from `public/js/utils.js`, and
@@ -332,6 +332,40 @@ The mechanic's pad sits in the repair section, which stays hidden until a defect
   `.inspection-repair` have no `display` rule in style.css, because one would override `hidden`.
   Keep it that way.
 
+### The checklist and its notes (`utils/dvirChecklist.js`)
+
+The 48 checklist items live only in `utils/dvirChecklist.js`, keyed like the schema in
+`models/Inspection.js`.
+- **How it's read.** Each section lists the paper form's three columns, top to bottom.
+  - `items(section)` reads them column by column. That's the schema's and the PDF template's
+    order, which the CSV export uses through `labelsFor()`.
+  - `formOrder(section)` reads them row by row, the order the form's grid needs to show the same
+    columns.
+  - `test/unit/utils/dvirChecklist.test.js` pins the keys to the schema, and the labels and the
+    grid order to their old hand-written values.
+- **How the form uses it.** server.js puts the module on `app.locals.dvirChecklist`, so every
+  render that includes the inspection form has it. Tests that render those templates directly must
+  pass it themselves, as `test/unit/views/inspectionModal.test.js` does.
+  `views/partials/checklistSection.ejs` builds a section's checkboxes, and gives each item that
+  has a `note` a `?` (`.inspection-check__help`, a different class from the help buttons above).
+- **Note fields.** `applies`, `where`, `check` (each line is something that should be true),
+  `more`, `remark`, `source`, and `photo` (`{ src, alt, width, height }`).
+- **Cards.** `checklistNote.ejs` renders each note as a `<dialog class="inspection-card">`.
+  `openChecklistNote()` in main.js shows it with `showModal()`.
+  - The card closes with its Close button, with Escape, or with a click whose target is the
+    `<dialog>` itself (the dimmed area: the dialog has no padding of its own).
+  - The form's Escape handler skips while a card is open (`checklistNoteOpen()`). Otherwise one
+    Escape would close the form and wipe it.
+- **What has notes so far.** The 19 boxes checked under the hood and in the cab, written from the
+  CDL manual (section 2, in our own words; the base is Oregon's online manual) and 49 CFR. The
+  walk-around items come next. Air-brake, fifth wheel and trailer items wait for a reviewer with a
+  Class A license. Someone with a CDL reviews every note's wording before it ships.
+- **Photos.** Resize them and strip their location data (EXIF) before they go into the public
+  repo. Blur plates, company names and USDOT numbers unless Bobby wants them shown. Give real
+  `width`/`height`.
+- **Adding a checklist item.** Change the schema, its column in `dvirChecklist.js`, and the
+  `xMark()` coordinates for its box in `generateDVIRPDF()`.
+
 The `Counter` model holds a single global document (`name: 'inspectionCount'`) powering the public
 homepage count — it is not per-user.
 
@@ -375,7 +409,8 @@ Grepping a single `.ejs` file for a variable is not enough — partials are incl
 share the same locals. `inspectionCount` is used only in `views/partials/inspectionModal.ejs`, which
 **both** `dashboard.ejs` and `index.ejs` include, so `getDashboard` and `getIndex` must each pass it
 or the page 500s at render. Grep `views/` recursively, and prefer actually rendering the template
-with the controller's payload over reasoning about it.
+with the controller's payload over reasoning about it. `dvirChecklist` is the exception: it comes
+from `app.locals` (server.js), so controllers don't pass it.
 
 ### CSP: no inline scripts or handlers, and a hash that can go stale
 
