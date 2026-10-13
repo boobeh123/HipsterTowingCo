@@ -1237,6 +1237,12 @@ body.has-modal-open {
   color: var(--color-text-muted);
 }
 
+/* Stands in for the hidden repair section: space it apart from the signature
+   hint above, or the two read as one paragraph */
+.inspection-note--repair {
+  margin-top: var(--space-4);
+}
+
 /* The defect checklist's heading with its ? button: the underline moves from
    the heading to this row, so it still spans the full width */
 .inspection-section-head {

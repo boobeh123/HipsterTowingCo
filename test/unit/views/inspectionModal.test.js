@@ -52,7 +52,7 @@ describe('inspectionModal.ejs help', () => {
       expect(section[1]).toContain(field);
     });
     expect(section[1]).not.toContain('data-field="driverSignature"');
-    expect(html).toContain('<p id="repairNote" class="inspection-note">');
+    expect(html).toMatch(/<p id="repairNote" class="inspection-note[^"]*">/);
   });
 
   it('should render the same help for a signed-in user', async () => {
