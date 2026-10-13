@@ -9,8 +9,8 @@ const methodOverride = require('method-override')
 const session = require('express-session')
 const { MongoStore } = require('connect-mongo')
 const passport = require('passport')
-const flash = require('connect-flash')
 const mainRoutes = require('./routes/main')
+const flash = require('./middleware/flash')
 const viewLocals = require('./middleware/viewLocals')
 const { endStaleSessions } = require('./middleware/auth')
 const errorHandler = require('./middleware/errorHandler')
@@ -110,13 +110,14 @@ app.use(
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.use(flash())
+// req.flash(): messages for the next page, kept in the session
+app.use(flash)
 
 // Signs out sessions that logged in before the account's last password
-// change, with a flash saying why (so it runs after connect-flash)
+// change, with a flash saying why (so it runs after flash)
 app.use(endStaleSessions)
 
-// Flash + request context for all views (must run after session + connect-flash)
+// Flash + request context for all views (must run after session + flash)
 app.use(viewLocals)
 
 app.use('/', mainRoutes)
