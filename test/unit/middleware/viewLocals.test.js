@@ -1,7 +1,7 @@
 const request = require('supertest');
 const express = require('express');
 const session = require('express-session');
-const flash = require('connect-flash');
+const flash = require('../../../middleware/flash');
 const viewLocals = require('../../../middleware/viewLocals');
 
 describe('viewLocals', () => {
@@ -22,24 +22,16 @@ describe('viewLocals', () => {
     jest.clearAllMocks();
   });
 
-  it('should not read or create flash storage when no flash is waiting', () => {
-    viewLocals(req, res, next);
-
-    expect(req.flash).not.toHaveBeenCalled();
-    expect(req.session).toEqual({});
-    expect(res.locals).toMatchObject({ success: [], errors: [], error: [], info: [] });
-    expect(next).toHaveBeenCalledTimes(1);
-  });
-
-  it('should read every flash type when a flash is waiting', () => {
-    req.session.flash = { success: ['Inspection deleted.'] };
+  // Reading never writes to the session (middleware/flash.js), so every type
+  // is read on every request; the real-session tests below check the cookie
+  it('should read every flash type into its own local', () => {
     req.flash = jest.fn((type) => (type === 'success' ? ['Inspection deleted.'] : []));
 
     viewLocals(req, res, next);
 
-    expect(req.flash).toHaveBeenCalledTimes(4);
-    expect(res.locals.success).toEqual(['Inspection deleted.']);
-    expect(res.locals.errors).toEqual([]);
+    expect(req.flash.mock.calls.map(([type]) => type)).toEqual(['success', 'errors', 'error', 'info']);
+    expect(res.locals).toMatchObject({ success: ['Inspection deleted.'], errors: [], error: [], info: [] });
+    expect(next).toHaveBeenCalledTimes(1);
   });
 
   it('should set currentPath from req.path and user to null when logged out', () => {
@@ -58,15 +50,15 @@ describe('viewLocals', () => {
   });
 
   // ─────────────────────────────────────────────
-  // With the real session and connect-flash, the way server.js wires them
+  // With the real session and flash middleware, the way server.js wires them
   // ─────────────────────────────────────────────
-  describe('with express-session and connect-flash', () => {
+  describe('with express-session and the flash middleware', () => {
     let app;
 
     beforeEach(() => {
       app = express();
       app.use(session({ secret: 'test-secret', resave: false, saveUninitialized: false }));
-      app.use(flash());
+      app.use(flash);
       app.use(viewLocals);
       app.get('/', (req, res) => res.json({ success: res.locals.success }));
       app.get('/set-flash', (req, res) => {
@@ -88,6 +80,16 @@ describe('viewLocals', () => {
       const response = await agent.get('/').expect(200);
 
       expect(response.body.success).toEqual(['Welcome back.']);
+    });
+
+    it('should show a flash only once', async () => {
+      const agent = request.agent(app);
+      await agent.get('/set-flash').expect(200);
+      await agent.get('/').expect(200);
+
+      const response = await agent.get('/').expect(200);
+
+      expect(response.body.success).toEqual([]);
     });
   });
 });

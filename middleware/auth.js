@@ -46,11 +46,11 @@ const ensureOnboarding = (req, res, next) => {
  * A password reset or change sets passwordChangedAt on the
  * account, and every login records loginAt on its session
  * (markLoginTime). endStaleSessions runs on every request, after
- * passport and connect-flash. A session that logged in before the
- * last password change is signed out, so whoever knew the old
- * password loses access on every other device. A page request goes
- * straight to /login, which says why; a fetch() caller gets a JSON
- * 401 with the same reason.
+ * passport and the flash middleware. A session that logged in
+ * before the last password change is signed out, so whoever knew
+ * the old password loses access on every other device. A page
+ * request goes straight to /login, which says why; a fetch()
+ * caller gets a JSON 401 with the same reason.
  * Anything new that logs a user in must call markLoginTime.
  **************************************************************/
 const markLoginTime = (req) => {
