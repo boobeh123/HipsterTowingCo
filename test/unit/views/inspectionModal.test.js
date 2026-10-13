@@ -109,7 +109,7 @@ describe('inspectionModal.ejs checklist', () => {
   });
 
   it('should leave the items without a note as a plain checkbox', () => {
-    expect(html).not.toContain('aria-controls="note-truckTractor-tires"');
+    expect(html).not.toContain('aria-controls="note-truckTractor-airCompressor"');
     expect(html).not.toContain('id="note-trailer-');
   });
 

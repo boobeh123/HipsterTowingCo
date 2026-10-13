@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 352 passed, 23 suites, 0 failures
+### Expected test baseline: 363 passed, 23 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -356,10 +356,11 @@ The 48 checklist items live only in `utils/dvirChecklist.js`, keyed like the sch
     `<dialog>` itself (the dimmed area: the dialog has no padding of its own).
   - The form's Escape handler skips while a card is open (`checklistNoteOpen()`). Otherwise one
     Escape would close the form and wipe it.
-- **What has notes so far.** The 19 boxes checked under the hood and in the cab, written from the
-  CDL manual (section 2, in our own words; the base is Oregon's online manual) and 49 CFR. The
-  walk-around items come next. Air-brake, fifth wheel and trailer items wait for a reviewer with a
-  Class A license. Someone with a CDL reviews every note's wording before it ships.
+- **What has notes so far.** Every truck box except Air Compressor, Air Lines, Brake Accessories
+  and Fifth Wheel: 30 notes in all. They were written from the CDL manual (sections 2 and 11, in
+  our own words; the base is Oregon's online manual) and 49 CFR. The missing four and all the
+  trailer boxes wait for a reviewer with a Class A license. Someone with a CDL reviews every note's
+  wording before it ships.
 - **Photos.** Resize them and strip their location data (EXIF) before they go into the public
   repo. Blur plates, company names and USDOT numbers unless Bobby wants them shown. Give real
   `width`/`height`.
