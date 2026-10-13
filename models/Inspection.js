@@ -58,7 +58,7 @@ const InspectionSchema = new mongoose.Schema({
     // Core identification
     truckTractorNo: {
         type: String,
-        required: [true, 'USDOT/Truck number is required.'],
+        required: [true, 'Truck / Tractor No. is required.'],
         trim: true,
         minLength: [1, 'Truck number must be at least 1 character long.'],
         maxLength: [30, 'Truck / Tractor No. can be up to 30 characters.'],

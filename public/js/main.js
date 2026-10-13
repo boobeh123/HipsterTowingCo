@@ -115,6 +115,25 @@ function closeModal() {
         form.reset();
     }
     signaturePads.forEach((pad) => pad.clear());
+    closeAllHelp();
+}
+
+/**************************************************************
+ * Form help
+ * Each ? button beside a label (.inspection-help-toggle) opens or
+ * closes the short note named in its aria-controls. They all start
+ * closed, and closeModal() folds any open ones away again.
+ **************************************************************/
+function setHelpOpen(button, open) {
+    const panel = form && form.querySelector(`#${button.getAttribute('aria-controls')}`);
+    if (!panel) return;
+    button.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+}
+
+function closeAllHelp() {
+    if (!form) return;
+    form.querySelectorAll('.inspection-help-toggle').forEach((button) => setHelpOpen(button, false));
 }
 
 /**************************************************************
@@ -911,6 +930,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeModal();
             }
         })
+    }
+
+    // One listener for every ? button in the form
+    if (form) {
+        form.addEventListener('click', (event) => {
+            const helpButton = event.target.closest('.inspection-help-toggle');
+            if (helpButton) {
+                setHelpOpen(helpButton, helpButton.getAttribute('aria-expanded') !== 'true');
+            }
+        });
     }
     
     document.addEventListener('keydown', (event) => {
