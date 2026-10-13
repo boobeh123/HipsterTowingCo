@@ -19,11 +19,11 @@
  *   remark   an example remark
  *   source   where the method or rule comes from
  *   photo    { src, alt, width, height }, once there's a photo of it
- * The notes are written from the CDL manual (section 2, in our own
- * words) and 49 CFR, and someone with a CDL reviews them before they
- * ship. So far they cover what's checked under the hood and in the
- * cab; the walk-around items come next. Air-brake, fifth wheel and
- * trailer items wait for a reviewer with a Class A license.
+ * The notes are written from the CDL manual (sections 2 and 11, in
+ * our own words) and 49 CFR, and someone with a CDL reviews them
+ * before they ship. Every truck box has one except the air-brake
+ * ones and Fifth Wheel, which wait, with the trailer items, for a
+ * reviewer with a Class A license.
  **************************************************************/
 const CHECKLIST = {
     truckTractor: [
@@ -103,7 +103,20 @@ const CHECKLIST = {
                     source: '49 CFR 393.79',
                 },
             },
-            { key: 'driveLine', label: 'Drive Line' },
+            {
+                key: 'driveLine',
+                label: 'Drive Line',
+                note: {
+                    where: 'Under the truck: the drive shaft running from the transmission back to the rear axle.',
+                    check: [
+                        "The drive shaft isn't bent, cracked or dented.",
+                        'The U-joints and couplings are secure, with nothing wrapped around them, such as wire or plastic.',
+                        'There is no clunk or shudder from under the truck when you pull away or shift.',
+                    ],
+                    remark: 'Drive line: rear U-joint has play, clunks when pulling away.',
+                    source: 'CDL manual, section 11 (vehicle inspection test)',
+                },
+            },
             {
                 key: 'engine',
                 label: 'Engine',
@@ -121,8 +134,35 @@ const CHECKLIST = {
                 },
             },
             { key: 'fifthWheel', label: 'Fifth Wheel' },
-            { key: 'frontAxle', label: 'Front Axle' },
-            { key: 'fuelTanks', label: 'Fuel Tanks' },
+            {
+                key: 'frontAxle',
+                label: 'Front Axle',
+                note: {
+                    where: 'Under the front of the truck, between the front wheels.',
+                    check: [
+                        "The axle isn't cracked or bent.",
+                        "The parts that hold it in place, such as U-bolts and spring hangers, aren't loose, cracked or missing.",
+                    ],
+                    remark: 'Front axle: U-bolt nut missing on left side.',
+                    source: 'CDL manual, section 2; 49 CFR 393.207',
+                },
+            },
+            {
+                key: 'fuelTanks',
+                label: 'Fuel Tanks',
+                note: {
+                    where: 'Under the truck or on the frame rails, usually behind the cab.',
+                    check: [
+                        'Each tank is mounted securely, with its straps tight.',
+                        "It isn't dented, damaged or leaking, and there's no fuel smell.",
+                        'The cap is on and tight.',
+                        "The fuel lines aren't leaking or rubbing on anything.",
+                    ],
+                    more: "Also make sure there's enough fuel for the trip.",
+                    remark: 'Fuel tank: mounting strap loose, fuel smell at the cap.',
+                    source: 'CDL manual, section 2; 49 CFR 393.65',
+                },
+            },
             {
                 key: 'heater',
                 label: 'Heater',
@@ -150,7 +190,21 @@ const CHECKLIST = {
                     source: '49 CFR 393.81',
                 },
             },
-            { key: 'lights', label: 'Lights' },
+            {
+                key: 'lights',
+                label: 'Lights',
+                note: {
+                    where: 'All around the truck: headlights and turn signals at the front, marker lights along the sides, and tail, brake and turn signals at the back.',
+                    check: [
+                        'Every light works: low and high beams, turn signals and four-way flashers front and back, tail lights, brake lights, marker lights and the license plate light.',
+                        'On a truck 80 inches wide or more, as most box trucks are, the clearance lights at the corners and the identification lights work too.',
+                        'The lenses are clean, not cracked or missing, and the right color: white headlights, amber at the front and sides, red at the back (rear turn signals can be red or amber).',
+                    ],
+                    more: 'To check the brake lights on your own, press the pedal and watch their reflection on a wall or vehicle behind you, or ask someone to watch.',
+                    remark: 'Lights: left rear brake light out.',
+                    source: 'CDL manual, section 2; 49 CFR 393.11',
+                },
+            },
             {
                 key: 'mirrors',
                 label: 'Mirrors',
@@ -164,7 +218,21 @@ const CHECKLIST = {
                     source: 'CDL manual, section 2; 49 CFR 393.80',
                 },
             },
-            { key: 'muffler', label: 'Muffler' },
+            {
+                key: 'muffler',
+                label: 'Muffler',
+                note: {
+                    where: 'Under the truck: the exhaust pipes, muffler and tailpipe, or a stack behind the cab.',
+                    check: [
+                        'The pipes, muffler and tailpipe are mounted securely, and none is cracked, broken or missing.',
+                        'Nothing leaks: no black soot around the joints, no unusually loud exhaust and no exhaust smell in the cab.',
+                        'No part of the exhaust touches fuel lines, wiring, tires or other moving parts.',
+                        "There are no wrap or patch repairs. They aren't allowed, even as a temporary fix.",
+                    ],
+                    remark: 'Muffler: exhaust leaking at the muffler inlet, black soot, loud.',
+                    source: 'CDL manual, section 2; 49 CFR 393.83',
+                },
+            },
             {
                 key: 'oilPressure',
                 label: 'Oil Pressure',
@@ -208,8 +276,33 @@ const CHECKLIST = {
                     source: 'CDL manual, section 2',
                 },
             },
-            { key: 'rearEnd', label: 'Rear End' },
-            { key: 'reflectors', label: 'Reflectors' },
+            {
+                key: 'rearEnd',
+                label: 'Rear End',
+                note: {
+                    where: 'The rear axle under the back of the truck, with the differential: the round housing in the middle.',
+                    check: [
+                        'No gear oil is leaking from the differential or the axle seals. Look for oil on the inside of the rear wheels too.',
+                        "The axle is secure, and the parts that hold it in place aren't loose, cracked or missing.",
+                        'There is no clunking, whining or grinding from the rear when you drive or turn.',
+                    ],
+                    remark: 'Rear end: gear oil leaking at the differential.',
+                    source: 'CDL manual, section 2',
+                },
+            },
+            {
+                key: 'reflectors',
+                label: 'Reflectors',
+                note: {
+                    where: 'At the back of the truck, along its sides and at the front corners.',
+                    check: [
+                        'Every reflector is there, clean, and not cracked or broken.',
+                        'The colors are right: red at the back and at the rear of each side, amber elsewhere on the sides and at the front.',
+                    ],
+                    remark: 'Reflectors: right rear reflector missing.',
+                    source: 'CDL manual, section 2; 49 CFR 393.11',
+                },
+            },
             {
                 key: 'safetyEquipment',
                 label: 'Safety Equipment',
@@ -227,7 +320,22 @@ const CHECKLIST = {
             },
         ],
         [
-            { key: 'springs', label: 'Springs' },
+            {
+                key: 'springs',
+                label: 'Springs',
+                note: {
+                    where: 'Above each axle, under the frame: leaf springs on most trucks, with shock absorbers beside them. Some trucks have air bags instead.',
+                    check: [
+                        'No spring leaf is cracked, broken, missing or shifted out of place, where it could hit a tire.',
+                        "The spring hangers and U-bolts aren't cracked, loose or missing.",
+                        "The shock absorbers aren't leaking or broken.",
+                        'The truck sits level, not leaning to one side.',
+                        "If it has air suspension, it isn't damaged or leaking.",
+                    ],
+                    remark: 'Springs: broken leaf in left rear spring.',
+                    source: 'CDL manual, section 2; 49 CFR 393.207',
+                },
+            },
             {
                 key: 'starter',
                 label: 'Starter',
@@ -267,7 +375,24 @@ const CHECKLIST = {
                     remark: 'Tachograph: not recording, disc not turning.',
                 },
             },
-            { key: 'tires', label: 'Tires' },
+            {
+                key: 'tires',
+                label: 'Tires',
+                note: {
+                    where: 'Every tire, including the inside tire of each pair of duals.',
+                    check: [
+                        "The pressure matches the sticker in the driver's door jamb. Check it with a gauge while the tires are cold: kicking a tire only finds a flat.",
+                        'The tread is at least 4/32 inch deep in every major groove on the front tires, and 2/32 inch on the others.',
+                        'There are no cuts or bulges, no fabric or cords showing in the tread or sidewall, and no tread coming apart.',
+                        "The valve stems aren't cut or cracked.",
+                        "Duals don't touch each other, and nothing is stuck between them.",
+                        "Tires on the same axle match in size, and radial and bias-ply tires aren't mixed.",
+                    ],
+                    more: "A quick tread check: put a quarter upside down in a groove. If you can see the top of Washington's head, the tread is under 4/32 inch. A penny does the same for 2/32 inch with Lincoln's head. A tread depth gauge is more exact.",
+                    remark: 'Tires: left front sidewall bulge.',
+                    source: 'CDL manual, section 2; 49 CFR 393.75',
+                },
+            },
             {
                 key: 'transmission',
                 label: 'Transmission',
@@ -282,7 +407,21 @@ const CHECKLIST = {
                     source: 'CDL manual, section 2',
                 },
             },
-            { key: 'wheels', label: 'Wheels' },
+            {
+                key: 'wheels',
+                label: 'Wheels',
+                note: {
+                    where: 'Every wheel, including the inner wheel of each pair of duals, and the hub at its center.',
+                    check: [
+                        "No lug nut or stud is missing, broken or loose. Rust streaks running from a nut can mean it's loose.",
+                        "The wheel and rim aren't cracked or bent, the stud holes aren't worn oval, and there are no welding repairs.",
+                        "The hub and wheel seals aren't leaking, and the hub oil is at the right level if the hub has a sight window.",
+                    ],
+                    more: 'After a tire change, stop a short while later and check that the lug nuts are still tight.',
+                    remark: 'Wheels: two lug nuts missing, right rear outer wheel.',
+                    source: 'CDL manual, section 2; 49 CFR 393.205',
+                },
+            },
             {
                 key: 'windows',
                 label: 'Windows',
@@ -311,7 +450,23 @@ const CHECKLIST = {
                     source: 'CDL manual, section 2; 49 CFR 393.78',
                 },
             },
-            { key: 'other', label: 'Other' },
+            {
+                key: 'other',
+                label: 'Other',
+                note: {
+                    where: 'Anything on the truck that has no box of its own.',
+                    check: [
+                        'The cab doors open, close and latch, and the steps and handholds are secure.',
+                        "The frame and cross members aren't bent or cracked.",
+                        'The mud flaps are there, fastened, and not dragging or rubbing a tire.',
+                        'The license plate is there, clean and secure.',
+                        'On a box truck, the cargo door latches, and the load is blocked, braced or tied down.',
+                    ],
+                    more: 'Tick Other and name the part in Remarks.',
+                    remark: "Other: cargo door latch broken, door won't stay shut.",
+                    source: 'CDL manual, section 2',
+                },
+            },
         ],
     ],
     trailer: [

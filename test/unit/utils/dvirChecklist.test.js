@@ -37,12 +37,10 @@ const FORM_ORDER = {
   ],
 };
 
-// The first batch of notes: what's checked under the hood and in the cab
-const WITH_NOTES = [
-  'battery', 'brakes', 'carburetor', 'clutch', 'defroster', 'engine', 'heater', 'horn', 'mirrors', 'oilPressure',
-  'onBoardRecorder', 'radiator', 'safetyEquipment', 'starter', 'steering', 'tachograph', 'transmission', 'windows',
-  'windshieldWipers',
-];
+// Every truck box has a note except the air-brake ones and Fifth Wheel, which
+// wait (with the trailer boxes) for a reviewer with a Class A license
+const WITHOUT_NOTES = ['airCompressor', 'airLines', 'brakeAccessories', 'fifthWheel'];
+const WITH_NOTES = FORM_ORDER.truckTractor.filter((key) => !WITHOUT_NOTES.includes(key));
 
 const NOTE_FIELDS = ['applies', 'where', 'check', 'more', 'remark', 'source', 'photo'];
 
@@ -71,8 +69,9 @@ describe('dvirChecklist', () => {
 
     const withNotes = (section) => items(section).filter((item) => item.note);
 
-    it('should cover the under-the-hood and in-cab boxes, and nothing else yet', () => {
+    it('should cover every truck box but the air-brake ones and Fifth Wheel, and no trailer box yet', () => {
       expect(withNotes('truckTractor').map((item) => item.key).sort()).toEqual([...WITH_NOTES].sort());
+      expect(WITH_NOTES).toHaveLength(30);
       expect(withNotes('trailer')).toEqual([]);
     });
 
