@@ -18,7 +18,7 @@ a batch of changes merges, add a Version History entry in the same format as the
 ```bash
 npm run dev      # node --watch server.js (restarts when a loaded file changes)
 npm start        # node server.js
-npm test         # jest — runs all 21 suites
+npm test         # jest — runs all 22 suites
 ```
 
 Run a single suite or a single test:
@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 308 passed, 21 suites, 0 failures
+### Expected test baseline: 317 passed, 22 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -59,8 +59,8 @@ exist and set `NODE_ENV`, which no test reads. `testPathIgnorePatterns` still na
 ### Request pipeline (`server.js`) — order is load-bearing
 
 `trust proxy` → helmet/CSP → morgan → body parsers → static → `method-override` → session →
-passport → connect-flash → **`endStaleSessions`** → **`viewLocals`** → `routes/main.js` → 404
-handler → `errorHandler`.
+passport → flash (`middleware/flash.js`) → **`endStaleSessions`** → **`viewLocals`** →
+`routes/main.js` → 404 handler → `errorHandler`.
 
 - `config/database.js` connects once and returns Mongoose's client. The session store reuses it
   (`MongoStore.create({ clientPromise })`), and `app.listen` runs only after the connection
@@ -78,9 +78,12 @@ handler → `errorHandler`.
   cookies are never set. The value is `1`, not `true` — express-rate-limit rejects `true` as
   spoofable.
 - `middleware/viewLocals.js` populates `success` / `errors` / `error` / `info` / `currentPath` /
-  `user` for **every** view. It calls `req.flash()` only when `req.session.flash` exists: reading a
-  flash creates that object, a changed session gets saved and sent a cookie, and reading
-  unconditionally gave every anonymous visitor (bots included) a cookie and a MongoDB session.
+  `user` for **every** view, reading all four flash types on every request. That's only safe
+  because reading never writes to the session (see the flash section below): express-session saves
+  a changed session and sends it a cookie, and connect-flash, which this app used before, created
+  `session.flash` on every read. That once gave every anonymous visitor (bots included) a cookie
+  and a MongoDB session. viewLocals.test.js checks for that with the real session and flash
+  middleware.
   `currentPath` uses `req.path`, not `req.originalUrl`, so `/dashboard?page=2` still matches the
   `'/dashboard'` comparisons in `views/partials/header.ejs`.
 - All routes live in the single `routes/main.js`. There is no per-resource route file.
@@ -99,6 +102,24 @@ return req.session.save((err) => {
 ```
 
 `views/partials/flash.ejs` accepts either a bare string or `{ msg }`.
+
+`req.flash()` comes from `middleware/flash.js`, which replaced connect-flash in October 2026.
+connect-flash was last released in 2013 and calls Node's deprecated `util.isArray`. The new module
+keeps connect-flash's API for the two calls the app makes:
+
+- `req.flash(type, message)` queues the message, or each item of an array, and returns how many of
+  that type are queued.
+- `req.flash(type)` returns that type's messages and clears them.
+
+It differs from connect-flash in three deliberate ways:
+
+- Reading never creates `session.flash`.
+- Reading without a session returns `[]`, while writing without one throws.
+- There's no `req.flash()` with no arguments, and no `%s` formatting; build the message string
+  first.
+
+It looks up `req.session` on every call, because passport regenerates the session on login and
+logout, and `endStaleSessions` flashes right after `req.logout()`.
 
 ### Validation (`middleware/validators.js`)
 
@@ -151,7 +172,7 @@ rather than letting it become a 500.
 ### Sessions end after a password reset
 
 A reset sets `passwordChangedAt` on the account. `endStaleSessions` (middleware/auth.js, after
-passport and connect-flash in server.js) signs out any session whose `req.session.loginAt` is older,
+passport and the flash middleware in server.js) signs out any session whose `req.session.loginAt` is older,
 so whoever knew the old password loses access on every other device. It then answers the request
 itself: a page request is sent straight to `/login` with an info flash saying why, and a `fetch()`
 caller gets a JSON 401 with the same message. It must not call `next()` for pages: `viewLocals`
