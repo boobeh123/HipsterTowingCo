@@ -18,7 +18,7 @@ a batch of changes merges, add a Version History entry in the same format as the
 ```bash
 npm run dev      # node --watch server.js (restarts when a loaded file changes)
 npm start        # node server.js
-npm test         # jest — runs all 20 suites
+npm test         # jest — runs all 21 suites
 ```
 
 Run a single suite or a single test:
@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 295 passed, 20 suites, 0 failures
+### Expected test baseline: 308 passed, 21 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -271,10 +271,12 @@ Details that are easy to break:
 
 The modal has two optional pads (`.inspection-sig-pad`, `data-field` naming the inspection field).
 The acknowledgment line (the next driver, after repairs) has none, and stays blank for signing by hand.
+The mechanic's pad sits in the repair section, which stays hidden until a defect is ticked (below).
 
 - `createSignaturePad()` in main.js draws with pointer events (finger, stylus and mouse). The canvas
   has `touch-action: none` in style.css, or a finger scrolls the dialog instead of signing. Pads are
-  sized when the modal opens and cleared when it closes.
+  sized when the modal opens and cleared when it closes. A hidden canvas has no size, so the
+  mechanic's pad is sized by `updateRepairSection()` when its section first shows.
 - `toDataUrl()` crops to the ink and exports a PNG of at most 600×150 (shrinking if needed), which
   `runInspection()` adds to the inspection as `driverSignature` / `mechanicSignature`.
 - `generateDVIRPDF()` stamps them at `SIGNATURE_BOXES` (measured from `dvir-template.png`), with
@@ -287,13 +289,36 @@ The acknowledgment line (the next driver, after repairs) has none, and stays bla
   `express.json` allows 200kb so two full-size signatures fit. Guests' signatures never leave the
   browser. The CSV export leaves signatures out.
 
+### Form help and the repair section
+
+- **Help notes.** A `?` button (`.inspection-help-toggle`, with `aria-expanded` and
+  `aria-controls`) beside a label opens the short note (`.inspection-help`, which starts `hidden`)
+  under it. One click listener on the form calls `setHelpOpen()` in main.js, and `closeModal()`
+  folds every note away again with `closeAllHelp()`. `test/unit/views/inspectionModal.test.js`
+  renders the partial and checks that every button points at its own note, so add new ones in the
+  same shape. The notes' text lives in `inspectionModal.ejs` for now. The truck number note's first
+  sentence is Bobby's wording; keep it as written.
+- **Repair section.** `#repairSection` holds the two "defects corrected" boxes, the mechanic's pad
+  and date, and the next driver's acknowledgment line with its date. All of it only applies to a
+  report that lists defects (49 CFR 396.11(a)(3), 396.13).
+  - `updateRepairSection()` shows it when `hasDefects()` (utils.js) finds a ticked defect, and
+    shows `#repairNote` in its place otherwise. It runs when the modal opens and on every change
+    to a `defects[...]` checkbox.
+  - `runInspection()` passes the inspection through `withoutRepairFields()`, so anything filled in
+    there before the last defect was unticked stays off the PDF and out of the save. Re-downloads
+    draw saved inspections as they were stored.
+- **Shown and hidden with the `hidden` attribute.** `.inspection-help`, `.inspection-note` and
+  `.inspection-repair` have no `display` rule in style.css, because one would override `hidden`.
+  Keep it that way.
+
 The `Counter` model holds a single global document (`name: 'inspectionCount'`) powering the public
 homepage count — it is not per-user.
 
 ### `public/js/utils.js` is loaded twice, two different ways
 
-`utils.js` holds `FIELD_LIMITS`, `sanitizeText`, `validateAndSanitize`, `decodeHTMLEntities` and
-`pdfFileName`. The browser loads it as a plain script from `views/partials/footer.ejs`, **deferred and
+`utils.js` holds `FIELD_LIMITS`, `sanitizeText`, `validateAndSanitize`, `decodeHTMLEntities`,
+`pdfFileName`, `isSignatureImage`, and `hasDefects` / `withoutRepairFields` (the repair section's
+rule). The browser loads it as a plain script from `views/partials/footer.ejs`, **deferred and
 before `main.js`**, so the functions are globals by the time `main.js`'s handlers call them. Jest
 `require()`s the same file. The `module.exports` at the bottom is wrapped in a
 `typeof module !== 'undefined'` guard so the browser doesn't throw on it — **keep that guard**.

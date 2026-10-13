@@ -127,6 +127,45 @@ function isSignatureImage(value) {
 }
 
 /**************************************************************
+ * hasDefects()
+ * True when an inspection lists at least one defect, in either
+ * checklist. Works on readFormData()'s output in main.js (only
+ * the ticked items, as true) and on saved inspections (every
+ * item, true or false).
+ * Parameters: inspection — an inspection object
+ * Returns: true or false
+ **************************************************************/
+function hasDefects(inspection) {
+    const defects = (inspection && inspection.defects) || {};
+    return ['truckTractor', 'trailer'].some((section) =>
+        Object.values(defects[section] || {}).some((ticked) => ticked === true));
+}
+
+/**************************************************************
+ * withoutRepairFields()
+ * The mechanic's certification and the next driver's
+ * acknowledgment only apply to a report that lists defects
+ * (49 CFR 396.11(a)(3) and 396.13), so the modal hides them until
+ * a defect is ticked. This drops anything still filled in there,
+ * so a report without defects never prints or saves them.
+ * Parameters: inspection — the cleaned inspection, signatures added
+ * Returns: the same object if it lists a defect, otherwise a copy
+ *          without the REPAIR_FIELDS
+ **************************************************************/
+const REPAIR_FIELDS = ['defectsCorrected', 'defectsNotCorrected', 'mechanicSignature', 'mechanicDate', 'driverDate'];
+
+function withoutRepairFields(inspection) {
+    if (hasDefects(inspection)) {
+        return inspection;
+    }
+    const cleaned = { ...inspection };
+    REPAIR_FIELDS.forEach((field) => {
+        delete cleaned[field];
+    });
+    return cleaned;
+}
+
+/**************************************************************
  * This file is loaded two ways: by the browser as a plain script
  * and by Jest as a CommonJS module. The guard keeps the browser from throwing
  * "module is not defined" on the export below.
@@ -136,10 +175,13 @@ if (typeof module !== 'undefined' && module.exports) {
         FIELD_LIMITS,
         SIGNATURE_PREFIX,
         SIGNATURE_MAX_LENGTH,
+        REPAIR_FIELDS,
         sanitizeText,
         validateAndSanitize,
         decodeHTMLEntities,
         pdfFileName,
         isSignatureImage,
+        hasDefects,
+        withoutRepairFields,
     };
 }

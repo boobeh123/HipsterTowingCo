@@ -74,7 +74,9 @@ function openModal(event) {
     overlay.classList.add('is-open');
     overlay.removeAttribute('aria-hidden');
     document.body.classList.add('has-modal-open');
-    // The pads only have a size once the modal shows
+    updateRepairSection();
+    // The pads only have a size once the modal shows. The mechanic's stays
+    // hidden until a defect is ticked, and updateRepairSection() sizes it then
     signaturePads.forEach((pad) => pad.resize());
 
     clearModalFlash();
@@ -115,6 +117,51 @@ function closeModal() {
         form.reset();
     }
     signaturePads.forEach((pad) => pad.clear());
+    closeAllHelp();
+}
+
+/**************************************************************
+ * Form help
+ * Each ? button beside a label (.inspection-help-toggle) opens or
+ * closes the short note named in its aria-controls. They all start
+ * closed, and closeModal() folds any open ones away again.
+ **************************************************************/
+function setHelpOpen(button, open) {
+    const panel = form && form.querySelector(`#${button.getAttribute('aria-controls')}`);
+    if (!panel) return;
+    button.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+}
+
+function closeAllHelp() {
+    if (!form) return;
+    form.querySelectorAll('.inspection-help-toggle').forEach((button) => setHelpOpen(button, false));
+}
+
+/**************************************************************
+ * updateRepairSection()
+ * Shows the mechanic's certification and the next driver's line
+ * (#repairSection) once any defect is ticked, and the note that
+ * stands in for them until then. withoutRepairFields() in utils.js
+ * leaves out anything filled in there while it's hidden.
+ **************************************************************/
+function updateRepairSection() {
+    const repairSection = document.querySelector('#repairSection');
+    const repairNote = document.querySelector('#repairNote');
+    if (!form || !repairSection) return;
+
+    const showRepairs = hasDefects(readFormData());
+    repairSection.hidden = !showRepairs;
+    if (repairNote) {
+        repairNote.hidden = showRepairs;
+    }
+    // A hidden pad has no size, so the mechanic's is sized when it shows
+    if (showRepairs) {
+        const mechanicPad = signaturePads.get('mechanicSignature');
+        if (mechanicPad) {
+            mechanicPad.resize();
+        }
+    }
 }
 
 /**************************************************************
@@ -912,6 +959,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         })
     }
+
+    // One listener for every ? button in the form, and one for the defect
+    // checkboxes, which show or hide the repair section
+    if (form) {
+        form.addEventListener('click', (event) => {
+            const helpButton = event.target.closest('.inspection-help-toggle');
+            if (helpButton) {
+                setHelpOpen(helpButton, helpButton.getAttribute('aria-expanded') !== 'true');
+            }
+        });
+        form.addEventListener('change', (event) => {
+            if (event.target.name && event.target.name.startsWith('defects[')) {
+                updateRepairSection();
+            }
+        });
+    }
     
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && overlay && overlay.classList.contains('is-open')) {
@@ -941,18 +1004,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 sanitizedUserInspectionObject[field] = image;
             }
         });
+        // Without a defect, the hidden repair section stays off the report
+        const inspection = withoutRepairFields(sanitizedUserInspectionObject);
 
         try {
-            currentInspectionReport = await generateDVIRPDF(sanitizedUserInspectionObject);
+            currentInspectionReport = await generateDVIRPDF(inspection);
         } catch (err) {
             console.error('PDF generation failed:', err);
             showModalFlash('The PDF could not be created. Check your connection and try again.');
             return null;
         }
 
-        currentInspectionData = sanitizedUserInspectionObject;
+        currentInspectionData = inspection;
         closeModal();
-        return sanitizedUserInspectionObject;
+        return inspection;
     }
 
     // Disables a button while its handler runs, so a double click can't

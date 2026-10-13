@@ -1153,6 +1153,113 @@ body.has-modal-open {
   color: var(--color-text-muted);
 }
 
+/* "What's this?" help: a small ? button beside a label opens a short note
+   under it. main.js toggles the note's hidden attribute, so these rules never
+   set display on .inspection-help or .inspection-note. */
+.inspection-label-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.inspection-label-row .inspection-sig-block__label {
+  margin-bottom: 0;
+}
+
+.inspection-sig-block > .inspection-label-row {
+  margin-bottom: var(--space-1);
+}
+
+.inspection-help-toggle {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-text-muted);
+  background-color: var(--color-modal-input-bg);
+  border: 1px solid var(--color-modal-border);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Hover only where there's a real pointer: on a phone it would stick after a tap */
+@media (hover: hover) {
+  .inspection-help-toggle:hover {
+    color: #fff;
+    background-color: var(--color-focus-ring);
+    border-color: var(--color-focus-ring);
+  }
+}
+
+.inspection-help-toggle[aria-expanded="true"] {
+  color: #fff;
+  background-color: var(--color-focus-ring);
+  border-color: var(--color-focus-ring);
+}
+
+.inspection-help-toggle:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.inspection-help {
+  margin: 0 0 var(--space-2);
+  padding: var(--space-3);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-modal-input-bg);
+  border: 1px solid var(--color-modal-border);
+  border-left: 3px solid var(--color-focus-ring);
+  border-radius: var(--radius-sm);
+}
+
+.inspection-help p {
+  margin: 0 0 var(--space-2);
+}
+
+.inspection-help p:last-child {
+  margin-bottom: 0;
+}
+
+.inspection-help__source {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.inspection-note {
+  margin: 0 0 var(--space-3);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+/* Stands in for the hidden repair section: space it apart from the signature
+   hint above, or the two read as one paragraph */
+.inspection-note--repair {
+  margin-top: var(--space-4);
+}
+
+/* The defect checklist's heading with its ? button: the underline moves from
+   the heading to this row, so it still spans the full width */
+.inspection-section-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-text);
+}
+
+.inspection-section-head .inspection-section__title {
+  margin: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
 /**************************************************************
  * PDF result dialog (guest)
  **************************************************************/
