@@ -18,7 +18,7 @@
  *   more     anything to do beyond ticking the box
  *   remark   an example remark
  *   source   where the method or rule comes from
- *   photos   one or two { src, width, height, alt, caption } from
+ *   photos   one to three { src, width, height, alt, caption } from
  *            public/imgs/notes/ (two portrait photos sit side by
  *            side). Photos are of a real truck: crop or blur out
  *            plates and company details, and strip their metadata.
@@ -261,8 +261,15 @@ const CHECKLIST = {
                             src: '/imgs/notes/lights-rear.webp',
                             width: 960,
                             height: 720,
-                            alt: 'Back of the box truck with its red lights on; the company details on the door are blurred',
-                            caption: 'Back: red clearance lights at the top corners, three identification lights in the middle, and the tail lights. Company details blurred.',
+                            alt: 'Back of the box truck with its red lights on; the company details on the door are covered',
+                            caption: 'Back: red clearance lights at the top corners, three identification lights in the middle, and the tail lights. Company details covered.',
+                        },
+                        {
+                            src: '/imgs/notes/dash-gauges.webp',
+                            width: 960,
+                            height: 463,
+                            alt: 'The instrument cluster with the blue high-beam light on at the left',
+                            caption: 'In the cab: the blue light at the left of the gauges shows the high beams are on.',
                         },
                     ],
                 },

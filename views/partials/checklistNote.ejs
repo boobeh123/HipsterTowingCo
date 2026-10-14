@@ -1,6 +1,6 @@
 <%# The note for one checklist item (utils/dvirChecklist.js), shown as a card over the form when its ?
     is pressed. The <dialog> itself has no padding, so a click whose target is the dialog landed on the
-    dimmed area around the card, and main.js closes it. A note's one or two photos come first; two
+    dimmed area around the card, and main.js closes it. A note's one to three photos come first; two
     portrait photos (a before and after, say) sit side by side, anything else stacks. %>
 <% const photos = item.note.photos || []; %>
 <% const sideBySide = photos.length === 2 && photos.every((photo) => photo.height > photo.width); %>

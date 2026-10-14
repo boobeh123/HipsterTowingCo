@@ -349,7 +349,7 @@ The 48 checklist items live only in `utils/dvirChecklist.js`, keyed like the sch
   `views/partials/checklistSection.ejs` builds a section's checkboxes, and gives each item that
   has a `note` a `?` (`.inspection-check__help`, a different class from the help buttons above).
 - **Note fields.** `applies`, `where`, `check` (each line is something that should be true),
-  `more`, `remark`, `source`, and `photos`: one or two `{ src, width, height, alt, caption }`.
+  `more`, `remark`, `source`, and `photos`: one to three `{ src, width, height, alt, caption }`.
 - **Cards.** `checklistNote.ejs` renders each note as a `<dialog class="inspection-card">`.
   `openChecklistNote()` in main.js shows it with `showModal()`.
   - The card closes with its Close button, with Escape, or with a click whose target is the
@@ -364,7 +364,9 @@ The 48 checklist items live only in `utils/dvirChecklist.js`, keyed like the sch
   trailer boxes wait for a reviewer with a Class A license. Someone with a CDL reviews every note's
   wording before it ships.
 - **Photos.** Bobby's photos of a real box truck live in `public/imgs/notes/`. 13 notes have them,
-  17 files in all.
+  17 files in all. The dash photo appears twice: in Oil Pressure for the gauges, and in Lights for
+  the blue high-beam light. Bobby edited two photos by hand: the dash, and the rear view (door and
+  surroundings covered). Keep those versions.
   - **Format:** lossy WebP with no metadata, 960px wide (600px for one of a portrait pair).
   - **Layout:** two portrait photos sit side by side; anything else stacks.
   - **Loading:** they're `loading="lazy"` inside closed dialogs, so a photo downloads only when its

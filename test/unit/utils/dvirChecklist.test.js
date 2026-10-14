@@ -125,11 +125,11 @@ describe('dvirChecklist', () => {
       });
     });
 
-    it('should give a note one or two photos, and no photo file without a note', () => {
+    it('should give a note one to three photos, and no photo file without a note', () => {
       const notes = items('truckTractor').filter((item) => item.note && item.note.photos).map((item) => item.note);
       const used = notes.flatMap((note) => note.photos.map((photo) => path.basename(photo.src)));
 
-      notes.forEach((note) => expect([1, 2]).toContain(note.photos.length));
+      notes.forEach((note) => expect([1, 2, 3]).toContain(note.photos.length));
       expect(fs.readdirSync(path.join(__dirname, '../../../public/imgs/notes')).sort()).toEqual([...new Set(used)].sort());
     });
 
