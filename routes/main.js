@@ -47,6 +47,7 @@ router.get('/terms', termController.getTerms)
 
 router.get('/learn', learnController.getLearn)
 router.get('/learn/dvir', learnController.getDvirGuide)
+router.get('/learn/pre-trip', learnController.getPreTripGuide)
 
 
 module.exports = router

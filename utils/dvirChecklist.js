@@ -689,4 +689,16 @@ const REQUIRED_ITEMS = [
     { rule: 'Emergency equipment', truckTractor: ['safetyEquipment'] },
 ]
 
-module.exports = { CHECKLIST, REQUIRED_ITEMS, items, formOrder, labelsFor }
+// The truck boxes checked at each step of the CDL manual's seven-step
+// inspection (section 2), in the order the step reaches them. The pre-trip
+// guide (views/learn/pre-trip.ejs) shows each box's note under its step, so
+// every box with a note belongs to exactly one step. Steps 1, 4 and 6 have no
+// box of their own, and the guide describes them in words.
+const INSPECTION_STEPS = {
+    2: ['engine', 'radiator', 'battery', 'transmission'],
+    3: ['starter', 'oilPressure', 'steering', 'clutch', 'horn', 'windshieldWipers', 'defroster', 'heater', 'mirrors', 'windows', 'safetyEquipment', 'onBoardRecorder', 'carburetor', 'tachograph'],
+    5: ['lights', 'reflectors', 'tires', 'wheels', 'springs', 'frontAxle', 'fuelTanks', 'muffler', 'driveLine', 'rearEnd', 'other'],
+    7: ['brakes'],
+}
+
+module.exports = { CHECKLIST, REQUIRED_ITEMS, INSPECTION_STEPS, items, formOrder, labelsFor }

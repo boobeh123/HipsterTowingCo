@@ -2345,7 +2345,7 @@ body.has-modal-open {
 
 /**************************************************************
  * Legal document (privacy.ejs, terms.ejs), also the layout of
- * the DVIR guide (learn/dvir.ejs)
+ * the guides (learn/dvir.ejs, learn/pre-trip.ejs)
  **************************************************************/
 .legalDoc {
   flex: 1;
@@ -2600,8 +2600,9 @@ body.has-modal-open {
 }
 
 /**************************************************************
- * Learn pages (learn/index.ejs, learn/dvir.ejs). The guide uses
- * the legal document layout above; these are the extras.
+ * Learn pages (learn/index.ejs, learn/dvir.ejs, learn/pre-trip.ejs).
+ * The guides use the legal document layout above; these are the
+ * extras.
  **************************************************************/
 .learn__inner {
   width: min(100% - var(--space-8), 48rem);
@@ -2776,6 +2777,111 @@ body.has-modal-open {
 .learn__trailerBoxes {
   display: block;
   color: var(--color-text-muted);
+}
+
+/* The notes under each step of the pre-trip guide (partials/learnBoxes.ejs),
+   folded into <details>. Inside, they keep the card's smaller text. */
+.learn__boxes {
+  margin-top: var(--space-6);
+}
+
+.learn__boxesTitle {
+  margin: 0 0 var(--space-2);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.learn__box {
+  background-color: #fff;
+  border: 1px solid var(--color-footer-border);
+  border-radius: var(--radius-sm);
+}
+
+.learn__box + .learn__box {
+  margin-top: var(--space-2);
+}
+
+.learn__boxSummary {
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.learn__box[open] > .learn__boxSummary {
+  border-bottom: 1px solid var(--color-footer-border);
+}
+
+.learn__boxBody {
+  padding: var(--space-4);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.legalDoc__section .learn__boxBody p {
+  margin: 0 0 var(--space-3);
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.legalDoc__section .learn__boxBody p:last-child {
+  margin-bottom: 0;
+}
+
+.legalDoc__section .learn__boxBody .inspection-card__label {
+  margin-bottom: var(--space-1);
+}
+
+.legalDoc__section .learn__boxBody .inspection-help__source {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* About the size they are in the form's cards, with room for a pair */
+.learn__boxBody .inspection-card__photos {
+  max-width: 36rem;
+}
+
+/* "How one box-truck driver does it": the driver's own words, with a note
+   under any step the manual or the rules add to */
+.learn__routine {
+  margin: 0 0 var(--space-6);
+  padding: var(--space-4);
+  background-color: var(--color-footer-bg);
+  border-left: 3px solid var(--color-text-muted);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.legalDoc__section .learn__routineStart {
+  margin-bottom: var(--space-2);
+  font-weight: 700;
+}
+
+.learn__routineSteps {
+  margin: 0;
+  padding-left: var(--space-6);
+}
+
+.learn__routineSteps li + li {
+  margin-top: var(--space-3);
+}
+
+.legalDoc__section .learn__routineSteps p {
+  margin: 0;
+}
+
+.legalDoc__section .learn__routineSteps .learn__routineNote {
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background-color: #fff;
+  border-left: 3px solid var(--color-marker);
+  border-radius: var(--radius-sm);
 }
 
 .learn__cta {

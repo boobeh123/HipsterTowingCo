@@ -16,13 +16,14 @@ describe('learnController', () => {
   it.each([
     ['getLearn', 'learn/index.ejs'],
     ['getDvirGuide', 'learn/dvir.ejs'],
+    ['getPreTripGuide', 'learn/pre-trip.ejs'],
   ])('%s should render %s', async (handler, view) => {
     await learnController[handler](req, res, next);
 
     expect(res.render).toHaveBeenCalledWith(view);
   });
 
-  it.each(['getLearn', 'getDvirGuide'])('%s should call next with error if render throws', async (handler) => {
+  it.each(['getLearn', 'getDvirGuide', 'getPreTripGuide'])('%s should call next with error if render throws', async (handler) => {
     res.render.mockImplementation(() => { throw new Error('render failed') });
 
     await learnController[handler](req, res, next);

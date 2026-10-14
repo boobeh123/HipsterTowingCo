@@ -1,0 +1,16 @@
+<%# The notes for the truck boxes checked at one step of the pre-trip guide (learn/pre-trip.ejs), from
+    dvirChecklist.INSPECTION_STEPS. Each note is folded into a <details>, so a step stays short and its
+    photos only load once it's opened. %>
+<% const truckItems = dvirChecklist.items('truckTractor'); %>
+<div class="learn__boxes">
+    <h3 class="learn__boxesTitle">On the DVIR</h3>
+    <% dvirChecklist.INSPECTION_STEPS[step].forEach((key) => { %>
+        <% const item = truckItems.find((candidate) => candidate.key === key); %>
+        <details class="learn__box">
+            <summary class="learn__boxSummary"><%= item.label %></summary>
+            <div class="learn__boxBody">
+                <%- include('checklistNoteBody', { item }) %>
+            </div>
+        </details>
+    <% }) %>
+</div>
