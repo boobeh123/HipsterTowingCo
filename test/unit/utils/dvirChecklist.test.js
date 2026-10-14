@@ -1,5 +1,23 @@
+const fs = require('fs');
+const path = require('path');
 const { CHECKLIST, items, formOrder, labelsFor } = require('../../../utils/dvirChecklist');
 const Inspection = require('../../../models/Inspection');
+
+// A WebP file's chunks and its pixel size, read from the RIFF headers (enough
+// for the files under public/imgs/notes, which are plain lossy WebP)
+const readWebp = (file) => {
+  const data = fs.readFileSync(file);
+  expect(data.toString('ascii', 0, 4)).toBe('RIFF');
+  expect(data.toString('ascii', 8, 12)).toBe('WEBP');
+  const chunks = [];
+  for (let offset = 12; offset < data.length;) {
+    const size = data.readUInt32LE(offset + 4);
+    chunks.push(data.toString('ascii', offset, offset + 4));
+    offset += 8 + size + (size % 2);
+  }
+  expect(chunks[0]).toBe('VP8 ');
+  return { chunks, width: data.readUInt16LE(26) & 0x3fff, height: data.readUInt16LE(28) & 0x3fff };
+};
 
 // The labels exactly as the form and the CSV export showed them before they
 // moved into utils/dvirChecklist.js, in the paper form's order
@@ -42,7 +60,7 @@ const FORM_ORDER = {
 const WITHOUT_NOTES = ['airCompressor', 'airLines', 'brakeAccessories', 'fifthWheel'];
 const WITH_NOTES = FORM_ORDER.truckTractor.filter((key) => !WITHOUT_NOTES.includes(key));
 
-const NOTE_FIELDS = ['applies', 'where', 'check', 'more', 'remark', 'source', 'photo'];
+const NOTE_FIELDS = ['applies', 'where', 'check', 'more', 'remark', 'source', 'photos'];
 
 describe('dvirChecklist', () => {
 
@@ -91,11 +109,28 @@ describe('dvirChecklist', () => {
       });
     });
 
-    it('should keep the photos it has under public/imgs, each with alt text', () => {
-      items('truckTractor').concat(items('trailer')).filter((item) => item.note && item.note.photo).forEach(({ note }) => {
-        expect(note.photo.src).toMatch(/^\/imgs\//);
-        expect(note.photo.alt).toBeTruthy();
+    // The width and height go on the <img>, so a wrong pair would squash it
+    it('should give each photo a real file of the size it says, with no metadata, plus alt text and a caption', () => {
+      const photos = items('truckTractor').concat(items('trailer')).flatMap((item) => (item.note && item.note.photos) || []);
+
+      expect(photos.length).toBeGreaterThan(0);
+      photos.forEach((photo) => {
+        expect(photo.src).toMatch(/^\/imgs\/notes\/[a-z0-9-]+\.webp$/);
+        const file = readWebp(path.join(__dirname, '../../../public', photo.src));
+        expect({ src: photo.src, width: file.width, height: file.height }).toEqual({ src: photo.src, width: photo.width, height: photo.height });
+        // EXIF and XMP chunks could carry where and when a photo was taken
+        expect(file.chunks).toEqual(['VP8 ']);
+        expect(photo.alt.trim().length).toBeGreaterThan(0);
+        expect(photo.caption).toMatch(/^\S.*\.$/);
       });
+    });
+
+    it('should give a note one or two photos, and no photo file without a note', () => {
+      const notes = items('truckTractor').filter((item) => item.note && item.note.photos).map((item) => item.note);
+      const used = notes.flatMap((note) => note.photos.map((photo) => path.basename(photo.src)));
+
+      notes.forEach((note) => expect([1, 2]).toContain(note.photos.length));
+      expect(fs.readdirSync(path.join(__dirname, '../../../public/imgs/notes')).sort()).toEqual([...new Set(used)].sort());
     });
 
   });

@@ -1,6 +1,9 @@
 <%# The note for one checklist item (utils/dvirChecklist.js), shown as a card over the form when its ?
     is pressed. The <dialog> itself has no padding, so a click whose target is the dialog landed on the
-    dimmed area around the card, and main.js closes it. The photo shows only once the note has one. %>
+    dimmed area around the card, and main.js closes it. A note's one or two photos come first; two
+    portrait photos (a before and after, say) sit side by side, anything else stacks. %>
+<% const photos = item.note.photos || []; %>
+<% const sideBySide = photos.length === 2 && photos.every((photo) => photo.height > photo.width); %>
 <dialog id="<%= noteId %>" class="inspection-card" aria-labelledby="<%= noteId %>-title">
     <div class="inspection-card__body">
         <div class="inspection-card__head">
@@ -10,8 +13,17 @@
         <% if (item.note.applies) { %>
             <p class="inspection-card__applies"><%= item.note.applies %></p>
         <% } %>
-        <% if (item.note.photo) { %>
-            <img class="inspection-card__photo" src="<%= item.note.photo.src %>" alt="<%= item.note.photo.alt %>" width="<%= item.note.photo.width %>" height="<%= item.note.photo.height %>" loading="lazy" />
+        <% if (photos.length) { %>
+            <div class="inspection-card__photos<%= sideBySide ? ' inspection-card__photos--pair' : '' %>">
+                <% photos.forEach((photo) => { %>
+                    <figure class="inspection-card__figure">
+                        <img class="inspection-card__photo" src="<%= photo.src %>" alt="<%= photo.alt %>" width="<%= photo.width %>" height="<%= photo.height %>" loading="lazy" />
+                        <% if (photo.caption) { %>
+                            <figcaption class="inspection-card__caption"><%= photo.caption %></figcaption>
+                        <% } %>
+                    </figure>
+                <% }) %>
+            </div>
         <% } %>
         <% if (item.note.where) { %>
             <p><strong>Where it is:</strong> <%= item.note.where %></p>

@@ -18,7 +18,10 @@
  *   more     anything to do beyond ticking the box
  *   remark   an example remark
  *   source   where the method or rule comes from
- *   photo    { src, alt, width, height }, once there's a photo of it
+ *   photos   one or two { src, width, height, alt, caption } from
+ *            public/imgs/notes/ (two portrait photos sit side by
+ *            side). Photos are of a real truck: crop or blur out
+ *            plates and company details, and strip their metadata.
  * The notes are written from the CDL manual (sections 2 and 11, in
  * our own words) and 49 CFR, and someone with a CDL reviews them
  * before they ship. Every truck box has one except the air-brake
@@ -44,6 +47,22 @@ const CHECKLIST = {
                     ],
                     remark: 'Battery: hold-down missing, battery slides in its tray.',
                     source: 'CDL manual, section 2',
+                    photos: [
+                        {
+                            src: '/imgs/notes/battery.webp',
+                            width: 600,
+                            height: 706,
+                            alt: 'A battery under the hood, held in its tray',
+                            caption: 'The battery, under the hood on this truck.',
+                        },
+                        {
+                            src: '/imgs/notes/battery-terminals.webp',
+                            width: 600,
+                            height: 709,
+                            alt: 'Battery cable ends, the positive one under a red cover',
+                            caption: 'Check the cable ends: tight, with no heavy white or green crust.',
+                        },
+                    ],
                 },
             },
             { key: 'brakeAccessories', label: 'Brake Accessories' },
@@ -62,6 +81,15 @@ const CHECKLIST = {
                     ],
                     remark: 'Brakes: pedal slowly sinks during the 5-second hold.',
                     source: 'CDL manual, section 2',
+                    photos: [
+                        {
+                            src: '/imgs/notes/brake-fluid-cap.webp',
+                            width: 960,
+                            height: 720,
+                            alt: 'Brake fluid reservoir cap marked DOT 3 with a yellow brake symbol',
+                            caption: 'The brake fluid reservoir: its cap says DOT 3 and shows the brake symbol.',
+                        },
+                    ],
                 },
             },
             {
@@ -131,6 +159,15 @@ const CHECKLIST = {
                     ],
                     remark: 'Engine: oil leaking at front of engine, fresh drips on the ground.',
                     source: 'CDL manual, section 2',
+                    photos: [
+                        {
+                            src: '/imgs/notes/engine-oil.webp',
+                            width: 800,
+                            height: 800,
+                            alt: 'Engine oil fill cap marked SAE 5W-30, with the yellow oil dipstick handle below it',
+                            caption: 'The oil fill cap and the yellow engine oil dipstick.',
+                        },
+                    ],
                 },
             },
             { key: 'fifthWheel', label: 'Fifth Wheel' },
@@ -161,6 +198,15 @@ const CHECKLIST = {
                     more: "Also make sure there's enough fuel for the trip.",
                     remark: 'Fuel tank: mounting strap loose, fuel smell at the cap.',
                     source: 'CDL manual, section 2; 49 CFR 393.65',
+                    photos: [
+                        {
+                            src: '/imgs/notes/fuel-cap.webp',
+                            width: 960,
+                            height: 720,
+                            alt: 'A hand tightening the fuel cap under an Unleaded Fuel Only sticker',
+                            caption: 'The fuel cap: on and tight.',
+                        },
+                    ],
                 },
             },
             {
@@ -203,6 +249,22 @@ const CHECKLIST = {
                     more: 'To check the brake lights on your own, press the pedal and watch their reflection on a wall or vehicle behind you, or ask someone to watch.',
                     remark: 'Lights: left rear brake light out.',
                     source: 'CDL manual, section 2; 49 CFR 393.11',
+                    photos: [
+                        {
+                            src: '/imgs/notes/lights-front.webp',
+                            width: 960,
+                            height: 322,
+                            alt: 'Front of the truck with the headlights and the amber front lights on',
+                            caption: 'Front: white headlights, with amber turn signals and parking lights.',
+                        },
+                        {
+                            src: '/imgs/notes/lights-rear.webp',
+                            width: 960,
+                            height: 720,
+                            alt: 'Back of the box truck with its red lights on; the company details on the door are blurred',
+                            caption: 'Back: red clearance lights at the top corners, three identification lights in the middle, and the tail lights. Company details blurred.',
+                        },
+                    ],
                 },
             },
             {
@@ -216,6 +278,22 @@ const CHECKLIST = {
                     ],
                     remark: 'Mirrors: passenger-side mirror loose, vibrates at speed.',
                     source: 'CDL manual, section 2; 49 CFR 393.80',
+                    photos: [
+                        {
+                            src: '/imgs/notes/mirrors-before.webp',
+                            width: 600,
+                            height: 678,
+                            alt: 'A side mirror with dust and water spots on the glass',
+                            caption: 'Before: dust and water spots on the glass.',
+                        },
+                        {
+                            src: '/imgs/notes/mirrors-after.webp',
+                            width: 600,
+                            height: 679,
+                            alt: 'The same mirror after cleaning',
+                            caption: 'After: wiped with a microfiber cloth and ammonia-free glass cleaner.',
+                        },
+                    ],
                 },
             },
             {
@@ -231,6 +309,15 @@ const CHECKLIST = {
                     ],
                     remark: 'Muffler: exhaust leaking at the muffler inlet, black soot, loud.',
                     source: 'CDL manual, section 2; 49 CFR 393.83',
+                    photos: [
+                        {
+                            src: '/imgs/notes/tailpipe.webp',
+                            width: 960,
+                            height: 720,
+                            alt: 'The end of the tailpipe under the truck',
+                            caption: 'The tailpipe: secure, not cracked and not hanging loose.',
+                        },
+                    ],
                 },
             },
             {
@@ -245,6 +332,15 @@ const CHECKLIST = {
                     more: 'If it stays low or the light stays on, shut the engine off and check the oil level before you go anywhere.',
                     remark: 'Oil pressure: gauge low at idle, light flickers.',
                     source: 'CDL manual, section 2',
+                    photos: [
+                        {
+                            src: '/imgs/notes/dash-gauges.webp',
+                            width: 960,
+                            height: 463,
+                            alt: 'The instrument cluster before the engine starts: warning lights on, oil pressure at 0',
+                            caption: 'The gauges: oil pressure (top left), voltage (top right), temperature (bottom left) and fuel. Before the engine starts, the warning lights are on and the oil pressure reads 0.',
+                        },
+                    ],
                 },
             },
             {
@@ -274,6 +370,22 @@ const CHECKLIST = {
                     more: 'Never open the radiator cap on a hot engine: the coolant is under pressure and can burn you.',
                     remark: 'Radiator: coolant dripping from lower hose, tank below MIN.',
                     source: 'CDL manual, section 2',
+                    photos: [
+                        {
+                            src: '/imgs/notes/coolant-tank.webp',
+                            width: 600,
+                            height: 681,
+                            alt: 'A white coolant tank with a black cap and a COLD FILL mark on its side',
+                            caption: 'The coolant tank, with a COLD FILL mark on its side.',
+                        },
+                        {
+                            src: '/imgs/notes/coolant-cap.webp',
+                            width: 600,
+                            height: 699,
+                            alt: 'A coolant pressure cap labeled NEVER OPEN HOT',
+                            caption: 'A coolant pressure cap says it too: never open hot.',
+                        },
+                    ],
                 },
             },
             {
@@ -362,6 +474,15 @@ const CHECKLIST = {
                     ],
                     remark: 'Steering: about 3 inches of free play at the wheel.',
                     source: 'CDL manual, section 2',
+                    photos: [
+                        {
+                            src: '/imgs/notes/power-steering-cap.webp',
+                            width: 960,
+                            height: 720,
+                            alt: 'Power steering reservoir cap with a steering wheel symbol',
+                            caption: 'The power steering reservoir: its cap shows a steering wheel.',
+                        },
+                    ],
                 },
             },
             {
@@ -391,6 +512,15 @@ const CHECKLIST = {
                     more: "A quick tread check: put a quarter upside down in a groove. If you can see the top of Washington's head, the tread is under 4/32 inch. A penny does the same for 2/32 inch with Lincoln's head. A tread depth gauge is more exact.",
                     remark: 'Tires: left front sidewall bulge.',
                     source: 'CDL manual, section 2; 49 CFR 393.75',
+                    photos: [
+                        {
+                            src: '/imgs/notes/tire-penny.webp',
+                            width: 960,
+                            height: 720,
+                            alt: 'A penny pushed head first into a tire groove',
+                            caption: "The penny check: Lincoln's head goes in first. Part of his head is hidden here, so this tread is deeper than 2/32 inch.",
+                        },
+                    ],
                 },
             },
             {
@@ -420,6 +550,15 @@ const CHECKLIST = {
                     more: 'After a tire change, stop a short while later and check that the lug nuts are still tight.',
                     remark: 'Wheels: two lug nuts missing, right rear outer wheel.',
                     source: 'CDL manual, section 2; 49 CFR 393.205',
+                    photos: [
+                        {
+                            src: '/imgs/notes/wheel-front.webp',
+                            width: 960,
+                            height: 720,
+                            alt: 'A front wheel with its lug nuts and hub',
+                            caption: 'Check every lug nut, and the wheel around them.',
+                        },
+                    ],
                 },
             },
             {
@@ -448,6 +587,15 @@ const CHECKLIST = {
                     ],
                     remark: 'Wipers: driver-side blade torn, leaves streaks.',
                     source: 'CDL manual, section 2; 49 CFR 393.78',
+                    photos: [
+                        {
+                            src: '/imgs/notes/washer-cap.webp',
+                            width: 960,
+                            height: 720,
+                            alt: 'Washer fluid tank cap with a windshield and spray symbol',
+                            caption: "The washer fluid tank's cap shows a windshield being sprayed.",
+                        },
+                    ],
                 },
             },
             {
