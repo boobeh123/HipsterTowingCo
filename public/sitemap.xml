@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The public pages. Add each new page under /learn here too. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url><loc>https://pretriq.com/</loc></url>
+    <url><loc>https://pretriq.com/learn</loc></url>
+    <url><loc>https://pretriq.com/learn/dvir</loc></url>
+    <url><loc>https://pretriq.com/privacy</loc></url>
+    <url><loc>https://pretriq.com/terms</loc></url>
+</urlset>

@@ -58,6 +58,14 @@ describe('inspectionModal.ejs help', () => {
     expect(html).toMatch(/<p id="repairNote" class="inspection-note[^"]*">/);
   });
 
+  // A new tab, so following the link doesn't lose what's already in the form
+  it('should link the checklist help to the DVIR guide, in a new tab', () => {
+    const help = html.match(/<div id="help-defects" class="inspection-help" hidden>([\s\S]*?)<\/div>/)[1];
+
+    expect(help).toContain('<a href="/learn/dvir" target="_blank" rel="noopener">How to fill out a DVIR</a>');
+    expect(help).toContain('opens in a new tab');
+  });
+
   it('should render the same help for a signed-in user', async () => {
     const signedIn = await renderModal({ _id: 'user-1', name: 'Driver' });
 

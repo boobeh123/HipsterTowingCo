@@ -1,0 +1,10 @@
+# Pages behind a login, and the inspections API, have nothing for a search
+# engine to index. Everything else is open.
+User-agent: *
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /onboard
+Disallow: /inspections
+Disallow: /reset/
+
+Sitemap: https://pretriq.com/sitemap.xml

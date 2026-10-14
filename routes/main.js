@@ -6,6 +6,7 @@ const onboardController = require('../controllers/onboard')
 const passwordResetController = require('../controllers/reset')
 const privacyController = require('../controllers/privacy')
 const termController = require('../controllers/terms')
+const learnController = require('../controllers/learn')
 const inspectionController = require('../controllers/inspection')
 const dashboardController = require('../controllers/dashboard')
 const profileController = require('../controllers/profile')
@@ -43,6 +44,9 @@ router.post('/reset/:token', passwordResetLimiter, validateReset, passwordResetC
 
 router.get('/privacy', privacyController.getPrivacy)
 router.get('/terms', termController.getTerms)
+
+router.get('/learn', learnController.getLearn)
+router.get('/learn/dvir', learnController.getDvirGuide)
 
 
 module.exports = router

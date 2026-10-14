@@ -18,7 +18,7 @@ a batch of changes merges, add a Version History entry in the same format as the
 ```bash
 npm run dev      # node --watch server.js (restarts when a loaded file changes)
 npm start        # node server.js
-npm test         # jest — runs all 23 suites
+npm test         # jest — runs all 25 suites
 ```
 
 Run a single suite or a single test:
@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 366 passed, 23 suites, 0 failures
+### Expected test baseline: 394 passed, 25 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -376,8 +376,40 @@ The 48 checklist items live only in `utils/dvirChecklist.js`, keyed like the sch
   - **Tests:** `dvirChecklist.test.js` reads each file's WebP header. It checks that the file
     exists, that its size matches the note's `width`/`height` (which go on the `<img>`), that it
     carries no EXIF or XMP chunk, and that the folder holds no unused files.
+- **The 11 required items.** `REQUIRED_ITEMS` lists the parts and accessories 49 CFR
+  396.11(a)(1) says every report must cover, in the rule's words and order, with the boxes that
+  cover each one. The DVIR guide shows it as a table, and the tests check every key against the
+  form.
 - **Adding a checklist item.** Change the schema, its column in `dvirChecklist.js`, and the
   `xMark()` coordinates for its box in `generateDVIRPDF()`.
+
+### The learn pages (`/learn`)
+
+Public guides for drivers, with no login needed: `GET /learn` (`views/learn/index.ejs`, the list of
+guides) and `GET /learn/dvir` (`views/learn/dvir.ejs`, "How to fill out a DVIR"), both from
+`controllers/learn.js`.
+- **Layout.** The guide reuses the legal pages' `legalDoc` classes (sidebar contents, summary,
+  sections). The extras are the `learn__` classes in style.css. `legalDoc__tocList--plain` drops the
+  contents list's numbers, because the guide's steps carry their own.
+- **Per-page title and description.** `head.ejs` takes optional `pageTitle`, `pageDescription` and
+  `pagePath` locals, passed in the page's `include()`. They set the title, description, Open Graph
+  and Twitter tags, and a canonical link. A page that passes none gets the home page's head, byte
+  for byte.
+- **Ways in.** A Learn link in the header (marked on every page under `/learn`), a Learn column in
+  the footer, and a link from the checklist's `?` help that opens the guide in a new tab, so the
+  form keeps its answers.
+- **The sample report** (`public/imgs/learn/dvir-sample.webp`) is the app's own
+  `generateDVIRPDF()` output, made in headless Chromium with made-up data (Unit 12, two defects) and
+  a drawn, made-up signature. It was rendered at 130 dpi, and the green markers (`--color-marker`)
+  were drawn with Pillow. Markers 1 to 7 match the guide's `learn__marker` numbers. If the steps,
+  the PDF template or `generateDVIRPDF()`'s layout change, remake the image.
+- **Content rules.** Quotes from 49 CFR are word for word and were checked against the rule text on
+  the guide's "Last reviewed" date. The CDL manual is paraphrased, never copied. The guide doesn't
+  call pretriq "FMCSA compliant". Each section names its source, the page ends with sources and a
+  not-legal-advice line, and Bobby approves the wording.
+- **Search engines.** `public/robots.txt` keeps crawlers out of the signed-in pages and points at
+  `public/sitemap.xml`. Add every new public page to the sitemap: `learn.test.js` fails if a
+  `/learn` route is missing from it.
 
 The `Counter` model holds a single global document (`name: 'inspectionCount'`) powering the public
 homepage count — it is not per-user.
@@ -441,7 +473,8 @@ or the browser can't parse the image.
 
 The one inline `<script>` is the JSON-LD block in `head.ejs`, allowed by a SHA-256 hash in
 `server.js`. **Editing that block — even its whitespace — invalidates the hash and silently blocks
-the structured data.** Regenerate with:
+the structured data.** `test/unit/views/learn.test.js` fails when the two drift apart. Regenerate
+with:
 
 ```bash
 node -e "const fs=require('fs'),c=require('crypto');const m=fs.readFileSync('views/partials/head.ejs','utf8').match(/<script type=\"application\/ld\+json\">([\s\S]*?)<\/script>/);console.log(\"'sha256-\"+c.createHash('sha256').update(m[1],'utf8').digest('base64')+\"'\")"

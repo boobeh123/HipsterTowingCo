@@ -8,6 +8,7 @@ const onboardController = require('../../../controllers/onboard');
 const passwordResetController = require('../../../controllers/reset');
 const privacyController = require('../../../controllers/privacy');
 const termController = require('../../../controllers/terms');
+const learnController = require('../../../controllers/learn');
 const inspectionController = require('../../../controllers/inspection');
 const dashboardController = require('../../../controllers/dashboard');
 const profileController = require('../../../controllers/profile');
@@ -44,6 +45,11 @@ jest.mock('../../../controllers/privacy', () => ({
 
 jest.mock('../../../controllers/terms', () => ({
   getTerms: jest.fn((req, res) => res.json({ message: 'Terms page' })),
+}));
+
+jest.mock('../../../controllers/learn', () => ({
+  getLearn:     jest.fn((req, res) => res.json({ message: 'Learn page' })),
+  getDvirGuide: jest.fn((req, res) => res.json({ message: 'DVIR guide' })),
 }));
 
 jest.mock('../../../controllers/inspection', () => ({
@@ -90,7 +96,7 @@ jest.mock('../../../middleware/auth', () => ({
   }),
 }));
 
-const { ensureAuthApi } = require('../../../middleware/auth');
+const { ensureAuth, ensureAuthApi } = require('../../../middleware/auth');
 
 describe('Main Routes', () => {
   let app;
@@ -306,6 +312,27 @@ describe('Main Routes', () => {
 
       expect(termController.getTerms).toHaveBeenCalledTimes(1);
       expect(response.body).toEqual({ message: 'Terms page' });
+    });
+  });
+
+  // The guides are public, so neither route sits behind ensureAuth
+  describe('GET /learn', () => {
+    it('should call learnController.getLearn and return 200', async () => {
+      const response = await request(app).get('/learn').expect(200);
+
+      expect(learnController.getLearn).toHaveBeenCalledTimes(1);
+      expect(ensureAuth).not.toHaveBeenCalled();
+      expect(response.body).toEqual({ message: 'Learn page' });
+    });
+  });
+
+  describe('GET /learn/dvir', () => {
+    it('should call learnController.getDvirGuide and return 200', async () => {
+      const response = await request(app).get('/learn/dvir').expect(200);
+
+      expect(learnController.getDvirGuide).toHaveBeenCalledTimes(1);
+      expect(ensureAuth).not.toHaveBeenCalled();
+      expect(response.body).toEqual({ message: 'DVIR guide' });
     });
   });
 

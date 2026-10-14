@@ -26,6 +26,7 @@
   --color-focus-ring: #185a9d;
   --color-error: #e53935;
   --color-error-text: #c62828; /* darker red for text: 5.6:1 on white, AA */
+  --color-marker: #2e7d32; /* the guide's numbered markers: white on it is 5.1:1, AA */
 
   --font-ui: "Roboto", system-ui, -apple-system, sans-serif;
   --font-brand: "Lato", var(--font-ui);
@@ -464,7 +465,30 @@ body.has-modal-open {
 }
 
 .site-header__nav {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.site-header__navLink {
+  padding: var(--space-2) 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.site-header__navLink:hover {
+  color: var(--color-focus-ring);
+}
+
+/* On every page under /learn */
+.site-header__navLink--active {
+  text-decoration: underline;
+  text-decoration-color: var(--color-primary);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35em;
 }
 
 .site-header__inner {
@@ -2320,7 +2344,8 @@ body.has-modal-open {
 }
 
 /**************************************************************
- * Legal document (privacy.ejs, terms-conditions.ejs)
+ * Legal document (privacy.ejs, terms.ejs), also the layout of
+ * the DVIR guide (learn/dvir.ejs)
  **************************************************************/
 .legalDoc {
   flex: 1;
@@ -2358,6 +2383,12 @@ body.has-modal-open {
 
 .legalDoc__tocList li + li {
   margin-top: var(--space-2);
+}
+
+/* Unnumbered, for a guide whose steps carry their own numbers */
+.legalDoc__tocList--plain {
+  padding-left: 0;
+  list-style: none;
 }
 
 .legalDoc__tocLink {
@@ -2569,6 +2600,204 @@ body.has-modal-open {
 }
 
 /**************************************************************
+ * Learn pages (learn/index.ejs, learn/dvir.ejs). The guide uses
+ * the legal document layout above; these are the extras.
+ **************************************************************/
+.learn__inner {
+  width: min(100% - var(--space-8), 48rem);
+  margin-inline: auto;
+}
+
+.learn__lead {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.learn__guides {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.learn__guide {
+  position: relative;
+  padding: var(--space-6);
+  background-color: #fff;
+  border: 1px solid var(--color-footer-border);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  transition: box-shadow 0.2s ease;
+}
+
+.learn__guide:hover {
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.18);
+}
+
+.learn__guideTitle {
+  margin: 0 0 var(--space-2);
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.learn__guideTitle a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+/* The whole card follows its title's link */
+.learn__guideTitle a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.learn__guide:hover .learn__guideTitle a {
+  color: var(--color-focus-ring);
+  text-decoration: underline;
+}
+
+.learn__guide p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.learn__guide .learn__guideMeta {
+  margin-top: var(--space-3);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.legalDoc__section .learn__source {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.learn__figure {
+  margin: var(--space-6) 0;
+}
+
+.learn__figureLink {
+  display: block;
+}
+
+.learn__figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background-color: #fff;
+  border: 1px solid var(--color-footer-border);
+  border-radius: var(--radius-sm);
+}
+
+.learn__caption {
+  margin-top: var(--space-2);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.learn__steps {
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  list-style: none;
+}
+
+.learn__step + .learn__step {
+  margin-top: var(--space-6);
+}
+
+.learn__stepTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--color-text);
+}
+
+.learn__step .learn__stepTitle {
+  margin-top: 0;
+}
+
+/* Matches the numbered markers on the sample report */
+.learn__marker {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background-color: var(--color-marker);
+  color: #fff;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.learn__tableWrap {
+  margin: 0 0 var(--space-4);
+  overflow-x: auto;
+}
+
+.learn__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.learn__table th,
+.learn__table td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-footer-border);
+}
+
+.learn__table thead th {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-bottom-width: 2px;
+}
+
+.learn__table tbody th {
+  font-weight: 500;
+}
+
+.learn__trailerBoxes {
+  display: block;
+  color: var(--color-text-muted);
+}
+
+.learn__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin: var(--space-4) 0 var(--space-8);
+  padding: var(--space-6);
+  background-color: var(--color-hero-slab-a);
+  border-radius: var(--radius-sm);
+}
+
+.learn__ctaText {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+/**************************************************************
  * Error pages (404.ejs & 500.ejs) 
  **************************************************************/
  .errorPage {
@@ -2630,7 +2859,7 @@ body.has-modal-open {
 * Media queries
 **************************************************************/
 
-/* 640px — logo size up, footer grid 2-col */
+/* 640px — logo size up, footer grid 3-col */
 @media (min-width: 640px) {
   .site-header__logo {
     width: 3.25rem;
@@ -2638,7 +2867,7 @@ body.has-modal-open {
   }
 
   .site-footer__inner {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     align-items: start;
   }
 }

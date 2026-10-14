@@ -1,0 +1,209 @@
+<%- include('../partials/head.ejs', {
+    pageTitle: 'How to Fill Out a DVIR - Pretriq',
+    pageDescription: 'A step-by-step guide to the driver vehicle inspection report: which boxes to tick, what to write, who signs, and what the federal rules (49 CFR 396.11) require.',
+    pagePath: '/learn/dvir',
+}) %>
+<%- include('../partials/header.ejs') %>
+
+<%# The guide reuses the legal pages' layout (legalDoc in style.css). The numbered markers on the
+    sample report (public/imgs/learn/dvir-sample.webp) match the learn__marker numbers below, so if
+    the steps change, remake the image too. Quotes from 49 CFR were checked against the rule text on
+    the "Last reviewed" date. %>
+<% const truckLabels = dvirChecklist.labelsFor('truckTractor'); %>
+<% const trailerLabels = dvirChecklist.labelsFor('trailer'); %>
+
+<main id="main-content" class="legalDoc" tabindex="-1" aria-labelledby="legalDoc-title">
+
+    <div class="legalDoc__inner">
+
+        <!-- Sidebar TOC -->
+        <aside class="legalDoc__toc" aria-label="Table of contents">
+            <p class="legalDoc__tocLabel">On this page</p>
+            <nav aria-label="Guide sections">
+                <ul class="legalDoc__tocList legalDoc__tocList--plain">
+                    <li><a href="#when" class="legalDoc__tocLink">When you need a DVIR</a></li>
+                    <li><a href="#form" class="legalDoc__tocLink">Filling out the form</a></li>
+                    <li><a href="#after" class="legalDoc__tocLink">After you hand it in</a></li>
+                    <li><a href="#items" class="legalDoc__tocLink">The 11 items every report covers</a></li>
+                    <li><a href="#mistakes" class="legalDoc__tocLink">Common mistakes</a></li>
+                    <li><a href="#electronic" class="legalDoc__tocLink">Paper or electronic</a></li>
+                    <li><a href="#sources" class="legalDoc__tocLink">Sources</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Guide body -->
+        <div class="legalDoc__body">
+
+            <header class="legalDoc__header">
+                <p class="legalDoc__eyebrow">Guide</p>
+                <h1 id="legalDoc-title" class="legalDoc__title">How to fill out a DVIR</h1>
+                <p class="legalDoc__meta">Last reviewed <time datetime="2026-10-13">October 13, 2026</time> · About a 5-minute read</p>
+            </header>
+
+            <div class="legalDoc__intro">
+                <p>A DVIR (driver vehicle inspection report) is how you tell your company what's wrong with a truck, and how your company shows it was fixed before anyone drove it again.</p>
+                <p>This guide goes through pretriq's report from top to bottom, then follows it to the shop and on to the next driver. The federal rules behind each step are cited as you go.</p>
+            </div>
+
+            <div class="legalDoc__summary">
+                <h2 class="legalDoc__summaryTitle">In short</h2>
+                <dl class="legalDoc__summaryList">
+                    <div class="legalDoc__summaryItem">
+                        <dt>When do I need one?</dt>
+                        <dd>At the end of your day, for each truck you drove, when you found a defect or someone told you about one. Many companies want one every day anyway.</dd>
+                    </div>
+                    <div class="legalDoc__summaryItem">
+                        <dt>What goes on it?</dt>
+                        <dd>Which truck it is, a tick for each item with a defect, a description of each defect, and your signature.</dd>
+                    </div>
+                    <div class="legalDoc__summaryItem">
+                        <dt>Who signs it?</dt>
+                        <dd>You do. If it lists defects, the mechanic signs once they're fixed or found not to need fixing, and the next driver signs before driving the truck.</dd>
+                    </div>
+                    <div class="legalDoc__summaryItem">
+                        <dt>How long is it kept?</dt>
+                        <dd>Your company keeps it for 3 months.</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <section id="when" class="legalDoc__section" aria-labelledby="when-heading">
+                <h2 id="when-heading" class="legalDoc__sectionHeading">When you need a DVIR</h2>
+                <p>The federal rule asks for a written report “at the completion of each day's work on each vehicle operated.” Drove two trucks today? That's two reports.</p>
+                <p>You need one when you found a defect, or someone told you about one, that “would affect the safety of operation of the vehicle or result in its mechanical breakdown.” Found nothing, and nobody reported anything? Then the federal rule doesn't require a report.</p>
+                <p class="legalDoc__inShort">Many companies want a report every day, defects or not. If yours does, follow your company's rule.</p>
+                <p>The rule doesn't apply to a company that runs only one commercial motor vehicle, to driveaway-towaway operations, or to nonbusiness private passenger carriers. Your state can add rules of its own.</p>
+                <p class="learn__source">Source: 49 CFR 396.11(a)(1), (a)(2) and (a)(5)</p>
+            </section>
+
+            <section id="form" class="legalDoc__section" aria-labelledby="form-heading">
+                <h2 id="form-heading" class="legalDoc__sectionHeading">Filling out the form</h2>
+                <p>Here's a sample report made with pretriq, for a box truck with two defects. The numbers on it match the steps below.</p>
+
+                <figure class="learn__figure">
+                    <a href="/imgs/learn/dvir-sample.webp" class="learn__figureLink">
+                        <img src="/imgs/learn/dvir-sample.webp" alt="A sample report for Unit 12 with Lights and Windshield Wipers ticked, both defects described under Remarks, and the driver's signature. Markers 1 to 7 label the parts described below." width="1105" height="1397" loading="lazy" />
+                    </a>
+                    <figcaption class="learn__caption">A sample report. Tap it to see it full size.</figcaption>
+                </figure>
+
+                <ol class="learn__steps" role="list">
+                    <li class="learn__step">
+                        <h3 class="learn__stepTitle"><span class="learn__marker">1</span> Date and truck number</h3>
+                        <p>pretriq fills in today's date. Under Truck / Tractor No., enter your company's unit number for the truck, or its license plate if it has none. The rule says the report “must identify the vehicle,” and the USDOT number can't: every truck in the company shares it.</p>
+                    </li>
+                    <li class="learn__step">
+                        <h3 class="learn__stepTitle"><span class="learn__marker">2</span> Truck / Tractor Defects</h3>
+                        <p>Tick only the items with a defect. A tick means “this has a problem,” not “I checked this.”</p>
+                        <p>Not sure what counts as a defect? Tap the ? beside a box on the form. A parking brake problem goes under Brakes, and a defect with no box of its own goes under Other.</p>
+                    </li>
+                    <li class="learn__step">
+                        <h3 class="learn__stepTitle"><span class="learn__marker">3</span> Trailer(s) Defects</h3>
+                        <p>Pulling a trailer? Enter its number and tick its defects the same way. No trailer? Leave this section blank.</p>
+                    </li>
+                    <li class="learn__step">
+                        <h3 class="learn__stepTitle"><span class="learn__marker">4</span> Remarks</h3>
+                        <p>For each box you ticked, say where the defect is, what's wrong and how bad, so the mechanic can find it without calling you. Write “Lights: left rear brake light out,” not “lights.”</p>
+                        <p>List defects that someone told you about, too. The rule covers any defect “discovered by or reported to the driver.”</p>
+                    </li>
+                    <li class="learn__step">
+                        <h3 class="learn__stepTitle"><span class="learn__marker">5</span> Condition and your signature</h3>
+                        <p>Found no defects? Tick “Condition of the above vehicle is satisfactory.” Found some? Leave it unticked.</p>
+                        <p>Then sign the driver's line, on screen with your finger or on the printed copy. Driving as a team? One of you signs, as long as you both agree on the defects.</p>
+                    </li>
+                </ol>
+
+                <p>When you're done, tap <strong>Generate</strong> (<strong>Generate &amp; Save</strong> if you're logged in), then download or view the PDF. Hand it in the way your company wants it.</p>
+                <p class="learn__source">Source: 49 CFR 396.11(a)(2)</p>
+            </section>
+
+            <section id="after" class="legalDoc__section" aria-labelledby="after-heading">
+                <h2 id="after-heading" class="legalDoc__sectionHeading">After you hand it in</h2>
+                <p>A report that lists defects needs two more signatures before the truck goes out again. Markers 6 and 7 on the sample show where.</p>
+
+                <h3 class="learn__stepTitle"><span class="learn__marker">6</span> The mechanic</h3>
+                <p>Your company repairs any defect that would affect safety before anyone drives the truck. Then whoever handled it ticks <strong>Above Defects Corrected</strong> or <strong>Above Defects Need NOT Be Corrected For Safe Operation Of Vehicle</strong>, and signs and dates the report.</p>
+                <p>That's the company certifying that each defect “has been repaired or that repair is unnecessary before the vehicle is operated again.”</p>
+
+                <h3 class="learn__stepTitle"><span class="learn__marker">7</span> The next driver</h3>
+                <p>Before driving, the next driver reads the report and signs the last line, to show they reviewed it and that the repairs were certified. That can be you, on a later day.</p>
+                <p>They still do their own pre-trip: before driving, a driver must “be satisfied that the motor vehicle is in safe operating condition.”</p>
+
+                <h3 class="learn__stepTitle">Keeping it</h3>
+                <p>Your company keeps the report, the repair certification and the next driver's signature for 3 months from the day you wrote it.</p>
+                <p class="legalDoc__inShort">pretriq can't reopen a saved report yet. If the repair happens later, print the PDF, and the mechanic and the next driver sign the paper copy.</p>
+                <p class="learn__source">Source: 49 CFR 396.11(a)(3) and (a)(4), and 396.13</p>
+            </section>
+
+            <section id="items" class="legalDoc__section" aria-labelledby="items-heading">
+                <h2 id="items-heading" class="legalDoc__sectionHeading">The 11 items every report covers</h2>
+                <p>The rule names 11 parts and accessories every report must cover. Each one has a box on the form, though not always under the same name.</p>
+                <div class="learn__tableWrap">
+                    <table class="learn__table">
+                        <caption class="sr-only">The 11 items in 49 CFR 396.11(a)(1), and the boxes on pretriq's form that cover them</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">The rule says</th>
+                                <th scope="col">Tick this box</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% dvirChecklist.REQUIRED_ITEMS.forEach((item) => { %>
+                                <tr>
+                                    <th scope="row"><%= item.rule %></th>
+                                    <td>
+                                        <%= item.truckTractor.map((key) => truckLabels[key]).join(', ') %>
+                                        <% if (item.trailer) { %><span class="learn__trailerBoxes">Trailer: <%= item.trailer.map((key) => trailerLabels[key]).join(', ') %></span><% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+                <p>The other boxes, like Battery, Engine and Oil Pressure, aren't named in the rule. A defect there still goes on the report if it would affect safety or lead to a breakdown.</p>
+                <p class="learn__source">Source: 49 CFR 396.11(a)(1) and (a)(2)</p>
+            </section>
+
+            <section id="mistakes" class="legalDoc__section" aria-labelledby="mistakes-heading">
+                <h2 id="mistakes-heading" class="legalDoc__sectionHeading">Common mistakes</h2>
+                <ul class="legalDoc__list">
+                    <li><strong>Writing the USDOT number as the truck number.</strong> It names the company, not the truck. Use the unit number or the plate.</li>
+                    <li><strong>Ticking every box you checked.</strong> A tick means a defect. A report with every box ticked says the truck is falling apart.</li>
+                    <li><strong>Ticking a box with no remark.</strong> The mechanic needs to know where and what. Every tick gets a line under Remarks.</li>
+                    <li><strong>Ticking “satisfactory” on a report with defects.</strong> Tick it only when you found nothing.</li>
+                    <li><strong>Leaving out a defect someone told you about.</strong> If another driver or dispatch mentions one, it goes on your report.</li>
+                    <li><strong>Signing the next driver's line yourself.</strong> It's for whoever drives the truck next, after the repairs are certified. That can be you on a later day, never in the same sitting.</li>
+                    <li><strong>Skipping a small defect.</strong> A brake light that's out is small, and it still affects safety. If a defect would, it goes on the report.</li>
+                </ul>
+            </section>
+
+            <section id="electronic" class="legalDoc__section" aria-labelledby="electronic-heading">
+                <h2 id="electronic-heading" class="legalDoc__sectionHeading">Paper or electronic</h2>
+                <p>Since March 23, 2026, the federal rule says a DVIR “may be created and maintained in electronic format,” following 49 CFR 390.32, the rule for electronic documents and signatures.</p>
+                <p>pretriq makes a PDF you can print, download or share, and saves the report to your dashboard if you're logged in. Your company decides whether it takes reports on paper, as a PDF or in its own system, so ask before you switch.</p>
+                <p class="learn__source">Source: 49 CFR 396.11(a)(6) and 396.13(d)</p>
+            </section>
+
+            <div class="learn__cta">
+                <p class="learn__ctaText">Ready to fill one out? Tap <strong>Start pretrip</strong> on the home page.</p>
+                <a href="/" class="btn btn--primary">Go to the home page</a>
+            </div>
+
+            <section id="sources" class="legalDoc__section" aria-labelledby="sources-heading">
+                <h2 id="sources-heading" class="legalDoc__sectionHeading">Sources</h2>
+                <ul class="legalDoc__list">
+                    <li><a href="https://www.ecfr.gov/current/title-49/section-396.11">49 CFR 396.11, Driver vehicle inspection report(s)</a></li>
+                    <li><a href="https://www.ecfr.gov/current/title-49/section-396.13">49 CFR 396.13, Driver inspection</a></li>
+                    <li><a href="https://www.ecfr.gov/current/title-49/section-390.32">49 CFR 390.32, Electronic documents and signatures</a></li>
+                    <li><a href="https://www.federalregister.gov/documents/2026/02/19/2026-03264/electronic-driver-vehicle-inspection-reports">Electronic Driver Vehicle Inspection Reports, 91 FR 7893 (February 19, 2026)</a></li>
+                </ul>
+                <p class="legalDoc__legalBlock">This guide explains the federal rules in plain words. It isn't legal advice, and it doesn't replace your training, your state's CDL manual or your company's policy.</p>
+            </section>
+
+        </div>
+    </div>
+
+</main>
+
+<%- include('../partials/footer.ejs') %>
