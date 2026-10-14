@@ -1298,18 +1298,24 @@ body.has-modal-open {
 }
 
 .inspection-card__body {
-  padding: var(--space-4);
+  padding: 0 var(--space-4) var(--space-4);
   font-size: 0.875rem;
   line-height: 1.5;
 }
 
+/* The title and Close stay in view while a long card scrolls (the dialog is
+   the scroll container); the head carries the body's top padding for that */
 .inspection-card__head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
   margin-bottom: var(--space-3);
-  padding-bottom: var(--space-2);
+  padding: var(--space-4) 0 var(--space-2);
+  background-color: var(--color-modal-input-bg);
   border-bottom: 2px solid var(--color-text);
 }
 
@@ -1366,12 +1372,34 @@ body.has-modal-open {
   margin-top: var(--space-1);
 }
 
+/* A note's photos: stacked, or two portrait ones side by side */
+.inspection-card__photos {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-3);
+}
+
+.inspection-card__photos--pair {
+  grid-template-columns: 1fr 1fr;
+}
+
+.inspection-card__figure {
+  margin: 0;
+}
+
 .inspection-card__photo {
   display: block;
   width: 100%;
   height: auto;
-  margin-bottom: var(--space-3);
+  background-color: var(--color-modal-surface-2);
   border-radius: var(--radius-sm);
+}
+
+.inspection-card__caption {
+  margin-top: var(--space-1);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--color-text-muted);
 }
 
 /**************************************************************

@@ -119,16 +119,34 @@ describe('checklistNote.ejs', () => {
 
   const note = { where: 'Under the hood.', check: ['It works.'] };
 
-  // The photo slot stays out of the card until a note has a photo
-  it('should show a photo only when the note has one', async () => {
-    const without = await ejs.renderFile(NOTE_VIEW, { noteId: 'note-x', item: { label: 'Battery', note } });
-    const withPhoto = await ejs.renderFile(NOTE_VIEW, {
-      noteId: 'note-x',
-      item: { label: 'Battery', note: { ...note, photo: { src: '/imgs/notes/battery.webp', alt: 'Battery under the hood', width: 800, height: 600 } } },
-    });
+  const renderNote = (photos) => ejs.renderFile(NOTE_VIEW, { noteId: 'note-x', item: { label: 'Battery', note: { ...note, photos } } });
+  const landscape = { src: '/imgs/notes/battery.webp', alt: 'Battery under the hood', caption: 'The battery.', width: 960, height: 720 };
+  const portrait = (name) => ({ src: `/imgs/notes/${name}.webp`, alt: name, caption: `${name}.`, width: 600, height: 700 });
+
+  // The photo row stays out of the card until a note has a photo
+  it('should show photos only when the note has some', async () => {
+    const without = await renderNote(undefined);
 
     expect(without).not.toContain('<img');
-    expect(withPhoto).toContain('<img class="inspection-card__photo" src="/imgs/notes/battery.webp" alt="Battery under the hood" width="800" height="600" loading="lazy" />');
+    expect(without).not.toContain('inspection-card__photos');
+  });
+
+  it('should show a photo with its size, alt text and caption, loaded lazily', async () => {
+    const card = await renderNote([landscape]);
+
+    expect(card).toContain('<img class="inspection-card__photo" src="/imgs/notes/battery.webp" alt="Battery under the hood" width="960" height="720" loading="lazy" />');
+    expect(card).toContain('<figcaption class="inspection-card__caption">The battery.</figcaption>');
+    expect(card).toContain('<div class="inspection-card__photos">');
+  });
+
+  // Two portrait photos, such as a before and after, sit side by side
+  it('should set two portrait photos side by side, and stack anything else', async () => {
+    const pair = await renderNote([portrait('before'), portrait('after')]);
+    const mixed = await renderNote([portrait('before'), landscape]);
+
+    expect(pair).toContain('<div class="inspection-card__photos inspection-card__photos--pair">');
+    expect(pair.indexOf('before.webp')).toBeLessThan(pair.indexOf('after.webp'));
+    expect(mixed).not.toContain('inspection-card__photos--pair');
   });
 
   it('should escape note text', async () => {

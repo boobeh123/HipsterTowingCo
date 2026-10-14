@@ -152,6 +152,8 @@ function openChecklistNote(button) {
     const card = form && form.querySelector(`#${button.getAttribute('aria-controls')}`);
     if (card && !card.open) {
         card.showModal();
+        // A long card keeps its scroll position when closed; start at the top
+        card.scrollTop = 0;
     }
 }
 

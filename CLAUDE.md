@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 363 passed, 23 suites, 0 failures
+### Expected test baseline: 366 passed, 23 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -349,21 +349,33 @@ The 48 checklist items live only in `utils/dvirChecklist.js`, keyed like the sch
   `views/partials/checklistSection.ejs` builds a section's checkboxes, and gives each item that
   has a `note` a `?` (`.inspection-check__help`, a different class from the help buttons above).
 - **Note fields.** `applies`, `where`, `check` (each line is something that should be true),
-  `more`, `remark`, `source`, and `photo` (`{ src, alt, width, height }`).
+  `more`, `remark`, `source`, and `photos`: one to three `{ src, width, height, alt, caption }`.
 - **Cards.** `checklistNote.ejs` renders each note as a `<dialog class="inspection-card">`.
   `openChecklistNote()` in main.js shows it with `showModal()`.
   - The card closes with its Close button, with Escape, or with a click whose target is the
     `<dialog>` itself (the dimmed area: the dialog has no padding of its own).
   - The form's Escape handler skips while a card is open (`checklistNoteOpen()`). Otherwise one
     Escape would close the form and wipe it.
+  - A long card scrolls inside the dialog, and its title and Close stay pinned at the top
+    (`position: sticky`). It always opens scrolled to the top.
 - **What has notes so far.** Every truck box except Air Compressor, Air Lines, Brake Accessories
   and Fifth Wheel: 30 notes in all. They were written from the CDL manual (sections 2 and 11, in
   our own words; the base is Oregon's online manual) and 49 CFR. The missing four and all the
   trailer boxes wait for a reviewer with a Class A license. Someone with a CDL reviews every note's
   wording before it ships.
-- **Photos.** Resize them and strip their location data (EXIF) before they go into the public
-  repo. Blur plates, company names and USDOT numbers unless Bobby wants them shown. Give real
-  `width`/`height`.
+- **Photos.** Bobby's photos of a real box truck live in `public/imgs/notes/`. 13 notes have them,
+  17 files in all. The dash photo appears twice: in Oil Pressure for the gauges, and in Lights for
+  the blue high-beam light. Bobby edited two photos by hand: the dash, and the rear view (door and
+  surroundings covered). Keep those versions.
+  - **Format:** lossy WebP with no metadata, 960px wide (600px for one of a portrait pair).
+  - **Layout:** two portrait photos sit side by side; anything else stacks.
+  - **Loading:** they're `loading="lazy"` inside closed dialogs, so a photo downloads only when its
+    card opens.
+  - **Privacy:** before a photo goes into the public repo, crop or blur the plate and the
+    employer's name, phone number and website, unless Bobby says otherwise. Strip all metadata.
+  - **Tests:** `dvirChecklist.test.js` reads each file's WebP header. It checks that the file
+    exists, that its size matches the note's `width`/`height` (which go on the `<img>`), that it
+    carries no EXIF or XMP chunk, and that the folder holds no unused files.
 - **Adding a checklist item.** Change the schema, its column in `dvirChecklist.js`, and the
   `xMark()` coordinates for its box in `generateDVIRPDF()`.
 
