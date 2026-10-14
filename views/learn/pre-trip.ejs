@@ -1,0 +1,265 @@
+<%- include('../partials/head.ejs', {
+    pageTitle: 'How to Do a Pre-Trip Inspection - Pretriq',
+    pageDescription: "The CDL manual's seven-step pre-trip inspection for trucks with hydraulic brakes, with the DVIR boxes each step covers and the checks that are easy to miss.",
+    pagePath: '/learn/pre-trip',
+}) %>
+<%- include('../partials/header.ejs') %>
+
+<%# The guide uses the same layout as learn/dvir.ejs. The seven steps are the CDL manual's (section 2), in our
+    own words, and each step shows the notes for the boxes it covers (dvirChecklist.INSPECTION_STEPS, through
+    partials/learnBoxes.ejs). "How one box-truck driver does it" is Bobby's routine word for word: change it
+    only with Bobby's say-so, and put anything the manual or the rules add in a note under the step. Quotes
+    from 49 CFR were checked against the rule text on the "Last reviewed" date. %>
+
+<main id="main-content" class="legalDoc" tabindex="-1" aria-labelledby="legalDoc-title">
+
+    <div class="legalDoc__inner">
+
+        <!-- Sidebar TOC -->
+        <aside class="legalDoc__toc" aria-label="Table of contents">
+            <p class="legalDoc__tocLabel">On this page</p>
+            <nav aria-label="Guide sections">
+                <ul class="legalDoc__tocList legalDoc__tocList--plain">
+                    <li><a href="#rules" class="legalDoc__tocLink">Before you drive</a></li>
+                    <li><a href="#missed" class="legalDoc__tocLink">Easy to miss</a></li>
+                    <li><a href="#steps" class="legalDoc__tocLink">The seven steps</a></li>
+                    <li><a href="#routine" class="legalDoc__tocLink">How one box-truck driver does it</a></li>
+                    <li><a href="#defects" class="legalDoc__tocLink">If you find a defect</a></li>
+                    <li><a href="#sources" class="legalDoc__tocLink">Sources</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Guide body -->
+        <div class="legalDoc__body">
+
+            <header class="legalDoc__header">
+                <p class="legalDoc__eyebrow">Guide</p>
+                <h1 id="legalDoc-title" class="legalDoc__title">How to do a pre-trip inspection</h1>
+                <p class="legalDoc__meta">Last reviewed <time datetime="2026-10-13">October 13, 2026</time> · About a 10-minute read</p>
+            </header>
+
+            <div class="legalDoc__intro">
+                <p>A pre-trip inspection is the check you do before you drive, to make sure the truck is safe.</p>
+                <p>This guide is for drivers who already have a routine. It starts with what the rules require and the checks that are easy to miss, then goes through the CDL manual's full inspection step by step, with the DVIR boxes each step covers.</p>
+            </div>
+
+            <div class="legalDoc__summary">
+                <h2 class="legalDoc__summaryTitle">In short</h2>
+                <dl class="legalDoc__summaryList">
+                    <div class="legalDoc__summaryItem">
+                        <dt>Why do one?</dt>
+                        <dd>Before you drive, the rules say you must be satisfied the truck is safe, including 11 parts they name: brakes, steering, lights, tires and the rest.</dd>
+                    </div>
+                    <div class="legalDoc__summaryItem">
+                        <dt>How do I do it?</dt>
+                        <dd>The same seven steps every time: look the truck over, check under the hood, start it and check the cab, set up the lights, walk around, check the signals, and test the brakes.</dd>
+                    </div>
+                    <div class="legalDoc__summaryItem">
+                        <dt>What if I find a defect?</dt>
+                        <dd>Don't drive the truck until it's fixed. Tell your company, and write it up.</dd>
+                    </div>
+                    <div class="legalDoc__summaryItem">
+                        <dt>Which trucks does this cover?</dt>
+                        <dd>Trucks with hydraulic brakes and no trailer, like most box trucks. Air brakes and trailers aren't covered yet.</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <section id="rules" class="legalDoc__section" aria-labelledby="rules-heading">
+                <h2 id="rules-heading" class="legalDoc__sectionHeading">Before you drive</h2>
+                <p>Two federal rules apply before every trip:</p>
+                <ul class="legalDoc__list">
+                    <li>You must “be satisfied that the motor vehicle is in safe operating condition,” and review the last DVIR if one was required.</li>
+                    <li>You can't drive until you're satisfied that 11 parts and accessories are “in good working order”: service brakes, parking brake, steering, lights and reflectors, tires, horn, wipers, mirrors, coupling devices, wheels and rims, and emergency equipment.</li>
+                </ul>
+                <p>Those are the same 11 items every DVIR covers. <a href="/learn/dvir#items">How to fill out a DVIR</a> shows which box each one goes in.</p>
+                <p>A pre-trip inspection is how you get there. Doing it in the same order every time is what keeps you from skipping something.</p>
+                <p class="legalDoc__inShort">This guide covers trucks with hydraulic brakes and no trailer, like most box trucks. Air brakes and trailers add more checks, and aren't covered yet.</p>
+                <p class="learn__source">Source: 49 CFR 396.13 and 392.7(a)</p>
+            </section>
+
+            <section id="missed" class="legalDoc__section" aria-labelledby="missed-heading">
+                <h2 id="missed-heading" class="legalDoc__sectionHeading">Easy to miss</h2>
+                <p>If you already have a routine, make sure it covers these. Each one is quick, easy to skip, and required.</p>
+                <ul class="legalDoc__list">
+                    <li><strong>The parking brake.</strong> Set it, put the truck in a low gear and pull forward gently: it should hold the truck. (<a href="#step-7">Step 7</a>)</li>
+                    <li><strong>Tire pressure and front tread.</strong> Kicking a tire only finds a flat, so use a gauge. A penny shows 2/32 inch of tread, which is only enough for the rear tires: front tires need 4/32 inch. (<a href="#step-5">Step 5</a>)</li>
+                    <li><strong>Lug nuts.</strong> Look for missing nuts on every wheel, and for rust streaks running from a nut, which can mean it's loose. (<a href="#step-5">Step 5</a>)</li>
+                    <li><strong>Steering free play.</strong> More than about 2 inches at the rim of a 20-inch wheel is too much. (<a href="#step-3">Step 3</a>)</li>
+                    <li><strong>Emergency equipment.</strong> A charged fire extinguisher, three reflective warning triangles, and spare fuses unless the truck uses circuit breakers. (<a href="#step-3">Step 3</a>)</li>
+                    <li><strong>The lights you can't see from the seat.</strong> Brake lights, clearance and marker lights, and the reflectors. (<a href="#step-5">Step 5</a>, <a href="#step-6">step 6</a>)</li>
+                    <li><strong>The last DVIR.</strong> If it listed defects, check the repairs were certified, and sign it before you drive. (<a href="#step-1">Step 1</a>)</li>
+                </ul>
+            </section>
+
+            <section id="steps" class="legalDoc__section" aria-labelledby="steps-heading">
+                <h2 id="steps-heading" class="legalDoc__sectionHeading">The seven steps</h2>
+                <p>The steps follow the seven-step method in section 2 of the CDL manual (Oregon's online edition is linked under Sources), in our own words. Under each step, the boxes it covers open to the same notes as the ? buttons on the form.</p>
+                <ol class="legalDoc__list">
+                    <li><a href="#step-1">Look the truck over</a></li>
+                    <li><a href="#step-2">Check under the hood</a></li>
+                    <li><a href="#step-3">Start the engine and check the cab</a></li>
+                    <li><a href="#step-4">Engine off, lights on</a></li>
+                    <li><a href="#step-5">Walk around the truck</a></li>
+                    <li><a href="#step-6">Check the signal and brake lights</a></li>
+                    <li><a href="#step-7">Test the brakes</a></li>
+                </ol>
+            </section>
+
+            <section id="step-1" class="legalDoc__section" aria-labelledby="step-1-heading">
+                <h2 id="step-1-heading" class="legalDoc__sectionHeading"><span class="learn__marker">1</span> Look the truck over</h2>
+                <p>Walk up to the truck and take it in as a whole. Is it leaning to one side, or damaged? Look underneath for fresh drips of oil, coolant, grease or fuel, and around it for anything in your way: people, other vehicles, low wires or branches.</p>
+                <p>Then read the last DVIR. If it listed defects, check that they were certified as repaired or not needing repair, and sign it. <a href="/learn/dvir#after">How to fill out a DVIR</a> covers that line.</p>
+            </section>
+
+            <section id="step-2" class="legalDoc__section" aria-labelledby="step-2-heading">
+                <h2 id="step-2-heading" class="legalDoc__sectionHeading"><span class="learn__marker">2</span> Check under the hood</h2>
+                <p>Make sure the parking brake is on, or the wheels are chocked, before you open the hood (or tilt the cab).</p>
+                <p>Check the fluid levels: engine oil, coolant, power steering fluid, washer fluid, brake fluid and, if the truck has a dipstick for it, automatic transmission fluid. Look over the belts, hoses and wiring, and look for leaks anywhere in the engine bay. Then close the hood and make sure it latches.</p>
+                <p>The power steering, washer and brake fluid checks are in the Steering, Windshield Wipers and Brakes notes, under steps 3 and 7.</p>
+                <%- include('../partials/learnBoxes', { step: 2 }) %>
+            </section>
+
+            <section id="step-3" class="legalDoc__section" aria-labelledby="step-3-heading">
+                <h2 id="step-3-heading" class="legalDoc__sectionHeading"><span class="learn__marker">3</span> Start the engine and check the cab</h2>
+                <p>With the parking brake on and the gearshift in neutral (or park), start the engine and listen for anything unusual.</p>
+                <p>Watch the gauges and warning lights settle: the oil pressure comes up to normal within seconds, the voltmeter reads normal, the coolant temperature starts rising slowly, and the warning lights, ABS included, go out.</p>
+                <p>Then go through the controls for anything loose, sticking or damaged: the steering wheel, pedals, gearshift, parking brake, horn, wipers and washer, heater and defroster, and the light switches. Check that the mirrors and windshield are clean, not cracked and clear of anything that blocks your view, that the emergency equipment is on board, and that your seat belt latches.</p>
+                <%- include('../partials/learnBoxes', { step: 3 }) %>
+            </section>
+
+            <section id="step-4" class="legalDoc__section" aria-labelledby="step-4-heading">
+                <h2 id="step-4-heading" class="legalDoc__sectionHeading"><span class="learn__marker">4</span> Engine off, lights on</h2>
+                <p>Set the parking brake, turn the engine off and take the key with you. Turn on the low beams and the four-way flashers, and get out.</p>
+            </section>
+
+            <section id="step-5" class="legalDoc__section" aria-labelledby="step-5-heading">
+                <h2 id="step-5-heading" class="legalDoc__sectionHeading"><span class="learn__marker">5</span> Walk around the truck</h2>
+                <p>At the front, check that the low beams and both front flashers work, then switch to high beams and check those. Turn off the headlights and flashers, turn on the clearance and marker lights and the right turn signal, and start walking.</p>
+                <p>Go around in the same order every time: left front, front, right side, right rear, back, left side. Wipe the lights, reflectors and glass as you go.</p>
+                <ul class="legalDoc__list">
+                    <li><strong>At each wheel:</strong> the tire, the wheel and its lug nuts, the springs and shocks, and the brake hoses behind it.</li>
+                    <li><strong>At the front:</strong> the axle, the steering parts (grab them and feel for looseness), the windshield and wiper arms, the lights, and the amber reflectors.</li>
+                    <li><strong>Along each side:</strong> the fuel tank, the exhaust, the frame, the drive shaft and the wiring, plus the battery box if it's mounted outside.</li>
+                    <li><strong>At the back:</strong> the tail, brake, turn and clearance lights, the red reflectors, the license plate, the mud flaps, and the cargo door: closed and latched, with the load secured.</li>
+                </ul>
+                <%- include('../partials/learnBoxes', { step: 5 }) %>
+            </section>
+
+            <section id="step-6" class="legalDoc__section" aria-labelledby="step-6-heading">
+                <h2 id="step-6-heading" class="legalDoc__sectionHeading"><span class="learn__marker">6</span> Check the signal and brake lights</h2>
+                <p>Get back in, turn off all the lights, then turn on the left turn signal. Get out and check the left turn signals, front and back. For the brake lights, have someone press the pedal, or press it yourself and watch their reflection on a wall or vehicle behind you.</p>
+                <p>Back in the cab, turn off the lights you don't need, make sure the paperwork you need is on board, and stow anything loose so it can't slide under a pedal. Then start the engine.</p>
+            </section>
+
+            <section id="step-7" class="legalDoc__section" aria-labelledby="step-7-heading">
+                <h2 id="step-7-heading" class="legalDoc__sectionHeading"><span class="learn__marker">7</span> Test the brakes</h2>
+                <p>Pump the brake pedal three times, then press it firmly and hold for five seconds. The pedal shouldn't move. If it sinks, there may be a leak: get it fixed before you drive.</p>
+                <p>Fasten your seat belt. With the parking brake set, put the truck in a low gear and pull forward gently: the parking brake should hold it. Then drive forward at about 5 mph and brake firmly. The truck should stop straight, without pulling to one side, and the pedal should feel normal.</p>
+                <p>Trucks with air brakes have their own checks, in the manual's air brakes sections. This guide doesn't cover them yet.</p>
+                <%- include('../partials/learnBoxes', { step: 7 }) %>
+            </section>
+
+            <section id="routine" class="legalDoc__section" aria-labelledby="routine-heading">
+                <h2 id="routine-heading" class="legalDoc__sectionHeading">How one box-truck driver does it</h2>
+                <p>The driver who built pretriq drives a gasoline Chevy box truck with hydraulic brakes and no trailer. This is that driver's own routine, word for word. It's shorter than the manual's inspection, so where the manual or the rules ask for more, a note says so.</p>
+                <div class="learn__routine">
+                    <p class="learn__routineStart">Start outside the vehicle:</p>
+                    <ol class="learn__routineSteps">
+                        <li>
+                            <p>Wipe both driver &amp; passenger side mirrors with microfiber cloth &amp; ammonia-free glass cleaner spray</p>
+                        </li>
+                        <li>
+                            <p>Kick all 4 tires to check for air pressure (daily) &amp; check tire tread (using a US coin). Visually inspect for punctures. When kicking the tires, my boot should bounce off the rubber. If my boot sinks into the tire, it must be filled up with air. For the tire tread, I believe the saying is: "Use a penny and if the tire tread covers Lincoln's hat, then you're okay"</p>
+                            <p class="learn__routineNote"><strong>Note:</strong> A kick finds a flat tire, not low pressure, so check the pressure with a gauge against the sticker in the driver's door jamb while the tires are cold. The penny test goes by the top of Lincoln's head (there's no hat on a penny) and shows 2/32 inch of tread: enough for the rear tires only. Front tires need 4/32 inch, so use a quarter (Washington's head) or a tread depth gauge. More under Tires, in <a href="#step-5">step 5</a>.</p>
+                        </li>
+                        <li>
+                            <p>I tighten the gas cap</p>
+                        </li>
+                        <li>
+                            <p>I look underneath the vehicle for fractures in the metal/frame. Debris that are wrapped underneath. Check safety tag expiration (might be Hawaii only)</p>
+                            <p class="learn__routineNote"><strong>Note:</strong> Not just Hawaii. Every commercial motor vehicle needs an inspection at least once every 12 months, with proof on the vehicle, such as a sticker or decal (49 CFR 396.17). Your state may have its own inspection too.</p>
+                        </li>
+                        <li>
+                            <p>Inspect doors/floor. I open driver/passenger door and remove and debri/obstruction on the steps of the door or floor</p>
+                        </li>
+                        <li>
+                            <p>Check lights - left+right signal/blinker front &amp; back, left+right hazard front &amp; back, high beams, automatic/manual on/off light switch</p>
+                        </li>
+                        <li>
+                            <p>Use windshield wiper/fluid to increase visibility on front windshield</p>
+                        </li>
+                        <li>
+                            <p>Step on the brakes and observe brake lights through side mirrors (vehicle off)</p>
+                        </li>
+                        <li>
+                            <p>Tap horn once or twice</p>
+                        </li>
+                        <li>
+                            <p>Open hood</p>
+                        </li>
+                        <li>
+                            <p>Check all fluid levels - windshield wiper, brake fluid(/transmission fluid?), oil level/consistency/color, power steering fluid, check battery terminal for corrosion, check belt for cracks/damage</p>
+                            <p class="learn__routineNote"><strong>Note:</strong> Brake fluid and transmission fluid are separate. The brake fluid reservoir is usually at the back of the engine bay on the driver's side. Many automatic transmissions are checked warm with the engine running, and some trucks have no transmission dipstick: the owner's manual says how. Check the coolant level here too, with the engine cold.</p>
+                        </li>
+                        <li>
+                            <p>Close hood</p>
+                        </li>
+                        <li>
+                            <p>Hop inside vehicle inspect seatbelt</p>
+                        </li>
+                        <li>
+                            <p>Turn vehicle on</p>
+                        </li>
+                        <li>
+                            <p>Fully turn steering wheel to the left and listen for groans</p>
+                        </li>
+                        <li>
+                            <p>Fully turn steering wheel to the right and listen for groans</p>
+                            <p class="learn__routineNote"><strong>Note:</strong> Check the free play too: with the engine running and the wheels straight, turn the wheel until the left front tire just moves. More than about 2 inches at the rim of a 20-inch wheel is too much.</p>
+                        </li>
+                        <li>
+                            <p>Tap on brakes to feel for response</p>
+                            <p class="learn__routineNote"><strong>Note:</strong> The manual's brake test goes further. Pump the pedal 3 times, then press firmly for 5 seconds: it shouldn't sink. Then check that the parking brake holds the truck in gear, and brake firmly at about 5 mph to check the truck stops straight. See <a href="#step-7">step 7</a>.</p>
+                        </li>
+                        <li>
+                            <p>Turn vehicle off</p>
+                        </li>
+                    </ol>
+                </div>
+                <p><strong>Also part of this routine,</strong> though the list doesn't say so: a walk-around to check the headlights and tail lights, a look at each wheel for missing lug nuts, and a check that the fire extinguisher, first-aid kit, spare fuses and warning triangles are on board.</p>
+                <p><strong>What the manual adds:</strong> testing the parking brake, looking under the truck for fresh leaks, watching the gauges and warning lights after starting, checking the clearance and marker lights and the reflectors, and making sure the box's door is latched and the load is secure.</p>
+            </section>
+
+            <section id="defects" class="legalDoc__section" aria-labelledby="defects-heading">
+                <h2 id="defects-heading" class="legalDoc__sectionHeading">If you find a defect</h2>
+                <p>Don't drive a truck that isn't safe. The rule says a vehicle “shall not be operated in such a condition as to likely cause an accident or a breakdown of the vehicle.”</p>
+                <p>Tell your company before you go, and get it fixed or checked by someone qualified. Write it up the way your company does it, so the repair gets recorded and certified. <a href="/learn/dvir">How to fill out a DVIR</a> shows how.</p>
+                <p class="learn__source">Source: 49 CFR 396.7(a)</p>
+            </section>
+
+            <div class="learn__cta">
+                <p class="learn__ctaText">Ready to write it up? Tap <strong>Start pretrip</strong> on the home page.</p>
+                <a href="/" class="btn btn--primary">Go to the home page</a>
+            </div>
+
+            <section id="sources" class="legalDoc__section" aria-labelledby="sources-heading">
+                <h2 id="sources-heading" class="legalDoc__sectionHeading">Sources</h2>
+                <ul class="legalDoc__list">
+                    <li><a href="https://www.ecfr.gov/current/title-49/section-392.7">49 CFR 392.7, Equipment, inspection and use</a></li>
+                    <li><a href="https://www.ecfr.gov/current/title-49/section-396.7">49 CFR 396.7, Unsafe operations forbidden</a></li>
+                    <li><a href="https://www.ecfr.gov/current/title-49/section-396.13">49 CFR 396.13, Driver inspection</a></li>
+                    <li><a href="https://www.ecfr.gov/current/title-49/section-396.17">49 CFR 396.17, Periodic inspection</a></li>
+                    <li><a href="https://www.oregon.gov/odot/DMV/Pages/Online_CDL_Manual_2/Section_2.aspx">Oregon Commercial Driver Manual, Section 2: Driving Safely</a> (2.1.5, Seven-step Inspection Method)</li>
+                </ul>
+                <p>Each box's note names its own source.</p>
+                <p class="legalDoc__legalBlock">This guide explains the federal rules and the CDL manual's inspection method in plain words. It isn't legal advice, and it doesn't replace your training, your state's CDL manual or your company's policy.</p>
+            </section>
+
+        </div>
+    </div>
+
+</main>
+
+<%- include('../partials/footer.ejs') %>

@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 394 passed, 25 suites, 0 failures
+### Expected test baseline: 406 passed, 25 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -351,7 +351,8 @@ The 48 checklist items live only in `utils/dvirChecklist.js`, keyed like the sch
 - **Note fields.** `applies`, `where`, `check` (each line is something that should be true),
   `more`, `remark`, `source`, and `photos`: one to three `{ src, width, height, alt, caption }`.
 - **Cards.** `checklistNote.ejs` renders each note as a `<dialog class="inspection-card">`.
-  `openChecklistNote()` in main.js shows it with `showModal()`.
+  `openChecklistNote()` in main.js shows it with `showModal()`. What the note says (photos, where,
+  checks, example remark, source) is in `checklistNoteBody.ejs`, which the pre-trip guide shares.
   - The card closes with its Close button, with Escape, or with a click whose target is the
     `<dialog>` itself (the dimmed area: the dialog has no padding of its own).
   - The form's Escape handler skips while a card is open (`checklistNoteOpen()`). Otherwise one
@@ -380,33 +381,47 @@ The 48 checklist items live only in `utils/dvirChecklist.js`, keyed like the sch
   396.11(a)(1) says every report must cover, in the rule's words and order, with the boxes that
   cover each one. The DVIR guide shows it as a table, and the tests check every key against the
   form.
+- **The seven-step inspection.** `INSPECTION_STEPS` says which truck boxes are checked at each
+  step of the CDL manual's seven-step inspection, in the order the step reaches them. The pre-trip
+  guide shows each box's note under its step. A test fails if a truck box with a note is missing
+  from it, or listed twice, so a new note needs a step.
 - **Adding a checklist item.** Change the schema, its column in `dvirChecklist.js`, and the
   `xMark()` coordinates for its box in `generateDVIRPDF()`.
 
 ### The learn pages (`/learn`)
 
-Public guides for drivers, with no login needed: `GET /learn` (`views/learn/index.ejs`, the list of
-guides) and `GET /learn/dvir` (`views/learn/dvir.ejs`, "How to fill out a DVIR"), both from
-`controllers/learn.js`.
-- **Layout.** The guide reuses the legal pages' `legalDoc` classes (sidebar contents, summary,
+Public guides for drivers, with no login needed, all from `controllers/learn.js`:
+- `GET /learn` (`views/learn/index.ejs`): the list of guides.
+- `GET /learn/pre-trip` (`views/learn/pre-trip.ejs`): "How to do a pre-trip inspection".
+- `GET /learn/dvir` (`views/learn/dvir.ejs`): "How to fill out a DVIR".
+
+- **Layout.** The guides reuse the legal pages' `legalDoc` classes (sidebar contents, summary,
   sections). The extras are the `learn__` classes in style.css. `legalDoc__tocList--plain` drops the
-  contents list's numbers, because the guide's steps carry their own.
+  contents list's numbers, because the guides' steps carry their own. The sidebar is hidden below
+  960px, so the pre-trip guide also lists its steps in the page.
+- **The pre-trip guide's steps** are the CDL manual's seven (section 2), in our own words.
+  `partials/learnBoxes.ejs` folds the notes for each step's boxes (`INSPECTION_STEPS`) into
+  `<details>`. Their photos stay `loading="lazy"`, so they only download once a note is opened.
+- **"How one box-truck driver does it"** in the pre-trip guide is Bobby's own routine, word for word,
+  typos included (see `learn.test.js`). Change it only when Bobby says so. Anything the manual or the
+  rules add goes in a `learn__routineNote` under the step.
 - **Per-page title and description.** `head.ejs` takes optional `pageTitle`, `pageDescription` and
   `pagePath` locals, passed in the page's `include()`. They set the title, description, Open Graph
   and Twitter tags, and a canonical link. A page that passes none gets the home page's head, byte
   for byte.
 - **Ways in.** A Learn link in the header (marked on every page under `/learn`), a Learn column in
-  the footer, and a link from the checklist's `?` help that opens the guide in a new tab, so the
-  form keeps its answers.
+  the footer, a link from the checklist's `?` help that opens the DVIR guide in a new tab (so the
+  form keeps its answers), and links between the two guides.
 - **The sample report** (`public/imgs/learn/dvir-sample.webp`) is the app's own
   `generateDVIRPDF()` output, made in headless Chromium with made-up data (Unit 12, two defects) and
   a drawn, made-up signature. It was rendered at 130 dpi, and the green markers (`--color-marker`)
   were drawn with Pillow. Markers 1 to 7 match the guide's `learn__marker` numbers. If the steps,
   the PDF template or `generateDVIRPDF()`'s layout change, remake the image.
 - **Content rules.** Quotes from 49 CFR are word for word and were checked against the rule text on
-  the guide's "Last reviewed" date. The CDL manual is paraphrased, never copied. The guide doesn't
-  call pretriq "FMCSA compliant". Each section names its source, the page ends with sources and a
-  not-legal-advice line, and Bobby approves the wording.
+  each guide's "Last reviewed" date. The CDL manual is paraphrased, never copied. The guides don't
+  call pretriq "FMCSA compliant". Each section names its source, each page ends with sources and a
+  not-legal-advice line, and Bobby approves the wording. Air brakes and trailers aren't covered
+  until someone with a Class A license reviews that content.
 - **Search engines.** `public/robots.txt` keeps crawlers out of the signed-in pages and points at
   `public/sitemap.xml`. Add every new public page to the sitemap: `learn.test.js` fails if a
   `/learn` route is missing from it.

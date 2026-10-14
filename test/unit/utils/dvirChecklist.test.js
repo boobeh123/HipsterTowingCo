@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { CHECKLIST, REQUIRED_ITEMS, items, formOrder, labelsFor } = require('../../../utils/dvirChecklist');
+const { CHECKLIST, REQUIRED_ITEMS, INSPECTION_STEPS, items, formOrder, labelsFor } = require('../../../utils/dvirChecklist');
 const Inspection = require('../../../models/Inspection');
 const readWebp = require('../helpers/readWebp');
 
@@ -138,6 +138,22 @@ describe('dvirChecklist', () => {
           (item[section] || []).forEach((key) => expect(Object.keys(labelsFor(section))).toContain(key));
         });
       });
+    });
+
+  });
+
+  // The pre-trip guide shows each note under its step, so a new note needs a step
+  describe('INSPECTION_STEPS', () => {
+
+    it('should place every truck box with a note in exactly one step, and nothing else', () => {
+      const placed = Object.values(INSPECTION_STEPS).flat();
+
+      expect([...placed].sort()).toEqual([...WITH_NOTES].sort());
+      expect(new Set(placed).size).toBe(placed.length);
+    });
+
+    it("should only use the manual's step numbers", () => {
+      Object.keys(INSPECTION_STEPS).forEach((step) => expect(['1', '2', '3', '4', '5', '6', '7']).toContain(step));
     });
 
   });

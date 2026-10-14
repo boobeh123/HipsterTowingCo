@@ -1,0 +1,40 @@
+<%# What a checklist item's note says (utils/dvirChecklist.js): who it's for, its photos, where the part
+    is, what to check, and an example remark. The form shows it in a card (checklistNote.ejs), and the
+    pre-trip guide (learn/pre-trip.ejs) under the step where the check happens. A note's one to three
+    photos come first; two portrait photos (a before and after, say) sit side by side, anything else
+    stacks. %>
+<% const photos = item.note.photos || []; %>
+<% const sideBySide = photos.length === 2 && photos.every((photo) => photo.height > photo.width); %>
+<% if (item.note.applies) { %>
+    <p class="inspection-card__applies"><%= item.note.applies %></p>
+<% } %>
+<% if (photos.length) { %>
+    <div class="inspection-card__photos<%= sideBySide ? ' inspection-card__photos--pair' : '' %>">
+        <% photos.forEach((photo) => { %>
+            <figure class="inspection-card__figure">
+                <img class="inspection-card__photo" src="<%= photo.src %>" alt="<%= photo.alt %>" width="<%= photo.width %>" height="<%= photo.height %>" loading="lazy" />
+                <% if (photo.caption) { %>
+                    <figcaption class="inspection-card__caption"><%= photo.caption %></figcaption>
+                <% } %>
+            </figure>
+        <% }) %>
+    </div>
+<% } %>
+<% if (item.note.where) { %>
+    <p><strong>Where it is:</strong> <%= item.note.where %></p>
+<% } %>
+<p class="inspection-card__label"><strong>Check that:</strong></p>
+<ul class="inspection-card__checks">
+    <% item.note.check.forEach((line) => { %>
+        <li><%= line %></li>
+    <% }) %>
+</ul>
+<% if (item.note.more) { %>
+    <p><%= item.note.more %></p>
+<% } %>
+<% if (item.note.remark) { %>
+    <p><strong>Example remark:</strong> “<%= item.note.remark %>”</p>
+<% } %>
+<% if (item.note.source) { %>
+    <p class="inspection-help__source">Source: <%= item.note.source %></p>
+<% } %>

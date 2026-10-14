@@ -18,4 +18,12 @@ module.exports = {
       }
     },
 
+    getPreTripGuide: async (req, res, next) => {
+      try {
+          res.render('learn/pre-trip.ejs');
+    } catch(err) {
+      next(err)
+      }
+    },
+
 }

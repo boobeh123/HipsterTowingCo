@@ -50,6 +50,7 @@ jest.mock('../../../controllers/terms', () => ({
 jest.mock('../../../controllers/learn', () => ({
   getLearn:     jest.fn((req, res) => res.json({ message: 'Learn page' })),
   getDvirGuide: jest.fn((req, res) => res.json({ message: 'DVIR guide' })),
+  getPreTripGuide: jest.fn((req, res) => res.json({ message: 'Pre-trip guide' })),
 }));
 
 jest.mock('../../../controllers/inspection', () => ({
@@ -333,6 +334,16 @@ describe('Main Routes', () => {
       expect(learnController.getDvirGuide).toHaveBeenCalledTimes(1);
       expect(ensureAuth).not.toHaveBeenCalled();
       expect(response.body).toEqual({ message: 'DVIR guide' });
+    });
+  });
+
+  describe('GET /learn/pre-trip', () => {
+    it('should call learnController.getPreTripGuide and return 200', async () => {
+      const response = await request(app).get('/learn/pre-trip').expect(200);
+
+      expect(learnController.getPreTripGuide).toHaveBeenCalledTimes(1);
+      expect(ensureAuth).not.toHaveBeenCalled();
+      expect(response.body).toEqual({ message: 'Pre-trip guide' });
     });
   });
 
