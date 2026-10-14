@@ -671,4 +671,22 @@ const formOrder = (section) => {
 // { key: label } in the paper form's order, for the CSV export
 const labelsFor = (section) => Object.fromEntries(items(section).map(({ key, label }) => [key, label]))
 
-module.exports = { CHECKLIST, items, formOrder, labelsFor }
+// The 11 parts and accessories every report must cover, in the words and
+// order of 49 CFR 396.11(a)(1), with the boxes that cover each one (the
+// DVIR guide, views/learn/dvir.ejs, shows them as a table). Brakes takes the
+// parking brake too, as the form's help says.
+const REQUIRED_ITEMS = [
+    { rule: 'Service brakes including trailer brake connections', truckTractor: ['brakes'], trailer: ['brakeConnections', 'brakes'] },
+    { rule: 'Parking brake', truckTractor: ['brakes'], trailer: ['brakes'] },
+    { rule: 'Steering mechanism', truckTractor: ['steering'] },
+    { rule: 'Lighting devices and reflectors', truckTractor: ['lights', 'reflectors'], trailer: ['lightsAll'] },
+    { rule: 'Tires', truckTractor: ['tires'], trailer: ['tires'] },
+    { rule: 'Horn', truckTractor: ['horn'] },
+    { rule: 'Windshield wipers', truckTractor: ['windshieldWipers'] },
+    { rule: 'Rear vision mirrors', truckTractor: ['mirrors'] },
+    { rule: 'Coupling devices', truckTractor: ['fifthWheel'], trailer: ['couplingPin', 'couplingChains', 'hitch'] },
+    { rule: 'Wheels and rims', truckTractor: ['wheels'], trailer: ['wheels'] },
+    { rule: 'Emergency equipment', truckTractor: ['safetyEquipment'] },
+]
+
+module.exports = { CHECKLIST, REQUIRED_ITEMS, items, formOrder, labelsFor }

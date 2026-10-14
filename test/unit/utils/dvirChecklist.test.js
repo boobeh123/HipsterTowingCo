@@ -1,23 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const { CHECKLIST, items, formOrder, labelsFor } = require('../../../utils/dvirChecklist');
+const { CHECKLIST, REQUIRED_ITEMS, items, formOrder, labelsFor } = require('../../../utils/dvirChecklist');
 const Inspection = require('../../../models/Inspection');
-
-// A WebP file's chunks and its pixel size, read from the RIFF headers (enough
-// for the files under public/imgs/notes, which are plain lossy WebP)
-const readWebp = (file) => {
-  const data = fs.readFileSync(file);
-  expect(data.toString('ascii', 0, 4)).toBe('RIFF');
-  expect(data.toString('ascii', 8, 12)).toBe('WEBP');
-  const chunks = [];
-  for (let offset = 12; offset < data.length;) {
-    const size = data.readUInt32LE(offset + 4);
-    chunks.push(data.toString('ascii', offset, offset + 4));
-    offset += 8 + size + (size % 2);
-  }
-  expect(chunks[0]).toBe('VP8 ');
-  return { chunks, width: data.readUInt16LE(26) & 0x3fff, height: data.readUInt16LE(28) & 0x3fff };
-};
+const readWebp = require('../helpers/readWebp');
 
 // The labels exactly as the form and the CSV export showed them before they
 // moved into utils/dvirChecklist.js, in the paper form's order
@@ -131,6 +116,28 @@ describe('dvirChecklist', () => {
 
       notes.forEach((note) => expect([1, 2, 3]).toContain(note.photos.length));
       expect(fs.readdirSync(path.join(__dirname, '../../../public/imgs/notes')).sort()).toEqual([...new Set(used)].sort());
+    });
+
+  });
+
+  // 49 CFR 396.11(a)(1)(i)-(xi), word for word
+  describe('REQUIRED_ITEMS', () => {
+
+    it('should list the 11 items the rule names, in its order', () => {
+      expect(REQUIRED_ITEMS.map((item) => item.rule)).toEqual([
+        'Service brakes including trailer brake connections', 'Parking brake', 'Steering mechanism',
+        'Lighting devices and reflectors', 'Tires', 'Horn', 'Windshield wipers', 'Rear vision mirrors',
+        'Coupling devices', 'Wheels and rims', 'Emergency equipment',
+      ]);
+    });
+
+    it('should point every item at boxes that exist on the form', () => {
+      REQUIRED_ITEMS.forEach((item) => {
+        expect(item.truckTractor.length).toBeGreaterThan(0);
+        ['truckTractor', 'trailer'].forEach((section) => {
+          (item[section] || []).forEach((key) => expect(Object.keys(labelsFor(section))).toContain(key));
+        });
+      });
     });
 
   });

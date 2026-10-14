@@ -34,6 +34,14 @@
             </svg>
         </a>
         <nav class="site-header__nav" aria-label="Main navigation">
+            <%# Learn stays marked on every page under /learn, but only /learn itself is the current page %>
+            <% const learnPath = locals.currentPath || ''; %>
+            <% const inLearn = learnPath === '/learn' || learnPath.startsWith('/learn/'); %>
+            <a
+                href="/learn"
+                class="site-header__navLink<%= inLearn ? ' site-header__navLink--active' : '' %>"
+                aria-current="<%= learnPath === '/learn' ? 'page' : 'false' %>"
+            >Learn</a>
             <% if (user) { %>
                 <div class="site-header__userNav">
                     <button
