@@ -85,10 +85,14 @@ app.use(logger(isProduction ? 'combined' : 'dev'))
 // Body parsing. No form uses nested field names, so the simple parser is
 // enough, and a field like email[$ne] stays a plain string key instead of
 // becoming an object. The inspection save arrives as JSON.
-app.use(express.urlencoded({ extended: false }))
+// inflate: false refuses a compressed request body with a 415. Otherwise
+// body-parser decompresses gzip and Brotli bodies through Node's zlib, where
+// the Oct 21 2026 Node security release fixed a Brotli bug that let crafted
+// data run code. No browser compresses a form post or a fetch() body.
+app.use(express.urlencoded({ extended: false, inflate: false }))
 // An inspection save can carry two drawn signatures of up to 60 KB each
 // (SIGNATURE_MAX_LENGTH in public/js/utils.js); the default limit is 100kb
-app.use(express.json({ limit: '200kb' }))
+app.use(express.json({ limit: '200kb', inflate: false }))
 
 app.use(express.static('public'))
 // Use forms for put / delete
@@ -139,7 +143,9 @@ app.use(errorHandler)
 clientPromise
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}, you better catch it!`)
+      // The Node version shows in Railway's deploy log, to confirm the pin in
+      // package.json's engines took effect
+      console.log(`Server is running on port ${PORT} with Node ${process.version}, you better catch it!`)
     })
   })
   .catch((err) => {

@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 406 passed, 25 suites, 0 failures
+### Expected test baseline: 413 passed, 26 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -71,6 +71,10 @@ passport → flash (`middleware/flash.js`) → **`endStaleSessions`** → **`vie
 - `express.urlencoded({ extended: false })`: no form uses nested field names (the inspection
   modal's bracketed names are only read by `readFormData()` and posted as JSON), so a field like
   `email[$ne]` stays a plain string key instead of becoming an object.
+- Both body parsers (`urlencoded` and `json`) have `inflate: false`, so a compressed request body
+  gets a 415. No browser compresses a form post or a `fetch()` body, and decompressing them put
+  Node's Brotli decoder within reach of anyone (the Oct 2026 Node security release). Keep it on
+  any parser added later.
 - Both `dotenv.config()` calls pass `quiet: true`; dotenv 17 otherwise logs a tip line.
 
 - **`app.set('trust proxy', 1)` must come before any `app.use`.** Railway proxies requests; without
@@ -515,8 +519,12 @@ entities. Reserve `<%-` for `include()`.
 - **`BASE_URL` is required for password reset emails.** The link is built from it only, never from
   the `Host` header, which the client controls. Without it, `POST /forgot` fails with a 500 and
   `server.js` logs a warning at startup in production.
-- **`engines: { node: "24.x" }` in `package.json` is load-bearing — do not remove it.** Railway's
-  Nixpacks reads it to pick a Node version. `mongodb`/`mongoose` require `>=20.19.0` and call the
+- **`engines: { node: "24.22.1" }` in `package.json` is load-bearing — do not remove it.** Railway
+  reads it to pick a Node version. It's an exact version, the Oct 21 2026 security release: the
+  service's builder must be Railpack (a setting in Railway's dashboard), because Nixpacks only
+  honours the major version. Bump it for each Node security release, never back to a range
+  (`test/unit/config/server.test.js` fails on one); the startup log line prints the running
+  version, so Railway's deploy log confirms it. `mongodb`/`mongoose` require `>=20.19.0` and call the
   global `crypto.getRandomValues`, which does not exist on Node 18. Without the pin, Railway
   defaulted to Node 18 and production crash-looped on `ReferenceError: crypto is not defined`.
   nodemailer 10 also needs Node 20 or newer.
