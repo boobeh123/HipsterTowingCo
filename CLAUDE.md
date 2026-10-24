@@ -18,7 +18,7 @@ a batch of changes merges, add a Version History entry in the same format as the
 ```bash
 npm run dev      # node --watch server.js (restarts when a loaded file changes)
 npm start        # node server.js
-npm test         # jest — runs all 25 suites
+npm test         # jest — runs all 28 suites
 ```
 
 Run a single suite or a single test:
@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 413 passed, 26 suites, 0 failures
+### Expected test baseline: 449 passed, 28 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -82,12 +82,12 @@ passport → flash (`middleware/flash.js`) → **`endStaleSessions`** → **`vie
   cookies are never set. The value is `1`, not `true` — express-rate-limit rejects `true` as
   spoofable.
 - `middleware/viewLocals.js` populates `success` / `errors` / `error` / `info` / `currentPath` /
-  `user` for **every** view, reading all four flash types on every request. That's only safe
-  because reading never writes to the session (see the flash section below): express-session saves
-  a changed session and sends it a cookie, and connect-flash, which this app used before, created
-  `session.flash` on every read. That once gave every anonymous visitor (bots included) a cookie
-  and a MongoDB session. viewLocals.test.js checks for that with the real session and flash
-  middleware.
+  `user` / `showPrivacyNotice` for **every** view, reading all four flash types on every request.
+  That's only safe because reading never writes to the session (see the flash section below):
+  express-session saves a changed session and sends it a cookie, and connect-flash, which this app
+  used before, created `session.flash` on every read. That once gave every anonymous visitor (bots
+  included) a cookie and a MongoDB session. viewLocals.test.js checks for that with the real
+  session and flash middleware.
   `currentPath` uses `req.path`, not `req.originalUrl`, so `/dashboard?page=2` still matches the
   `'/dashboard'` comparisons in `views/partials/header.ejs`.
 - All routes live in the single `routes/main.js`. There is no per-resource route file.
@@ -430,6 +430,31 @@ Public guides for drivers, with no login needed, all from `controllers/learn.js`
   `public/sitemap.xml`. Add every new public page to the sitemap: `learn.test.js` fails if a
   `/learn` route is missing from it.
 
+### The privacy policy and its notice
+
+The policy text in `views/privacy.ejs` is Bobby's, generated with Termly. Publish it word for word
+and never edit its wording; flag problems to Bobby instead.
+
+- **`utils/privacyPolicy.js`** holds `UPDATED`, the Hawaii date the current policy took effect, and
+  `ANNOUNCE`, whether account holders must be told about it.
+  - The page's "Last updated" date reads `UPDATED` through `app.locals.privacyPolicy`, so the page
+    and the notice can't disagree.
+  - A material change sets both. A typo fix moves `UPDATED` but keeps `ANNOUNCE` false.
+- **Who sees the notice.** `needsPrivacyNotice(user)` decides, and viewLocals turns it into
+  `showPrivacyNotice`. It's true for an account that:
+  - was created before `UPDATED` (or has no `createdAt`)
+  - has a name, because an account still in onboarding can't dismiss it: `ensureAuth` would send
+    its "Got it" back to `/onboard`
+  - hasn't pressed "Got it" since the update
+- **The notice** (`partials/privacyNotice.ejs`) sits under the header bar on every page.
+  - "Got it" is a plain form post to `POST /privacy/notice` (`ensureAuth`, then
+    `validatePrivacyNotice`, then `postNoticeSeen`), so it works without JavaScript.
+  - The controller saves `privacyNoticeSeenAt` on the account, then returns to the page it came
+    from through `safeReturnPath()`. That only allows a path on this site: anything else, such as
+    `//host` or `/\host`, goes to `/dashboard`.
+- **Email.** Users who rarely log in hear about a change by email. Bobby sends it from pretriq's
+  Gmail with every address in BCC; the app has no bulk mailer.
+
 The `Counter` model holds a single global document (`name: 'inspectionCount'`) powering the public
 homepage count — it is not per-user.
 
@@ -473,8 +498,8 @@ Grepping a single `.ejs` file for a variable is not enough — partials are incl
 share the same locals. `inspectionCount` is used only in `views/partials/inspectionModal.ejs`, which
 **both** `dashboard.ejs` and `index.ejs` include, so `getDashboard` and `getIndex` must each pass it
 or the page 500s at render. Grep `views/` recursively, and prefer actually rendering the template
-with the controller's payload over reasoning about it. `dvirChecklist` is the exception: it comes
-from `app.locals` (server.js), so controllers don't pass it.
+with the controller's payload over reasoning about it. `dvirChecklist` and `privacyPolicy` are the
+exceptions: they come from `app.locals` (server.js), so controllers don't pass them.
 
 ### CSP: no inline scripts or handlers, and a hash that can go stale
 
@@ -534,5 +559,5 @@ entities. Reserve `<%-` for `include()`.
   it would downgrade jest and reinstall old tooling. The remaining audit findings are 19 moderate
   ones inside Jest, dev-only, with no fix released yet.
 - A push to `main` is a production deploy. The `pretriq` Railway service owns `pretriq.com`.
-  A second service, `permissible-wool`, builds from this same repo but has no domain and points at a
-  different database.
+  A second service, `permissible-wool`, used to build from this same repo with no domain and its
+  own database. Bobby deleted it on Oct 21 2026, after Railway's environment-variable breach.

@@ -37,6 +37,9 @@ const UserSchema = new mongoose.Schema({
   // Set by a password reset. Sessions that logged in before it are signed
   // out (see endStaleSessions in middleware/auth.js)
   passwordChangedAt: Date,
+  // Set when the user presses "Got it" on the privacy policy notice
+  // (utils/privacyPolicy.js decides who still needs to see it)
+  privacyNoticeSeenAt: Date,
   // lastLogin: {
   //   type: Date,
   //   default: Date.now

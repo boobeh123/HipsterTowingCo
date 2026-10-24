@@ -13,7 +13,7 @@ const profileController = require('../controllers/profile')
 const { uploadProfilePhoto } = require('../middleware/multer')
 const { ensureAuth, ensureAuthApi, ensureOnboarding } = require('../middleware/auth')
 const { authLimiter, passwordResetLimiter, counterLimiter, inspectionSaveLimiter, photoUploadLimiter, passwordChangeLimiter, exportLimiter } = require('../middleware/rateLimiters')
-const { validateLogin, validateSignup, validateForgot, validateReset, validateOnboard, validateInspection, validateProfileName, validateProfilePassword, validateDashboardQuery } = require('../middleware/validators')
+const { validateLogin, validateSignup, validateForgot, validateReset, validateOnboard, validateInspection, validateProfileName, validateProfilePassword, validateDashboardQuery, validatePrivacyNotice } = require('../middleware/validators')
 
 router.get('/', homeController.getIndex)
 router.get('/dashboard', ensureAuth, validateDashboardQuery, dashboardController.getDashboard)
@@ -43,6 +43,7 @@ router.get('/reset/:token', passwordResetController.getRecoverPassword)
 router.post('/reset/:token', passwordResetLimiter, validateReset, passwordResetController.postRecoverPassword)
 
 router.get('/privacy', privacyController.getPrivacy)
+router.post('/privacy/notice', ensureAuth, validatePrivacyNotice, privacyController.postNoticeSeen)
 router.get('/terms', termController.getTerms)
 
 router.get('/learn', learnController.getLearn)
