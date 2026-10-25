@@ -1,6 +1,7 @@
 const privacyController = require('../../../controllers/privacy');
 const User = require('../../../models/User');
 const runValidators = require('../helpers/runValidators');
+const { UPDATED } = require('../../../utils/privacyPolicy');
 const { validatePrivacyNotice } = require('../../../middleware/validators');
 
 jest.mock('../../../models/User');
@@ -54,10 +55,10 @@ describe('privacyController.postNoticeSeen', () => {
     jest.clearAllMocks();
   });
 
-  it('should save when this account saw the notice, then go back to the page', async () => {
+  it('should save the policy version this account has seen, then go back to the page', async () => {
     await postNoticeSeen({ returnTo: '/learn/dvir' });
 
-    expect(User.updateOne).toHaveBeenCalledWith({ _id: 'user-1' }, { $set: { privacyNoticeSeenAt: expect.any(Date) } });
+    expect(User.updateOne).toHaveBeenCalledWith({ _id: 'user-1' }, { $set: { privacyPolicySeen: UPDATED } });
     expect(res.redirect).toHaveBeenCalledWith('/learn/dvir');
     expect(next).not.toHaveBeenCalled();
   });

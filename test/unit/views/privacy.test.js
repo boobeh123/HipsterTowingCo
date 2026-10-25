@@ -11,10 +11,52 @@ const render = (view, locals = {}) => ejs.renderFile(path.join(VIEWS, view), { u
 
 describe('privacy.ejs', () => {
 
-  it("should show the date from utils/privacyPolicy.js, so the page and the notice agree", async () => {
-    const html = await render('privacy.ejs', { currentPath: '/privacy' });
+  let html;
 
+  beforeAll(async () => {
+    html = await render('privacy.ejs', { currentPath: '/privacy' });
+  });
+
+  it("should show the date from utils/privacyPolicy.js, so the page and the notice agree", () => {
     expect(html).toContain(`Last updated <time datetime="${privacyPolicy.UPDATED}">${privacyPolicy.updatedLabel}</time>`);
+  });
+
+  // The notice's "See what changed" links to /privacy#changes
+  it('should say what changed in this update, where the notice links to', () => {
+    expect(html).toContain('<section id="changes" class="legalDoc__changes" aria-labelledby="changes-heading">');
+    expect(html).toContain(`<h2 id="changes-heading" class="legalDoc__changesTitle">What changed on ${privacyPolicy.updatedLabel}</h2>`);
+  });
+
+  it('should set its own title and canonical URL', () => {
+    expect(html).toContain('<title>Privacy Policy - Pretriq</title>');
+    expect(html).toContain('<link rel="canonical" href="https://pretriq.com/privacy">');
+  });
+
+  it('should point every in-page link at a section with a heading', () => {
+    const main = html.slice(html.indexOf('<main'), html.indexOf('</main>'));
+    const targets = new Set([...main.matchAll(/<a href="#([\w-]+)"/g)].map((match) => match[1]));
+
+    expect(targets.size).toBe(15);
+    targets.forEach((id) => {
+      expect(html).toContain(`<section id="${id}" class="legalDoc__section" aria-labelledby="${id}-heading">`);
+      expect(html).toContain(`<h2 id="${id}-heading"`);
+    });
+  });
+
+  it('should list the categories of personal information A to L', () => {
+    const rows = [...html.matchAll(/<th scope="row">([A-L])\. /g)].map((match) => match[1]);
+
+    expect(rows).toEqual(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']);
+  });
+
+  // Fixes Bobby asked for on Oct 25 2026, against claims that weren't true of pretriq
+  it('should give one contact address and leave out what pretriq doesn\'t do', () => {
+    const emails = new Set([...html.matchAll(/[\w.+-]+@[\w-]+\.[\w.]+/g)].map((match) => match[0]));
+
+    expect(emails).toEqual(new Set(['boobeh321@gmail.com']));
+    ['PayPal', 'Cookie Notice', 'display advertisements', 'written contract'].forEach((claim) => {
+      expect(html).not.toContain(claim);
+    });
   });
 
 });

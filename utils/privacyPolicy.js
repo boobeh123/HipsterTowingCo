@@ -9,30 +9,31 @@
  * (a Hawaii date), and set ANNOUNCE to true when users must hear
  * about it. Every account created before that day then sees the
  * notice until it presses "Got it" (POST /privacy/notice), which
- * saves privacyNoticeSeenAt on the account. A typo fix keeps
- * ANNOUNCE false.
+ * saves this UPDATED on the account as privacyPolicySeen. A typo
+ * fix keeps ANNOUNCE false.
  **************************************************************/
-const UPDATED = '2026-06-16'
-const ANNOUNCE = false
+const UPDATED = '2026-10-26'
+const ANNOUNCE = true
 
 // Midnight in Hawaii (no daylight saving) on the day the policy took effect
 const updatedAt = new Date(`${UPDATED}T00:00:00-10:00`)
 
-// "June 16, 2026", for the page and the notice
+// "October 26, 2026", for the page and the notice
 const updatedLabel = updatedAt.toLocaleDateString('en-US', { timeZone: 'Pacific/Honolulu', year: 'numeric', month: 'long', day: 'numeric' })
 
 // True for a signed-in account that hasn't heard about the latest change: one
 // created before it (or old enough to have no createdAt) that hasn't pressed
-// "Got it" since. An account still in onboarding waits until it has a name,
+// "Got it" for this version. Versions are YYYY-MM-DD strings, so they compare
+// in order as text. An account still in onboarding waits until it has a name,
 // because ensureAuth would send its "Got it" back to /onboard unsaved.
 // Tests pass their own policy.
-const needsPrivacyNotice = (user, policy = { announce: ANNOUNCE, updatedAt }) => {
+const needsPrivacyNotice = (user, policy = { announce: ANNOUNCE, updated: UPDATED, updatedAt }) => {
     if (!user || !user.name || !policy.announce) {
         return false
     }
     const joinedBefore = !user.createdAt || user.createdAt < policy.updatedAt
-    const seenSince = Boolean(user.privacyNoticeSeenAt) && user.privacyNoticeSeenAt >= policy.updatedAt
-    return joinedBefore && !seenSince
+    const seenThisVersion = typeof user.privacyPolicySeen === 'string' && user.privacyPolicySeen >= policy.updated
+    return joinedBefore && !seenThisVersion
 }
 
 // Where "Got it" goes back to: a path on this site, and nothing else. Another

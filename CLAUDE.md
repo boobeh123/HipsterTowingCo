@@ -33,7 +33,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 449 passed, 28 suites, 0 failures
+### Expected test baseline: 455 passed, 28 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -445,13 +445,15 @@ and never edit its wording; flag problems to Bobby instead.
   - was created before `UPDATED` (or has no `createdAt`)
   - has a name, because an account still in onboarding can't dismiss it: `ensureAuth` would send
     its "Got it" back to `/onboard`
-  - hasn't pressed "Got it" since the update
+  - hasn't pressed "Got it" for this version
 - **The notice** (`partials/privacyNotice.ejs`) sits under the header bar on every page.
   - "Got it" is a plain form post to `POST /privacy/notice` (`ensureAuth`, then
     `validatePrivacyNotice`, then `postNoticeSeen`), so it works without JavaScript.
-  - The controller saves `privacyNoticeSeenAt` on the account, then returns to the page it came
-    from through `safeReturnPath()`. That only allows a path on this site: anything else, such as
-    `//host` or `/\host`, goes to `/dashboard`.
+  - The controller saves the policy's version (`UPDATED`) on the account as `privacyPolicySeen`.
+    It's a version rather than a time, so a dismissal sticks even if the site goes live before
+    the policy's date.
+  - It then returns to the page it came from through `safeReturnPath()`, which only allows a path
+    on this site: anything else, such as `//host` or `/\host`, goes to `/dashboard`.
 - **Email.** Users who rarely log in hear about a change by email. Bobby sends it from pretriq's
   Gmail with every address in BCC; the app has no bulk mailer.
 

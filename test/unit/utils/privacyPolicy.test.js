@@ -17,14 +17,14 @@ describe('privacyPolicy', () => {
 
   describe('needsPrivacyNotice', () => {
 
-    const policy = { announce: true, updatedAt: new Date('2026-11-01T10:00:00Z') };
+    const policy = { announce: true, updated: '2026-11-01', updatedAt: new Date('2026-11-01T10:00:00Z') };
     const before = new Date('2026-10-01T00:00:00Z');
     const after = new Date('2026-11-02T00:00:00Z');
     const name = 'Jordan Rivera';
 
     it('should tell an account created before the update that hasn\'t seen it', () => {
       expect(needsPrivacyNotice({ name, createdAt: before }, policy)).toBe(true);
-      expect(needsPrivacyNotice({ name, createdAt: before, privacyNoticeSeenAt: before }, policy)).toBe(true);
+      expect(needsPrivacyNotice({ name, createdAt: before, privacyPolicySeen: '2026-06-16' }, policy)).toBe(true);
     });
 
     // Accounts made before the schema had timestamps have no createdAt
@@ -32,9 +32,14 @@ describe('privacyPolicy', () => {
       expect(needsPrivacyNotice({ name }, policy)).toBe(true);
     });
 
-    it('should stop once the account has seen this update', () => {
-      expect(needsPrivacyNotice({ name, createdAt: before, privacyNoticeSeenAt: after }, policy)).toBe(false);
-      expect(needsPrivacyNotice({ name, createdAt: before, privacyNoticeSeenAt: policy.updatedAt }, policy)).toBe(false);
+    // A version, not a time: dismissing before the policy's date still counts
+    it('should stop once the account has seen this version, whenever it pressed "Got it"', () => {
+      expect(needsPrivacyNotice({ name, createdAt: before, privacyPolicySeen: '2026-11-01' }, policy)).toBe(false);
+      expect(needsPrivacyNotice({ name, createdAt: before, privacyPolicySeen: '2027-01-15' }, policy)).toBe(false);
+    });
+
+    it('should ignore a seen value that isn\'t a version string', () => {
+      expect(needsPrivacyNotice({ name, createdAt: before, privacyPolicySeen: after }, policy)).toBe(true);
     });
 
     it('should leave out accounts created after the update, and guests', () => {
