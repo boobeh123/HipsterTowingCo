@@ -2291,6 +2291,37 @@ body.has-modal-open {
 }
 
 /**************************************************************
+ * Privacy policy notice (partials/privacyNotice.ejs): under the
+ * header, for signed-in users who haven't seen the latest change
+ **************************************************************/
+.privacyNotice {
+  background-color: var(--color-hero-slab-a);
+  border-bottom: 1px solid var(--color-footer-border);
+}
+
+.privacyNotice__inner {
+  width: min(100% - var(--space-8), var(--content-max));
+  margin-inline: auto;
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.privacyNotice__text {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.privacyNotice__form {
+  margin: 0;
+}
+
+/**************************************************************
  * Consent banner
  **************************************************************/
 .consentBanner {
@@ -2375,9 +2406,11 @@ body.has-modal-open {
   color: var(--color-text-muted);
 }
 
+/* Room for two-digit numbers ("15."), at the links' size */
 .legalDoc__tocList {
   margin: 0;
-  padding-left: var(--space-4);
+  padding-left: 1.75rem;
+  font-size: 0.8125rem;
   list-style: decimal;
 }
 
@@ -2571,6 +2604,41 @@ body.has-modal-open {
   margin-top: var(--space-2);
 }
 
+/* A list inside a list item, as in the privacy policy's service providers */
+.legalDoc__list ul {
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-6);
+}
+
+/* The privacy policy's "What changed" box. The notice's "See what changed"
+   link lands here, so it clears the sticky header like a section does. */
+.legalDoc__changes {
+  margin-bottom: var(--space-8);
+  padding: var(--space-6);
+  background-color: var(--color-hero-slab-a);
+  border-left: 3px solid var(--color-marker);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  scroll-margin-top: calc(3.75rem + var(--space-6));
+}
+
+.legalDoc__changesTitle {
+  margin: 0 0 var(--space-3);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.legalDoc__changes .legalDoc__list {
+  margin-bottom: 0;
+}
+
+.legalDoc__summaryIntro {
+  margin: 0 0 var(--space-4);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
 .legalDoc__address {
   font-style: normal;
   padding: var(--space-4);
@@ -2741,12 +2809,14 @@ body.has-modal-open {
   font-variant-numeric: tabular-nums;
 }
 
-.learn__tableWrap {
+.learn__tableWrap,
+.legalDoc__tableWrap {
   margin: 0 0 var(--space-4);
   overflow-x: auto;
 }
 
-.learn__table {
+.learn__table,
+.legalDoc__table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
@@ -2755,14 +2825,17 @@ body.has-modal-open {
 }
 
 .learn__table th,
-.learn__table td {
+.learn__table td,
+.legalDoc__table th,
+.legalDoc__table td {
   padding: var(--space-2) var(--space-3);
   text-align: left;
   vertical-align: top;
   border-bottom: 1px solid var(--color-footer-border);
 }
 
-.learn__table thead th {
+.learn__table thead th,
+.legalDoc__table thead th {
   font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -2770,7 +2843,8 @@ body.has-modal-open {
   border-bottom-width: 2px;
 }
 
-.learn__table tbody th {
+.learn__table tbody th,
+.legalDoc__table tbody th {
   font-weight: 500;
 }
 

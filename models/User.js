@@ -37,6 +37,10 @@ const UserSchema = new mongoose.Schema({
   // Set by a password reset. Sessions that logged in before it are signed
   // out (see endStaleSessions in middleware/auth.js)
   passwordChangedAt: Date,
+  // The date (UPDATED in utils/privacyPolicy.js) of the latest privacy policy
+  // whose notice this account dismissed with "Got it". A version, not a time,
+  // so a dismissal sticks however the clock compares with the policy's date.
+  privacyPolicySeen: String,
   // lastLogin: {
   //   type: Date,
   //   default: Date.now

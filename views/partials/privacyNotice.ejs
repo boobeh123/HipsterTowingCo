@@ -1,0 +1,16 @@
+<%# The one-time notice about a privacy policy update, under the header for signed-in users who still need
+    it (showPrivacyNotice, from utils/privacyPolicy.js through middleware/viewLocals.js). "Got it" is a plain
+    form post, so it works without JavaScript; the controller saves the policy's version on the account and
+    comes back to this page. %>
+<div class="privacyNotice" role="region" aria-label="Privacy policy update">
+    <div class="privacyNotice__inner">
+        <p class="privacyNotice__text">
+            We updated our Privacy Policy on <time datetime="<%= privacyPolicy.UPDATED %>"><%= privacyPolicy.updatedLabel %></time>.
+            <a href="/privacy#changes">See what changed</a>
+        </p>
+        <form action="/privacy/notice" method="POST" class="privacyNotice__form">
+            <input type="hidden" name="returnTo" value="<%= locals.currentPath || '/dashboard' %>" />
+            <button type="submit" class="btn btn--nav">Got it</button>
+        </form>
+    </div>
+</div>

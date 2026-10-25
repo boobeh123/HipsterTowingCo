@@ -40,7 +40,8 @@ jest.mock('../../../controllers/reset', () => ({
 }));
 
 jest.mock('../../../controllers/privacy', () => ({
-  getPrivacy: jest.fn((req, res) => res.json({ message: 'Privacy page' })),
+  getPrivacy:     jest.fn((req, res) => res.json({ message: 'Privacy page' })),
+  postNoticeSeen: jest.fn((req, res) => res.json({ message: 'Notice seen' })),
 }));
 
 jest.mock('../../../controllers/terms', () => ({
@@ -304,6 +305,21 @@ describe('Main Routes', () => {
 
       expect(privacyController.getPrivacy).toHaveBeenCalledTimes(1);
       expect(response.body).toEqual({ message: 'Privacy page' });
+    });
+  });
+
+  // Only an account has a notice to dismiss
+  describe('POST /privacy/notice', () => {
+    it('should run ensureAuth, then privacyController.postNoticeSeen', async () => {
+      const response = await request(app)
+        .post('/privacy/notice')
+        .type('form')
+        .send({ returnTo: '/dashboard' })
+        .expect(200);
+
+      expect(ensureAuth).toHaveBeenCalledTimes(1);
+      expect(privacyController.postNoticeSeen).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'Notice seen' });
     });
   });
 

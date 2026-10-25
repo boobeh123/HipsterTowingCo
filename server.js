@@ -43,6 +43,10 @@ app.set('view engine', 'ejs')
 // that includes it (views/partials/checklistSection.ejs)
 app.locals.dvirChecklist = require('./utils/dvirChecklist')
 
+// When the privacy policy last changed, for its page and for the notice that
+// tells signed-in users about it (views/partials/privacyNotice.ejs)
+app.locals.privacyPolicy = require('./utils/privacyPolicy')
+
 // X-Content-Type-Options: nosniff — prevents MIME sniffing attacks
 // X-Frame-Options: SAMEORIGIN — prevents clickjacking via iframes
 // Strict-Transport-Security — forces HTTPS on browsers that have visited before

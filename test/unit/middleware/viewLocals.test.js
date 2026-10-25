@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const flash = require('../../../middleware/flash');
 const viewLocals = require('../../../middleware/viewLocals');
+const privacyPolicy = require('../../../utils/privacyPolicy');
 
 describe('viewLocals', () => {
   let req, res, next;
@@ -47,6 +48,24 @@ describe('viewLocals', () => {
     viewLocals(req, res, next);
 
     expect(res.locals.user).toEqual({ name: 'Jordan Rivera' });
+  });
+
+  // utils/privacyPolicy.js decides; privacyPolicy.test.js covers who it tells
+  it("should show the privacy notice when the policy says this user needs it", () => {
+    const needsPrivacyNotice = jest.spyOn(privacyPolicy, 'needsPrivacyNotice').mockReturnValueOnce(true);
+    req.user = { name: 'Jordan Rivera' };
+
+    viewLocals(req, res, next);
+
+    expect(needsPrivacyNotice).toHaveBeenCalledWith(req.user);
+    expect(res.locals.showPrivacyNotice).toBe(true);
+    needsPrivacyNotice.mockRestore();
+  });
+
+  it('should not show the privacy notice to a guest', () => {
+    viewLocals(req, res, next);
+
+    expect(res.locals.showPrivacyNotice).toBe(false);
   });
 
   // ─────────────────────────────────────────────

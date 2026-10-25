@@ -136,6 +136,13 @@ module.exports = {
         ...newPasswordFields(),
     ],
 
+    // "Got it" on the privacy policy notice. A returnTo that isn't short text
+    // is left out of matchedData(), and safeReturnPath() (utils/privacyPolicy.js)
+    // decides whether what's left is a path on this site.
+    validatePrivacyNotice: [
+        body('returnTo').optional().isString().bail().isLength({ max: 200 }),
+    ],
+
     // The dashboard's filter form, sent as a GET query. Empty fields are
     // skipped. A value that doesn't fit is left out of matchedData(), and the
     // controller tells the page some filters were ignored.
