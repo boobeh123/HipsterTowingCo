@@ -1427,6 +1427,102 @@ body.has-modal-open {
 }
 
 /**************************************************************
+ * Repair sign-off dialog (partials/signOffDialog.ejs): an
+ * .inspection-card, a little wider for its signature pads. The
+ * parts that come and go use the hidden attribute, so nothing
+ * here gives them a display rule. Clear and redo gets one from
+ * .btn, which the [hidden] rule below undoes.
+ **************************************************************/
+.signOff {
+  width: min(34rem, calc(100vw - 2rem));
+}
+
+.signOff__report {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3);
+  background-color: var(--color-modal-surface);
+  border-radius: var(--radius-sm);
+}
+
+.signOff__reportItem + .signOff__reportItem {
+  margin-top: var(--space-2);
+}
+
+.signOff__reportItem dt {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Remarks keep the driver's line breaks */
+.signOff__reportItem dd {
+  margin: 0;
+  white-space: pre-line;
+}
+
+.inspection-card__body .signOff__error {
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-error-text);
+  background-color: #fef2f2;
+  border-left: 3px solid var(--color-error);
+  border-radius: var(--radius-sm);
+}
+
+.signOff__step {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-modal-border);
+}
+
+.signOff__step + .signOff__step {
+  margin-top: var(--space-4);
+}
+
+.signOff__stepTitle {
+  margin: 0 0 var(--space-3);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.signOff__choices {
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  border: 0;
+}
+
+.signOff__legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  font-weight: 600;
+}
+
+.signOff__form .inspection-sig-block,
+.signOff__form .inspection-field {
+  margin-bottom: var(--space-3);
+}
+
+.signOff__signature {
+  max-width: 100%;
+  max-height: 4rem;
+  margin-bottom: var(--space-3);
+  padding: var(--space-1);
+  background-color: #fff;
+  border: 1px solid var(--color-modal-border);
+  border-radius: var(--radius-sm);
+}
+
+/* Prevent .btn's display:inline-flex from overriding the HTML hidden attribute */
+.signOff__redo[hidden] {
+  display: none;
+}
+
+.inspection-card__body .signOff__note {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+/**************************************************************
  * PDF result dialog (guest)
  **************************************************************/
 .result-overlay {
@@ -1663,9 +1759,13 @@ body.has-modal-open {
   vertical-align: middle;
 }
 
+/* Up to three buttons. Where the table is too narrow for them in a row, they
+   wrap inside the cell instead of scrolling Delete out of view. */
 .historyTable__td--action {
   display: flex !important;
+  flex-wrap: wrap;
   justify-content: flex-end !important;
+  gap: var(--space-2);
   text-align: right;
   white-space: nowrap;
 }
@@ -1686,6 +1786,18 @@ body.has-modal-open {
 .historyTable__badge--flag {
   background-color: #fef2f2;
   color: #b91c1c;
+}
+
+/* Defects signed off by the mechanic (utils/signOff.js): 5.6:1 */
+.historyTable__badge--certified {
+  background-color: #fff8e1;
+  color: #8a5a00;
+}
+
+/* And acknowledged by the next driver: the report is final. 7.6:1 */
+.historyTable__badge--final {
+  background-color: #e3f2fd;
+  color: #0d47a1;
 }
 
 /* Empty state */
@@ -3202,8 +3314,9 @@ body.has-modal-open {
     display: none;
   }
 
-  .historytable__redownload {
-    margin
+  /* Its own row above Download PDF and Delete */
+  .historyTable__signOff {
+    flex-basis: 100%;
   }
 }
 

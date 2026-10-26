@@ -126,14 +126,30 @@
                                         </td>
                                         <td class="historyTable__td" data-label="Truck / Tractor"> <%= inspection.truckTractorNo %></td>
                                         <td class="historyTable__td" data-label="Trailer"> <%= inspection.trailerNo || '—' %></td>
+                                        <%# A report with defects moves on as it's signed off (utils/signOff.js) %>
                                         <td class="historyTable__td" data-label="Condition">
                                             <% if (inspection.conditionSatisfactory) { %>
                                                 <span class="historyTable__badge historyTable__badge--ok">Satisfactory</span>
+                                            <% } else if (inspection.signOff === 'acknowledged') { %>
+                                                <span class="historyTable__badge historyTable__badge--final">Acknowledged</span>
+                                            <% } else if (inspection.signOff === 'certified') { %>
+                                                <span class="historyTable__badge historyTable__badge--certified">Repairs certified</span>
                                             <% } else { %>
                                                 <span class="historyTable__badge historyTable__badge--flag">Defects noted</span>
                                             <% } %>
                                         </td>
                                         <td class="historyTable__td historyTable__td--action">
+                                            <% if (inspection.signOff === 'open' || inspection.signOff === 'certified') { %>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn--nav historyTable__signOff"
+                                                    data-id="<%= inspection._id %>"
+                                                    aria-haspopup="dialog"
+                                                    aria-label="Sign off repairs for truck <%= inspection.truckTractorNo %>"
+                                                >
+                                                    Sign off repairs
+                                                </button>
+                                            <% } %>
                                             <button
                                                 type="button"
                                                 class="btn btn--nav historyTable__redownload"
@@ -182,4 +198,5 @@
 </main>
 
 <%- include('./partials/inspectionModal.ejs') %>
+<%- include('./partials/signOffDialog.ejs') %>
 <%- include('./partials/footer.ejs') %>
