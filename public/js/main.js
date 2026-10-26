@@ -7,7 +7,8 @@ const closeResultBtn = document.querySelector('#closeResultBtn');
 const saveStatus = document.querySelector('#saveStatus');
 const filterTz = document.querySelector('#filter-tz');
 const exportLink = document.querySelector('.dashboard__exportBtn');
-const signaturePadElements = document.querySelectorAll('.inspection-sig-pad');
+// The inspection form's pads only: the dashboard's sign-off dialog has its own
+const signaturePadElements = document.querySelectorAll('#inspectionForm .inspection-sig-pad');
 
 // Holds the most recently generated jsPDF doc, and the data it was built
 // from, so the download button can save it under a meaningful file name
@@ -755,6 +756,9 @@ async function generateDVIRPDF(sanitizedUserInspectionObject) {
     const SIGNATURE_BOXES = {
         driverSignature: { x: 50, bottom: 232.3, maxWidth: 75, maxHeight: 7 },
         mechanicSignature: { x: 57, bottom: 257.0, maxWidth: 75, maxHeight: 7 },
+        // The form's last line: the next driver's acknowledgment, signed later
+        // from the dashboard's sign-off dialog
+        nextDriverSignature: { x: 50, bottom: 265.6, maxWidth: 75, maxHeight: 7 },
     };
     driverVehicleInspectionReport.setPage(1);
     Object.entries(SIGNATURE_BOXES).forEach(([field, box]) => {
@@ -1209,6 +1213,234 @@ if (historyTable) {
                 btn.textContent = btn.dataset.label;
             }, 3000);
         }
+    });
+}
+
+/**************************************************************
+ * Repair sign-offs from the dashboard (views/partials/signOffDialog.ejs)
+ * "Sign off repairs" on a history row opens the dialog with that
+ * report, read-only, followed by the mechanic's certification and
+ * then the next driver's acknowledgment (controllers/inspection.js).
+ * Each step saves with fetch(), so an error shows in the dialog and
+ * the drawn signature stays. The mechanic's part can be cleared and
+ * redone until the next driver signs; that makes the report final.
+ * Closing the dialog after a change reloads the page, so the row's
+ * badge and button catch up.
+ **************************************************************/
+const signOffDialog = document.querySelector('#signOffDialog');
+
+if (signOffDialog && historyTable) {
+    const labels = JSON.parse(signOffDialog.dataset.labels);
+    const errorBox = signOffDialog.querySelector('.signOff__error');
+    const forms = {
+        certification: signOffDialog.querySelector('[data-form="certification"]'),
+        acknowledgment: signOffDialog.querySelector('[data-form="acknowledgment"]'),
+    };
+    const saved = {
+        certification: signOffDialog.querySelector('[data-saved="certification"]'),
+        acknowledgment: signOffDialog.querySelector('[data-saved="acknowledgment"]'),
+    };
+    const waitingNote = signOffDialog.querySelector('[data-note="waiting"]');
+    const pads = {};
+    signOffDialog.querySelectorAll('[data-signoff-pad]').forEach((element) => {
+        pads[element.dataset.signoffPad] = createSignaturePad(element);
+    });
+
+    // The form's two boxes, in its own words
+    const OUTCOMES = {
+        corrected: 'Above Defects Corrected',
+        notNeeded: 'Above Defects Need NOT Be Corrected For Safe Operation Of Vehicle',
+    };
+
+    let report = null;
+    let opener = null;
+    let changed = false;
+
+    const today = () => {
+        const date = new Date();
+        return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    };
+
+    // Reports saved in 2025 can hold HTML entities (see decodeHTMLEntities in utils.js)
+    const text = (value) => decodeHTMLEntities(String(value || ''));
+
+    function showError(message) {
+        errorBox.textContent = message || '';
+        errorBox.hidden = !message;
+    }
+
+    function defectNames(inspection) {
+        const defects = inspection.defects || {};
+        const truck = Object.entries(defects.truckTractor || {})
+            .filter(([, ticked]) => ticked === true)
+            .map(([key]) => labels.truckTractor[key] || key);
+        const trailer = Object.entries(defects.trailer || {})
+            .filter(([, ticked]) => ticked === true)
+            .map(([key]) => `Trailer: ${labels.trailer[key] || key}`);
+        return truck.concat(trailer).join(', ');
+    }
+
+    function showSignature(container, image) {
+        const img = container.querySelector('.signOff__signature');
+        img.hidden = !isSignatureImage(image);
+        if (!img.hidden) img.src = image;
+    }
+
+    // Lays the dialog out for where the report stands
+    function render() {
+        const field = (name) => signOffDialog.querySelector(`[data-report="${name}"]`);
+        field('truckTractorNo').textContent = text(report.truckTractorNo);
+        field('date').textContent = text(report.date) || new Date(report.createdAt).toLocaleDateString();
+        field('defects').textContent = defectNames(report);
+        field('remarks').textContent = text(report.remarks) || 'None';
+
+        const certified = Boolean(report.defectsCorrected || report.defectsNotCorrected);
+        const acknowledged = Boolean(report.acknowledgedAt);
+
+        saved.certification.hidden = !certified;
+        forms.certification.hidden = certified;
+        if (certified) {
+            const outcome = report.defectsCorrected ? OUTCOMES.corrected : OUTCOMES.notNeeded;
+            saved.certification.querySelector('.signOff__savedText').textContent =
+                report.mechanicDate ? `${outcome}, dated ${text(report.mechanicDate)}` : outcome;
+            showSignature(saved.certification, report.mechanicSignature);
+            saved.certification.querySelector('[data-action="clear-certification"]').hidden = acknowledged;
+        }
+
+        waitingNote.hidden = certified;
+        saved.acknowledgment.hidden = !acknowledged;
+        forms.acknowledgment.hidden = !certified || acknowledged;
+        if (acknowledged) {
+            saved.acknowledgment.querySelector('.signOff__savedText').textContent =
+                `Signed by the next driver, dated ${text(report.driverDate)}`;
+            showSignature(saved.acknowledgment, report.nextDriverSignature);
+        }
+
+        // A pad only has a size once it shows
+        Object.values(pads).forEach((pad) => pad.resize());
+    }
+
+    // Sends one step and returns the server's answer, or throws its message
+    async function send(method, step, body) {
+        const response = await fetch(`/inspections/${report._id}/${step}`, {
+            method,
+            headers: JSON_HEADERS,
+            body: body ? JSON.stringify(body) : undefined,
+        });
+        const answer = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            throw new Error(answer.error || 'That didn\'t save. Check your connection and try again.');
+        }
+        return answer;
+    }
+
+    // Runs a step with its button disabled, and shows any error in the dialog
+    async function busy(button, step) {
+        if (button.disabled) return;
+        button.disabled = true;
+        showError('');
+        try {
+            await step();
+            changed = true;
+            render();
+        } catch (err) {
+            showError(err.message);
+        } finally {
+            button.disabled = false;
+        }
+    }
+
+    historyTable.addEventListener('click', async (event) => {
+        const btn = event.target.closest('.historyTable__signOff');
+        if (!btn || btn.disabled) return;
+        btn.disabled = true;
+        try {
+            const response = await fetch(`/inspections/${btn.dataset.id}`, { headers: JSON_HEADERS });
+            if (!response.ok) {
+                throw new Error(`Failed to fetch inspection (${response.status}).`);
+            }
+            report = await response.json();
+        } catch (err) {
+            console.error('Opening the sign-off failed:', err);
+            btn.textContent = 'Couldn\'t open. Try again';
+            setTimeout(() => { btn.textContent = 'Sign off repairs'; }, 3000);
+            return;
+        } finally {
+            btn.disabled = false;
+        }
+
+        opener = btn;
+        changed = false;
+        showError('');
+        Object.values(forms).forEach((form) => form.reset());
+        forms.certification.elements.mechanicDate.value = today();
+        forms.acknowledgment.elements.driverDate.value = today();
+        signOffDialog.showModal();
+        signOffDialog.scrollTop = 0;
+        Object.values(pads).forEach((pad) => pad.clear());
+        render();
+    });
+
+    forms.certification.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const form = forms.certification;
+        busy(form.querySelector('.signOff__submit'), async () => {
+            const body = {
+                outcome: form.elements.outcome.value || undefined,
+                mechanicSignature: pads.mechanicSignature.toDataUrl(),
+                mechanicDate: form.elements.mechanicDate.value.trim(),
+            };
+            await send('PUT', 'certification', body);
+            Object.assign(report, {
+                defectsCorrected: body.outcome === 'corrected',
+                defectsNotCorrected: body.outcome === 'notNeeded',
+                mechanicSignature: body.mechanicSignature,
+                mechanicDate: body.mechanicDate,
+            });
+        });
+    });
+
+    signOffDialog.querySelector('[data-action="clear-certification"]').addEventListener('click', (event) => {
+        if (!confirm('Clear the mechanic\'s sign-off so it can be done again?')) return;
+        busy(event.currentTarget, async () => {
+            await send('DELETE', 'certification');
+            Object.assign(report, { defectsCorrected: false, defectsNotCorrected: false, mechanicSignature: undefined, mechanicDate: undefined });
+            forms.certification.reset();
+            forms.certification.elements.mechanicDate.value = today();
+            pads.mechanicSignature.clear();
+        });
+    });
+
+    forms.acknowledgment.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const form = forms.acknowledgment;
+        const body = {
+            nextDriverSignature: pads.nextDriverSignature.toDataUrl(),
+            driverDate: form.elements.driverDate.value.trim(),
+        };
+        // Asks only once both are filled in. A missing one goes straight to the
+        // server, whose answer says which.
+        if (body.nextDriverSignature && body.driverDate &&
+            !confirm('Sign and make this report final? Nothing on it can be changed after this.')) return;
+        busy(form.querySelector('.signOff__submit'), async () => {
+            await send('PUT', 'acknowledgment', body);
+            Object.assign(report, { ...body, acknowledgedAt: new Date().toISOString() });
+        });
+    });
+
+    // Close, or a click on the dimmed area around the card (the dialog itself)
+    signOffDialog.addEventListener('click', (event) => {
+        if (event.target === signOffDialog || event.target.closest('.inspection-card__close')) {
+            signOffDialog.close();
+        }
+    });
+
+    signOffDialog.addEventListener('close', () => {
+        if (changed) {
+            window.location.reload();
+            return;
+        }
+        if (opener) opener.focus();
     });
 }
 

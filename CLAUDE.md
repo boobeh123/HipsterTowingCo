@@ -21,7 +21,7 @@ each PR linked to its thread, with the date it merged (Hawaii time). Take them f
 ```bash
 npm run dev      # node --watch server.js (restarts when a loaded file changes)
 npm start        # node server.js
-npm test         # jest — runs all 29 suites
+npm test         # jest — runs all 30 suites
 ```
 
 Run a single suite or a single test:
@@ -36,7 +36,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 494 passed, 29 suites, 0 failures
+### Expected test baseline: 509 passed, 30 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -302,7 +302,9 @@ Details that are easy to break:
 ### Signature pads (driver and mechanic)
 
 The modal has two optional pads (`.inspection-sig-pad`, `data-field` naming the inspection field).
-The acknowledgment line (the next driver, after repairs) has none, and stays blank for signing by hand.
+The acknowledgment line (the next driver, after repairs) has none on the form: the next driver signs
+the printed copy, or a saved report through the dashboard's sign-off dialog (below). main.js only
+registers `#inspectionForm .inspection-sig-pad` as the form's pads, so the dialog's stay separate.
 The mechanic's pad sits in the repair section, which stays hidden until a defect is ticked (below).
 
 - `createSignaturePad()` in main.js draws with pointer events (finger, stylus and mouse). The canvas
@@ -324,9 +326,29 @@ The mechanic's pad sits in the repair section, which stays hidden until a defect
 ### Repair sign-offs on saved reports
 
 A saved report that lists defects can take two sign-offs later: the mechanic's certification
-(49 CFR 396.11(a)(3)) and then the next driver's acknowledgment (396.13). The dashboard's dialog for
-them is still to come. The server side, all JSON for a `fetch()`, guarded by `ensureAuthApi` and
-`signOffLimiter`:
+(49 CFR 396.11(a)(3)) and then the next driver's acknowledgment (396.13).
+
+**On the dashboard:**
+
+- `getDashboard` loads each row's defects and sign-off fields (never the signatures) and adds its
+  `signOff` status. The row's badge follows it: "Defects noted", then "Repairs certified", then
+  "Acknowledged".
+- Rows that are `open` or `certified` get a **Sign off repairs** button. With three buttons, the
+  action cell wraps them where the table is narrow, instead of scrolling Delete out of view. On
+  phones, Sign off repairs gets its own row.
+- The button opens `partials/signOffDialog.ejs`. The script for it is in main.js (search
+  `signOffDialog`). It shows the report read-only from `GET /inspections/:id`, then the mechanic's
+  step (the form's two boxes, a pad, a date), then the next driver's (a pad and a date). Dates
+  start as today's.
+- Each step saves with `fetch()`, so a server error shows in the dialog's `role="alert"` line and
+  the drawn signature stays.
+- "Clear and redo" deletes the mechanic's part until the next driver signs. Signing the next
+  driver's part asks for confirmation first, because it makes the report final.
+- Closing the dialog after any change reloads the page, so the row catches up.
+- `generateDVIRPDF()` stamps `nextDriverSignature` on the form's last line (`SIGNATURE_BOXES`), so
+  re-downloads carry every sign-off.
+
+**The server side**, all JSON for a `fetch()`, guarded by `ensureAuthApi` and `signOffLimiter`:
 
 - `PUT /inspections/:id/certification` (`validateCertification`): `outcome` is `corrected` or
   `notNeeded` (the form's two boxes, `defectsCorrected` / `defectsNotCorrected`), with a required
@@ -371,7 +393,9 @@ How it holds together:
     draw saved inspections as they were stored.
 - **Shown and hidden with the `hidden` attribute.** `.inspection-help`, `.inspection-note` and
   `.inspection-repair` have no `display` rule in style.css, because one would override `hidden`.
-  Keep it that way.
+  Keep it that way. normalize.css's `[hidden] { display: none; }` beats element rules such as
+  `img`, but not a class that sets `display` (`.btn`, `.modal-flash`): an element like that needs
+  its own `[hidden]` rule (`.modal-flash[hidden]`, `.signOff__redo[hidden]`).
 
 ### The checklist and its notes (`utils/dvirChecklist.js`)
 

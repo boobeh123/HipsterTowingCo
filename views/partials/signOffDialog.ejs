@@ -1,0 +1,101 @@
+<%# The repair sign-off dialog on the dashboard. A saved report that lists defects takes the mechanic's
+    certification, then the next driver's acknowledgment (controllers/inspection.js, utils/signOff.js).
+    main.js fills it from GET /inspections/:id when a row's "Sign off repairs" is pressed and saves each
+    step with fetch(), so a missed field shows here instead of costing a drawn signature. The parts that
+    come and go use the hidden attribute, so style.css gives them no display rule (Clear and redo gets one
+    from .btn, and a [hidden] rule undoes it). The defect names come from utils/dvirChecklist.js, through
+    data-labels. %>
+<dialog
+    id="signOffDialog"
+    class="inspection-card signOff"
+    aria-labelledby="signOff-title"
+    data-labels="<%= JSON.stringify({ truckTractor: dvirChecklist.labelsFor('truckTractor'), trailer: dvirChecklist.labelsFor('trailer') }) %>"
+>
+    <div class="inspection-card__body">
+        <div class="inspection-card__head">
+            <h2 id="signOff-title" class="inspection-card__title">Sign off repairs</h2>
+            <button type="button" class="inspection-card__close">Close</button>
+        </div>
+
+        <%# The report as the driver saved it. Nothing here can be changed. %>
+        <dl class="signOff__report">
+            <div class="signOff__reportItem">
+                <dt>Truck / Tractor No.</dt>
+                <dd data-report="truckTractorNo"></dd>
+            </div>
+            <div class="signOff__reportItem">
+                <dt>Date</dt>
+                <dd data-report="date"></dd>
+            </div>
+            <div class="signOff__reportItem">
+                <dt>Defects</dt>
+                <dd data-report="defects"></dd>
+            </div>
+            <div class="signOff__reportItem">
+                <dt>Remarks</dt>
+                <dd data-report="remarks"></dd>
+            </div>
+        </dl>
+
+        <p class="signOff__error" role="alert" hidden></p>
+
+        <section class="signOff__step" aria-labelledby="signOff-mechanic-title">
+            <h3 id="signOff-mechanic-title" class="signOff__stepTitle">1. Mechanic's certification</h3>
+            <div class="signOff__saved" data-saved="certification" hidden>
+                <p class="signOff__savedText"></p>
+                <img class="signOff__signature" alt="The mechanic's signature" />
+                <button type="button" class="btn btn--secondary signOff__redo" data-action="clear-certification">Clear and redo</button>
+            </div>
+            <form class="signOff__form" data-form="certification" novalidate hidden>
+                <fieldset class="signOff__choices">
+                    <legend class="signOff__legend">Whoever handled the repairs ticks one:</legend>
+                    <label class="inspection-condition">
+                        <input type="radio" name="outcome" value="corrected" />
+                        <span>Above Defects Corrected</span>
+                    </label>
+                    <label class="inspection-condition">
+                        <input type="radio" name="outcome" value="notNeeded" />
+                        <span>Above Defects Need NOT Be Corrected For Safe Operation Of Vehicle</span>
+                    </label>
+                </fieldset>
+                <div class="inspection-sig-block">
+                    <span id="signOff-mechanic-label" class="inspection-sig-block__label">Mechanic's Signature</span>
+                    <div class="inspection-sig-pad" data-signoff-pad="mechanicSignature">
+                        <canvas class="inspection-sig-pad__canvas" role="img" aria-labelledby="signOff-mechanic-label"></canvas>
+                        <button type="button" class="inspection-sig-pad__clear" aria-label="Clear the mechanic's signature">Clear</button>
+                    </div>
+                </div>
+                <div class="inspection-field inspection-field--date">
+                    <label for="signOff-mechanic-date">Date</label>
+                    <input type="text" id="signOff-mechanic-date" name="mechanicDate" maxlength="20" autocomplete="off" />
+                </div>
+                <button type="submit" class="btn btn--primary signOff__submit">Save the mechanic's sign-off</button>
+            </form>
+        </section>
+
+        <section class="signOff__step" aria-labelledby="signOff-driver-title">
+            <h3 id="signOff-driver-title" class="signOff__stepTitle">2. Next driver's acknowledgment</h3>
+            <p class="signOff__note" data-note="waiting">The next driver signs once the mechanic's part is saved.</p>
+            <div class="signOff__saved" data-saved="acknowledgment" hidden>
+                <p class="signOff__savedText"></p>
+                <img class="signOff__signature" alt="The next driver's signature" />
+                <p class="signOff__note">This report is final.</p>
+            </div>
+            <form class="signOff__form" data-form="acknowledgment" novalidate hidden>
+                <p class="signOff__note">Before driving, read the report above, then sign to confirm the repairs were certified. Signing makes the report final: nothing on it can change after this.</p>
+                <div class="inspection-sig-block">
+                    <span id="signOff-driver-label" class="inspection-sig-block__label">Next Driver's Signature</span>
+                    <div class="inspection-sig-pad" data-signoff-pad="nextDriverSignature">
+                        <canvas class="inspection-sig-pad__canvas" role="img" aria-labelledby="signOff-driver-label"></canvas>
+                        <button type="button" class="inspection-sig-pad__clear" aria-label="Clear the next driver's signature">Clear</button>
+                    </div>
+                </div>
+                <div class="inspection-field inspection-field--date">
+                    <label for="signOff-driver-date">Date</label>
+                    <input type="text" id="signOff-driver-date" name="driverDate" maxlength="20" autocomplete="off" />
+                </div>
+                <button type="submit" class="btn btn--primary signOff__submit">Sign and make final</button>
+            </form>
+        </section>
+    </div>
+</dialog>

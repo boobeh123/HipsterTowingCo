@@ -62,6 +62,29 @@ describe('dashboardController.getDashboard', () => {
         }));
     });
 
+    // Each row's badge and its "Sign off repairs" button follow utils/signOff.js
+    it('should give each row its sign-off status, loading the fields that decide it but no signatures', async () => {
+        const brakes = { truckTractor: { brakes: true }, trailer: {} };
+        const find = mockFind([
+            { _id: 'a', truckTractorNo: '1', conditionSatisfactory: true, defects: { truckTractor: {}, trailer: {} } },
+            { _id: 'b', truckTractorNo: '2', defects: brakes },
+            { _id: 'c', truckTractorNo: '3', defects: brakes, defectsCorrected: true },
+            { _id: 'd', truckTractorNo: '4', defects: brakes, defectsNotCorrected: true, acknowledgedAt: new Date() },
+        ]);
+        Counter.findOne.mockResolvedValue({ value: 1 });
+        Inspection.countDocuments.mockResolvedValue(4);
+        Inspection.findOne.mockReturnValue(mockFindOne(null));
+        Inspection.find.mockReturnValue(find);
+
+        await dashboardController.getDashboard(req, res, next);
+
+        const selected = find.select.mock.calls[0][0].split(' ');
+        expect(selected).toEqual(expect.arrayContaining(['defects', 'defectsCorrected', 'defectsNotCorrected', 'acknowledgedAt']));
+        expect(selected).not.toEqual(expect.arrayContaining(['mechanicSignature']));
+        const { inspections } = res.render.mock.calls[0][1];
+        expect(inspections.map((inspection) => inspection.signOff)).toEqual(['none', 'open', 'certified', 'acknowledged']);
+    });
+
     // inspectionCount feeds inspectionModal.ejs, which dashboard.ejs includes.
     // Dropping it renders a 500, so it is pinned here deliberately.
     it('should pass inspectionCount through for the modal partial', async () => {

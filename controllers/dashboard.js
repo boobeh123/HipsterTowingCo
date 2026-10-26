@@ -4,6 +4,7 @@ const Inspection = require('../models/Inspection')
 const Counter = require('../models/Counter')
 const { buildInspectionFilter } = require('../utils/inspectionFilter')
 const { CSV_HEADER, inspectionRow, exportFileName } = require('../utils/inspectionCsv')
+const { signOffStatus } = require('../utils/signOff')
 
 const INSPECTIONS_PER_PAGE = 10
 
@@ -74,12 +75,16 @@ module.exports = {
             // A page past the end shows the last page instead of an empty table
             const page = Math.max(1, Math.min(query.page || 1, totalPages))
 
-            const inspections = await Inspection.find(filter)
+            // The defect and sign-off fields decide each row's badge and whether it
+            // offers "Sign off repairs" (utils/signOff.js). Signatures stay out of
+            // the list; the dialog fetches the one report it opens.
+            const rows = await Inspection.find(filter)
                 .sort({ createdAt: -1 })
                 .skip((page - 1) * INSPECTIONS_PER_PAGE)
                 .limit(INSPECTIONS_PER_PAGE)
-                .select('truckTractorNo trailerNo date createdAt conditionSatisfactory')
+                .select('truckTractorNo trailerNo date createdAt conditionSatisfactory defects defectsCorrected defectsNotCorrected acknowledgedAt')
                 .lean()
+            const inspections = rows.map((inspection) => ({ ...inspection, signOff: signOffStatus(inspection) }))
 
             res.render('dashboard.ejs', {
                 inspections,
