@@ -33,6 +33,23 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.024
+📅 **Release Date:** October 25th, 2026
+
+## 📢 Developer's Notes - Checklist notes & photos, driver guides, a security release & the new privacy policy, with Claude Code
+
+- PRs #9–#17, one at a time. Each links to its thread on GitHub, with the date it merged:
+  - [#9 Add help notes to the inspection form, and show the repair section only with defects](https://github.com/boobeh123/HipsterTowingCo/pull/9) · October 12th, 2026
+  - [#10 Replace connect-flash with a small flash middleware of our own](https://github.com/boobeh123/HipsterTowingCo/pull/10) · October 12th, 2026
+  - [#11 Add "what to check" notes to 19 checklist boxes](https://github.com/boobeh123/HipsterTowingCo/pull/11) · October 12th, 2026
+  - [#12 Add notes to the 11 walk-around checklist boxes](https://github.com/boobeh123/HipsterTowingCo/pull/12) · October 12th, 2026
+  - [#13 Show Bobby's truck photos in 13 checklist notes](https://github.com/boobeh123/HipsterTowingCo/pull/13) · October 13th, 2026
+  - [#14 Add /learn guides, starting with How to fill out a DVIR](https://github.com/boobeh123/HipsterTowingCo/pull/14) · October 13th, 2026
+  - [#15 Add the pre-trip guide at /learn/pre-trip](https://github.com/boobeh123/HipsterTowingCo/pull/15) · October 13th, 2026
+  - [#16 Refuse compressed request bodies and pin Node 24.22.1 (Oct 21 security release)](https://github.com/boobeh123/HipsterTowingCo/pull/16) · October 21st, 2026
+  - [#17 Publish the updated privacy policy and tell signed-in users](https://github.com/boobeh123/HipsterTowingCo/pull/17) · October 25th, 2026
+- 455/455 passing unit tests (up from 295)
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.023
 📅 **Release Date:** October 12th, 2026
 
