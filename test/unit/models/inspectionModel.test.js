@@ -141,4 +141,25 @@ describe('Inspection Model — length limits and unknown fields', () => {
     expect(truckTractor).not.toHaveProperty('$where');
     expect(inspection.toObject().defects.trailer.tires).toBe(true);
   });
+
+  // Added from the dashboard after the report is saved (controllers/inspection.js)
+  it("should keep the next driver's signature within the same limit as the others, and store when sign-offs were saved", async () => {
+    const inspection = new Inspection({
+      truckTractorNo: '12345',
+      userId: new mongoose.Types.ObjectId(),
+      nextDriverSignature: 'x'.repeat(60001),
+      repairCertifiedAt: '2026-10-26T10:00:00Z',
+      acknowledgedAt: '2026-10-27T10:00:00Z',
+    });
+    let err;
+    try {
+      await inspection.validate();
+    } catch(e) {
+      err = e;
+    }
+    expect(err.errors.nextDriverSignature.message).toBe('A signature was too large.');
+    expect(inspection.repairCertifiedAt).toBeInstanceOf(Date);
+    expect(inspection.acknowledgedAt).toBeInstanceOf(Date);
+  });
+
 });

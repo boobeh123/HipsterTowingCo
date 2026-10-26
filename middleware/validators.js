@@ -83,12 +83,24 @@ const isPngSignature = (value) => {
     return Buffer.from(base64.slice(0, 12), 'base64').subarray(0, 8).equals(PNG_SIGNATURE)
 }
 
-const signatureField = (field) =>
-    body(field)
-        .optional()
+const signatureChecks = (chain) =>
+    chain
         .isString().withMessage('Signatures must be images.').bail()
         .isLength({ max: SIGNATURE_MAX_LENGTH }).withMessage('A signature was too large. Please clear it and sign again.').bail()
         .custom(isPngSignature).withMessage('Signatures must be PNG images drawn on the form.')
+
+const signatureField = (field) => signatureChecks(body(field).optional())
+
+// A sign-off added from the dashboard has to be signed: that's its whole point
+const requiredSignature = (field, message) =>
+    signatureChecks(body(field).exists({ values: 'falsy' }).withMessage(message).bail())
+
+const requiredText = (field, maxLength, label) =>
+    body(field)
+        .isString().withMessage(`${label} is required.`).bail()
+        .trim()
+        .notEmpty().withMessage(`${label} is required.`).bail()
+        .isLength({ max: maxLength }).withMessage(`${label} can be up to ${maxLength} characters.`)
 
 const TERMS_MESSAGE = 'Please agree to the Terms of Use to create an account.'
 
@@ -178,5 +190,20 @@ module.exports = {
         checkbox('defects.trailer.*'),
         signatureField('driverSignature'),
         signatureField('mechanicSignature'),
+    ],
+
+    // The mechanic's repair certification, added to a saved report from the
+    // dashboard: which of the form's two boxes applies, a signature and a date
+    validateCertification: [
+        body('outcome')
+            .isIn(['corrected', 'notNeeded']).withMessage("Choose whether the defects were corrected or don't need correcting."),
+        requiredSignature('mechanicSignature', "The mechanic's signature is required."),
+        requiredText('mechanicDate', 20, "The mechanic's date"),
+    ],
+
+    // The next driver's acknowledgment of a certified report
+    validateAcknowledgment: [
+        requiredSignature('nextDriverSignature', "The next driver's signature is required."),
+        requiredText('driverDate', 20, "The next driver's date"),
     ],
 }

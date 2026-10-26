@@ -1,6 +1,6 @@
 const inspectionController = require('../../../controllers/inspection');
 const Inspection = require('../../../models/Inspection');
-const { validateInspection } = require('../../../middleware/validators');
+const { validateInspection, validateCertification, validateAcknowledgment } = require('../../../middleware/validators');
 const runValidators = require('../helpers/runValidators');
 
 jest.mock('../../../models/Inspection');
@@ -402,3 +402,235 @@ describe('inspectionController.deleteInspection', () => {
     expect(res.redirect).not.toHaveBeenCalled();
   });
 });
+
+// ─────────────────────────────────────────────
+// Repair sign-offs: the mechanic's certification and the next driver's
+// acknowledgment, added to a saved report from the dashboard
+// ─────────────────────────────────────────────
+describe('inspectionController repair sign-offs', () => {
+  let req, res, next;
+
+  const PNG = 'data:image/png;base64,' + Buffer.from('89504e470d0a1a0a0000000d49484452', 'hex').toString('base64');
+  const NO_DEFECTS = 'This report lists no defects, so there are no repairs to sign off.';
+  const NOT_CERTIFIED = 'The mechanic has to certify the repairs before the next driver signs.';
+  const FINAL = "The next driver has signed this report, so it can't be changed.";
+
+  const report = (fields = {}) => ({ _id: 'insp-1', userId: 'user123', defects: { truckTractor: { brakes: true }, trailer: {} }, ...fields });
+  const found = (doc) => Inspection.findOne.mockReturnValue({ lean: jest.fn().mockResolvedValue(doc) });
+  const castError = () => Object.assign(new Error('Cast to ObjectId failed'), { name: 'CastError' });
+
+  beforeEach(() => {
+    req = { params: { id: 'insp-1' }, user: { _id: 'user123' }, body: {} };
+    res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+    next = jest.fn();
+    Inspection.updateOne.mockResolvedValue({ matchedCount: 1 });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('putCertification', () => {
+
+    const valid = { outcome: 'corrected', mechanicSignature: PNG, mechanicDate: '10/26/2026' };
+
+    // Runs the route's validators, then the controller
+    const certify = async (body) => {
+      req.body = body;
+      await runValidators(validateCertification, req);
+      await inspectionController.putCertification(req, res, next);
+    };
+
+    it("should save the mechanic's certification on this user's report, and nothing else", async () => {
+      found(report());
+
+      await certify({ ...valid, remarks: 'rewritten', defects: { truckTractor: {} }, acknowledgedAt: '2020-01-01' });
+
+      expect(Inspection.findOne).toHaveBeenCalledWith({ _id: 'insp-1', userId: 'user123' });
+      expect(Inspection.updateOne).toHaveBeenCalledWith(
+        { _id: 'insp-1', userId: 'user123', acknowledgedAt: null },
+        { $set: { defectsCorrected: true, defectsNotCorrected: false, mechanicSignature: PNG, mechanicDate: '10/26/2026', repairCertifiedAt: expect.any(Date) } },
+        { runValidators: true },
+      );
+      expect(res.json).toHaveBeenCalledWith({ status: 'certified' });
+    });
+
+    it('should tick the form\'s other box when repairs weren\'t needed', async () => {
+      found(report());
+
+      await certify({ ...valid, outcome: 'notNeeded' });
+
+      const [, update] = Inspection.updateOne.mock.calls[0];
+      expect(update.$set).toMatchObject({ defectsCorrected: false, defectsNotCorrected: true });
+    });
+
+    // Option B: the mechanic's part stays open to corrections until the next driver signs
+    it('should let the mechanic redo a certification before the next driver signs', async () => {
+      found(report({ defectsCorrected: true, mechanicSignature: PNG, mechanicDate: '10/25/2026' }));
+
+      await certify({ ...valid, outcome: 'notNeeded' });
+
+      expect(Inspection.updateOne).toHaveBeenCalledTimes(1);
+      expect(res.json).toHaveBeenCalledWith({ status: 'certified' });
+    });
+
+    it.each([
+      ['no outcome', { mechanicSignature: PNG, mechanicDate: '10/26/2026' }, "Choose whether the defects were corrected or don't need correcting."],
+      ['an unknown outcome', { ...valid, outcome: 'maybe' }, "Choose whether the defects were corrected or don't need correcting."],
+      ['no signature', { ...valid, mechanicSignature: '' }, "The mechanic's signature is required."],
+      ['a signature that isn\'t a drawn PNG', { ...valid, mechanicSignature: 'Jordan Rivera' }, 'Signatures must be PNG images drawn on the form.'],
+      ['no date', { ...valid, mechanicDate: '   ' }, "The mechanic's date is required."],
+      ['a date over 20 characters', { ...valid, mechanicDate: '1'.repeat(21) }, "The mechanic's date can be up to 20 characters."],
+    ])('should answer 400 for %s, without loading the report', async (label, body, error) => {
+      await certify(body);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error });
+      expect(Inspection.findOne).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['lists no defects', report({ defects: { truckTractor: { brakes: false }, trailer: {} } }), NO_DEFECTS],
+      ['has been signed by the next driver', report({ defectsCorrected: true, acknowledgedAt: new Date() }), FINAL],
+    ])('should answer 409 when the report %s', async (label, doc, error) => {
+      found(doc);
+
+      await certify(valid);
+
+      expect(res.status).toHaveBeenCalledWith(409);
+      expect(res.json).toHaveBeenCalledWith({ error });
+      expect(Inspection.updateOne).not.toHaveBeenCalled();
+    });
+
+    it('should answer 409 if the next driver signed in the meantime', async () => {
+      found(report({ defectsCorrected: true }));
+      Inspection.updateOne.mockResolvedValue({ matchedCount: 0 });
+
+      await certify(valid);
+
+      expect(res.status).toHaveBeenCalledWith(409);
+      expect(res.json).toHaveBeenCalledWith({ error: FINAL });
+    });
+
+    it("should answer 404 for another user's report, or a malformed id", async () => {
+      found(null);
+      await certify(valid);
+      expect(res.status).toHaveBeenLastCalledWith(404);
+
+      Inspection.findOne.mockReturnValue({ lean: jest.fn().mockRejectedValue(castError()) });
+      await certify(valid);
+      expect(res.status).toHaveBeenLastCalledWith(404);
+      expect(res.json).toHaveBeenLastCalledWith({ error: 'Inspection not found.' });
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it('should pass other errors to next', async () => {
+      found(report());
+      Inspection.updateOne.mockRejectedValue(new Error('db down'));
+
+      await certify(valid);
+
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
+    });
+
+  });
+
+  describe('deleteCertification', () => {
+
+    it("should clear the mechanic's part of the report", async () => {
+      found(report({ defectsCorrected: true, mechanicSignature: PNG, mechanicDate: '10/26/2026', repairCertifiedAt: new Date() }));
+
+      await inspectionController.deleteCertification(req, res, next);
+
+      expect(Inspection.updateOne).toHaveBeenCalledWith(
+        { _id: 'insp-1', userId: 'user123', acknowledgedAt: null },
+        {
+          $set: { defectsCorrected: false, defectsNotCorrected: false },
+          $unset: { mechanicSignature: '', mechanicDate: '', repairCertifiedAt: '' },
+        },
+      );
+      expect(res.json).toHaveBeenCalledWith({ status: 'open' });
+    });
+
+    it.each([
+      ['once the next driver has signed', report({ defectsCorrected: true, acknowledgedAt: new Date() }), FINAL],
+      ['on a report without defects', report({ defects: { truckTractor: {}, trailer: {} } }), NO_DEFECTS],
+    ])('should refuse %s', async (label, doc, error) => {
+      found(doc);
+
+      await inspectionController.deleteCertification(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(409);
+      expect(res.json).toHaveBeenCalledWith({ error });
+      expect(Inspection.updateOne).not.toHaveBeenCalled();
+    });
+
+    it("should answer 404 for another user's report", async () => {
+      found(null);
+
+      await inspectionController.deleteCertification(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+    });
+
+  });
+
+  describe('putAcknowledgment', () => {
+
+    const valid = { nextDriverSignature: PNG, driverDate: '10/27/2026' };
+
+    const acknowledge = async (body) => {
+      req.body = body;
+      await runValidators(validateAcknowledgment, req);
+      await inspectionController.putAcknowledgment(req, res, next);
+    };
+
+    it("should save the next driver's signature and date, which makes the report final", async () => {
+      found(report({ defectsCorrected: true, mechanicSignature: PNG }));
+
+      await acknowledge({ ...valid, mechanicSignature: 'swapped', defectsCorrected: false });
+
+      expect(Inspection.updateOne).toHaveBeenCalledWith(
+        { _id: 'insp-1', userId: 'user123', acknowledgedAt: null },
+        { $set: { nextDriverSignature: PNG, driverDate: '10/27/2026', acknowledgedAt: expect.any(Date) } },
+        { runValidators: true },
+      );
+      expect(res.json).toHaveBeenCalledWith({ status: 'acknowledged' });
+    });
+
+    it('should accept a certification ticked on the form when the report was saved', async () => {
+      found(report({ defectsNotCorrected: true }));
+
+      await acknowledge(valid);
+
+      expect(res.json).toHaveBeenCalledWith({ status: 'acknowledged' });
+    });
+
+    it.each([
+      ['before the mechanic has certified the repairs', report(), NOT_CERTIFIED],
+      ['a second time', report({ defectsCorrected: true, acknowledgedAt: new Date() }), FINAL],
+      ['on a report without defects', report({ defects: { truckTractor: {}, trailer: {} } }), NO_DEFECTS],
+    ])('should refuse %s', async (label, doc, error) => {
+      found(doc);
+
+      await acknowledge(valid);
+
+      expect(res.status).toHaveBeenCalledWith(409);
+      expect(res.json).toHaveBeenCalledWith({ error });
+      expect(Inspection.updateOne).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['no signature', { driverDate: '10/27/2026' }, "The next driver's signature is required."],
+      ['no date', { nextDriverSignature: PNG }, "The next driver's date is required."],
+    ])('should answer 400 for %s', async (label, body, error) => {
+      await acknowledge(body);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error });
+    });
+
+  });
+
+});
+

@@ -1,6 +1,6 @@
 const request = require('supertest');
 const express = require('express');
-const { inspectionSaveLimiter, photoUploadLimiter, passwordChangeLimiter, exportLimiter } = require('../../../middleware/rateLimiters');
+const { inspectionSaveLimiter, signOffLimiter, photoUploadLimiter, passwordChangeLimiter, exportLimiter } = require('../../../middleware/rateLimiters');
 
 // The limiters keep their counts for the whole run, so every test uses its
 // own account ids.
@@ -40,6 +40,27 @@ describe('inspectionSaveLimiter', () => {
     await postAs(app, 'save-b', 61);
 
     const response = await request(app).post('/target').set('x-user', 'save-c');
+
+    expect(response.status).toBe(200);
+  });
+});
+
+describe('signOffLimiter', () => {
+  const app = buildApp(signOffLimiter, jest.fn());
+
+  it('should answer the 31st sign-off in 15 minutes with a JSON 429', async () => {
+    await postAs(app, 'signoff-a', 30);
+
+    const response = await request(app).post('/target').set('x-user', 'signoff-a');
+
+    expect(response.status).toBe(429);
+    expect(response.body).toEqual({ error: 'Too many sign-offs. Please wait a few minutes and try again.' });
+  });
+
+  it('should count each account separately', async () => {
+    await postAs(app, 'signoff-b', 31);
+
+    const response = await request(app).post('/target').set('x-user', 'signoff-c');
 
     expect(response.status).toBe(200);
   });

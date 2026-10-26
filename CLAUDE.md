@@ -21,7 +21,7 @@ each PR linked to its thread, with the date it merged (Hawaii time). Take them f
 ```bash
 npm run dev      # node --watch server.js (restarts when a loaded file changes)
 npm start        # node server.js
-npm test         # jest — runs all 28 suites
+npm test         # jest — runs all 29 suites
 ```
 
 Run a single suite or a single test:
@@ -36,7 +36,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 456 passed, 28 suites, 0 failures
+### Expected test baseline: 494 passed, 29 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -249,6 +249,7 @@ query as the dashboard, so the file holds exactly the inspections the history sh
 | `passwordResetLimiter` | POST /forgot, /reset/:token | 5 / hour | IP | flash + redirect |
 | `counterLimiter` | POST /inspections/count | 30 / 15 min | IP | JSON 429 |
 | `inspectionSaveLimiter` | POST /inspections | 60 / 15 min | account | JSON 429 |
+| `signOffLimiter` | PUT/DELETE /inspections/:id/certification, PUT /inspections/:id/acknowledgment | 30 / 15 min | account | JSON 429 |
 | `photoUploadLimiter` | POST /profile/photo | 10 / hour | account | flash + redirect to /profile |
 | `passwordChangeLimiter` | POST /profile/password | 10 / 15 min | account | flash + redirect to /profile |
 | `exportLimiter` | GET /dashboard/export | 20 / 15 min | account | flash + redirect to /dashboard |
@@ -319,6 +320,36 @@ The mechanic's pad sits in the repair section, which stays hidden until a defect
   base64 that decodes to the PNG file signature. The schema has the same `maxLength`, and
   `express.json` allows 200kb so two full-size signatures fit. Guests' signatures never leave the
   browser. The CSV export leaves signatures out.
+
+### Repair sign-offs on saved reports
+
+A saved report that lists defects can take two sign-offs later: the mechanic's certification
+(49 CFR 396.11(a)(3)) and then the next driver's acknowledgment (396.13). The dashboard's dialog for
+them is still to come. The server side, all JSON for a `fetch()`, guarded by `ensureAuthApi` and
+`signOffLimiter`:
+
+- `PUT /inspections/:id/certification` (`validateCertification`): `outcome` is `corrected` or
+  `notNeeded` (the form's two boxes, `defectsCorrected` / `defectsNotCorrected`), with a required
+  `mechanicSignature` (a PNG, checked like the form's pads) and `mechanicDate`. Saving again replaces
+  it.
+- `DELETE /inspections/:id/certification` clears the mechanic's part, so a mistake can be redone.
+- `PUT /inspections/:id/acknowledgment` (`validateAcknowledgment`): a required `nextDriverSignature`
+  and `driverDate`. It makes the report final: after it, every sign-off route answers 409.
+
+How it holds together:
+
+- `signOffStatus()` (`utils/signOff.js`) says where a report stands: `none` (no defects), `open`,
+  `certified` or `acknowledged`. A box ticked on the form when the report was saved counts as
+  certified.
+- Steps out of order answer 409 with a sentence the dialog can show. A report that isn't this
+  account's answers 404, like a malformed id.
+- Only the sign-off fields change. The driver's own part (date, truck, defects, remarks, condition,
+  signature) stays as it was saved, because the rule has the company certify *on* the report.
+- Each update filters on `acknowledgedAt: null`, so a report that became final in the meantime
+  is left alone. `repairCertifiedAt` and `acknowledgedAt` exist only for that and for the status.
+  The PDF shows the dates the signers write, never these timestamps (Bobby's call).
+- `~/projects/.scratchpad/HipsterTowingCo/smoke/signOffCheck.sh` walks every step against the
+  smoke stack's real MongoDB.
 
 ### Form help and the repair section
 

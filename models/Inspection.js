@@ -132,6 +132,18 @@ const InspectionSchema = new mongoose.Schema({
         maxLength: [20, "The mechanic's date can be up to 20 characters."],
     },
 
+    // Sign-offs added later from the dashboard (controllers/inspection.js,
+    // utils/signOff.js): the next driver's drawn signature, and when each step
+    // was saved. The timestamps only keep the steps in order and lock the report;
+    // the PDF shows the dates the signers write (mechanicDate, driverDate).
+    nextDriverSignature: {
+        type: String,
+        trim: true,
+        maxLength: [60000, 'A signature was too large.'],
+    },
+    repairCertifiedAt: Date,
+    acknowledgedAt: Date,
+
     // Ownership
     userId: {
         type: mongoose.Schema.Types.ObjectId,
