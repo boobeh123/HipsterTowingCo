@@ -89,6 +89,25 @@ const inspectionSaveLimiter = rateLimit({
 })
 
 /**************************************************************
+ * signOffLimiter
+ * Guards the dashboard's repair sign-off routes
+ * (/inspections/:id/certification and /acknowledgment). Each one
+ * stores a signature image, so it's capped like saves. Responds
+ * with JSON because the caller is a fetch().
+ * 30 sign-offs per account per 15 minutes.
+ **************************************************************/
+const signOffLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 30,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    keyGenerator: byAccount,
+    handler: (req, res) => {
+        res.status(429).json({ error: 'Too many sign-offs. Please wait a few minutes and try again.' })
+    },
+})
+
+/**************************************************************
  * photoUploadLimiter
  * Guards POST /profile/photo. Every upload goes to Cloudinary and
  * counts against the account's quota. Runs before multer, so a
@@ -137,4 +156,4 @@ const exportLimiter = rateLimit({
     handler: flashAndRedirect('Too many exports. Please wait a few minutes and try again.', '/dashboard'),
 })
 
-module.exports = { authLimiter, passwordResetLimiter, counterLimiter, inspectionSaveLimiter, photoUploadLimiter, passwordChangeLimiter, exportLimiter }
+module.exports = { authLimiter, passwordResetLimiter, counterLimiter, inspectionSaveLimiter, signOffLimiter, photoUploadLimiter, passwordChangeLimiter, exportLimiter }

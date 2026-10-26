@@ -12,8 +12,8 @@ const dashboardController = require('../controllers/dashboard')
 const profileController = require('../controllers/profile')
 const { uploadProfilePhoto } = require('../middleware/multer')
 const { ensureAuth, ensureAuthApi, ensureOnboarding } = require('../middleware/auth')
-const { authLimiter, passwordResetLimiter, counterLimiter, inspectionSaveLimiter, photoUploadLimiter, passwordChangeLimiter, exportLimiter } = require('../middleware/rateLimiters')
-const { validateLogin, validateSignup, validateForgot, validateReset, validateOnboard, validateInspection, validateProfileName, validateProfilePassword, validateDashboardQuery, validatePrivacyNotice } = require('../middleware/validators')
+const { authLimiter, passwordResetLimiter, counterLimiter, inspectionSaveLimiter, signOffLimiter, photoUploadLimiter, passwordChangeLimiter, exportLimiter } = require('../middleware/rateLimiters')
+const { validateLogin, validateSignup, validateForgot, validateReset, validateOnboard, validateInspection, validateProfileName, validateProfilePassword, validateDashboardQuery, validatePrivacyNotice, validateCertification, validateAcknowledgment } = require('../middleware/validators')
 
 router.get('/', homeController.getIndex)
 router.get('/dashboard', ensureAuth, validateDashboardQuery, dashboardController.getDashboard)
@@ -22,6 +22,11 @@ router.get('/inspections/:id', ensureAuthApi, inspectionController.getInspection
 router.post('/inspections/count', counterLimiter, homeController.postInspectionCount)
 router.post('/inspections', ensureAuthApi, inspectionSaveLimiter, validateInspection, inspectionController.postInspection)
 router.delete('/inspections/:id', ensureAuth, inspectionController.deleteInspection)
+
+// Repair sign-offs added to a saved report from the dashboard (fetch, JSON)
+router.put('/inspections/:id/certification', ensureAuthApi, signOffLimiter, validateCertification, inspectionController.putCertification)
+router.delete('/inspections/:id/certification', ensureAuthApi, signOffLimiter, inspectionController.deleteCertification)
+router.put('/inspections/:id/acknowledgment', ensureAuthApi, signOffLimiter, validateAcknowledgment, inspectionController.putAcknowledgment)
 
 router.get('/onboard', ensureOnboarding, onboardController.getOnboard)
 router.post('/onboard', ensureOnboarding, validateOnboard, onboardController.postOnboard)

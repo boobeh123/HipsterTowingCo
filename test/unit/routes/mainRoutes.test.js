@@ -58,6 +58,9 @@ jest.mock('../../../controllers/inspection', () => ({
   getInspection:    jest.fn((req, res) => res.json({ message: 'Inspection fetched' })),
   postInspection:   jest.fn((req, res) => res.status(201).json({ success: true })),
   deleteInspection: jest.fn((req, res) => res.json({ message: 'Inspection deleted' })),
+  putCertification:    jest.fn((req, res) => res.json({ status: 'certified' })),
+  deleteCertification: jest.fn((req, res) => res.json({ status: 'open' })),
+  putAcknowledgment:   jest.fn((req, res) => res.json({ status: 'acknowledged' })),
 }));
 
 jest.mock('../../../controllers/dashboard', () => ({
@@ -296,6 +299,33 @@ describe('Main Routes', () => {
 
       expect(passwordResetController.postRecoverPassword).toHaveBeenCalledTimes(1);
       expect(response.body).toEqual({ message: 'Password recovered' });
+    });
+  });
+
+  // The dashboard's repair sign-offs: JSON routes for signed-in users only
+  describe('repair sign-off routes', () => {
+    const PNG = 'data:image/png;base64,' + Buffer.from('89504e470d0a1a0a0000000d49484452', 'hex').toString('base64');
+
+    it.each([
+      ['put', '/inspections/abc/certification', 'putCertification', { outcome: 'corrected', mechanicSignature: PNG, mechanicDate: '10/26/2026' }, 'certified'],
+      ['delete', '/inspections/abc/certification', 'deleteCertification', {}, 'open'],
+      ['put', '/inspections/abc/acknowledgment', 'putAcknowledgment', { nextDriverSignature: PNG, driverDate: '10/27/2026' }, 'acknowledged'],
+    ])('should send %s %s to inspectionController.%s when signed in', async (method, url, handler, body, status) => {
+      const response = await request(app)[method](url).set('x-test-auth', 'true').send(body).expect(200);
+
+      expect(inspectionController[handler]).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ status });
+    });
+
+    it.each([
+      ['put', '/inspections/abc/certification', 'putCertification'],
+      ['delete', '/inspections/abc/certification', 'deleteCertification'],
+      ['put', '/inspections/abc/acknowledgment', 'putAcknowledgment'],
+    ])('should answer %s %s with a 401 when not signed in', async (method, url, handler) => {
+      const response = await request(app)[method](url).send({}).expect(401);
+
+      expect(inspectionController[handler]).not.toHaveBeenCalled();
+      expect(response.body).toEqual({ error: 'Unauthorised' });
     });
   });
 
