@@ -36,7 +36,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 455 passed, 28 suites, 0 failures
+### Expected test baseline: 456 passed, 28 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -262,6 +262,9 @@ with no GET page of its own passes `flashAndRedirect(message, redirectTo)` its d
 - `POST /logout` comes from a small form in `views/partials/header.ejs`. There is deliberately no
   GET route, because another site could sign users out by linking to it. `.site-header__logoutBtn`
   resets the button so it looks exactly like the menu links.
+- `injectGA()` in `public/js/main.js` loads Analytics with `allow_google_signals: false` and
+  `allow_ad_personalization_signals: false`. The privacy policy promises no advertising, and this
+  keeps that true whatever the Google Analytics admin is set to. `privacy.test.js` checks both.
 - A reset token is in the reset page's URL. `injectGA()` in `public/js/main.js` returns early on
   `/reset/` paths, and morgan's `url` token in `server.js` logs every URL through `redactUrl()`
   (`utils/logUrl.js`), which shows `/reset/:token`. Keep both in step if the reset URL ever changes

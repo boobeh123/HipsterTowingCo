@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const ejs = require('ejs');
 const privacyPolicy = require('../../../utils/privacyPolicy');
@@ -95,6 +96,20 @@ describe('the privacy notice in header.ejs', () => {
 
     expect(html).toContain('value="/a&#34;&gt;&lt;script&gt;"');
     expect(html).not.toContain('"><script>');
+  });
+
+});
+
+// The policy's promise of no advertising, kept in the code that loads Analytics
+describe('Google Analytics', () => {
+
+  it('should load with Google signals and ad personalization turned off', () => {
+    const main = fs.readFileSync(path.join(__dirname, '../../../public/js/main.js'), 'utf8');
+    const config = main.match(/gtag\('config', 'G-[A-Z0-9]+', \{([^}]*)\}\)/);
+
+    expect(config).not.toBeNull();
+    expect(config[1]).toMatch(/allow_google_signals: false/);
+    expect(config[1]).toMatch(/allow_ad_personalization_signals: false/);
   });
 
 });
