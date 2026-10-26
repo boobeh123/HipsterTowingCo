@@ -111,6 +111,18 @@ describe('learn/dvir.ejs', () => {
     });
   });
 
+  // The text's own links too, like "Keeping it" pointing at Paper or electronic
+  it('should point every in-page link at a section with a heading', () => {
+    const main = html.slice(html.indexOf('<main'), html.indexOf('</main>'));
+    const targets = [...main.matchAll(/<a href="#([\w-]+)"/g)].map((match) => match[1]);
+
+    expect(targets.filter((id) => id === 'electronic')).toHaveLength(2);
+    new Set(targets).forEach((id) => {
+      expect(html).toContain(`<section id="${id}" class="legalDoc__section" aria-labelledby="${id}-heading">`);
+      expect(html).toContain(`<h2 id="${id}-heading"`);
+    });
+  });
+
   // The sample image is marked 1 to 7, and the steps are numbered to match
   it('should number its steps 1 to 7, in order', () => {
     const markers = [...html.matchAll(/<span class="learn__marker">(\d+)<\/span>/g)].map((match) => Number(match[1]));
