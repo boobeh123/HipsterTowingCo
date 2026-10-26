@@ -12,6 +12,9 @@ https://pretriq.com.
 README.md is mostly Bobby's patch log, newest first. It doesn't need updating on every push. After
 a batch of changes merges, add a Version History entry in the same format as the earlier ones
 (heading with the next patch number, release date, developer's notes, the dashed separator).
+Since Patch 1.6.024, the notes list the batch's PRs instead of describing the changes by hand:
+each PR linked to its thread, with the date it merged (Hawaii time). Take them from
+`gh pr list --state merged`, starting after the last PR the previous entry lists.
 
 ## Commands
 
