@@ -44,7 +44,13 @@ function injectGA() {
     window.dataLayer = window.dataLayer || []
     window.gtag = function() { window.dataLayer.push(arguments) }
     window.gtag('js', new Date())
-    window.gtag('config', 'G-DHM2VXYJYE')
+    // The privacy policy says pretriq shows no ads and shares no data for
+    // advertising, so Google signals (demographics, interests, remarketing)
+    // and ad personalization stay off here, whatever the GA admin is set to
+    window.gtag('config', 'G-DHM2VXYJYE', {
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+    })
     const gaScript = document.createElement('script')
     gaScript.async = true
     gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-DHM2VXYJYE'
