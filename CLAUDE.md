@@ -36,7 +36,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 509 passed, 30 suites, 0 failures
+### Expected test baseline: 510 passed, 30 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -335,7 +335,8 @@ A saved report that lists defects can take two sign-offs later: the mechanic's c
   "Acknowledged".
 - Rows that are `open` or `certified` get a **Sign off repairs** button. With three buttons, the
   action cell wraps them where the table is narrow, instead of scrolling Delete out of view. On
-  phones, Sign off repairs gets its own row.
+  phones, Sign off repairs gets its own row. `.historyTable__td--action .btn` gives all three one
+  size, because Delete is a full-size `.btn` and the other two are `.btn--nav`.
 - The button opens `partials/signOffDialog.ejs`. The script for it is in main.js (search
   `signOffDialog`). It shows the report read-only from `GET /inspections/:id`, then the mechanic's
   step (the form's two boxes, a pad, a date), then the next driver's (a pad and a date). Dates

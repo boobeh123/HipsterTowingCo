@@ -1770,6 +1770,15 @@ body.has-modal-open {
   white-space: nowrap;
 }
 
+/* The row's buttons share one size: the full button height, which suits a
+   finger, with btn--nav's padding and text. Without it, Delete (a plain .btn)
+   is taller and wider than the other two. */
+.historyTable__td--action .btn {
+  min-height: 3rem;
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.9375rem;
+}
+
 .historyTable__badge {
   display: inline-block;
   padding: 0.2em 0.6em;
