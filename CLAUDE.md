@@ -36,7 +36,7 @@ other scripts (`test:unit`, `test:e2e:*`, `test:all`) used to exist and matched 
 Jest treats a positional path argument as a regex against the full path, and the `test/e2e*.test.js`
 files they named never existed. They have been removed; don't reintroduce that pattern.
 
-### Expected test baseline: 510 passed, 30 suites, 0 failures
+### Expected test baseline: 512 passed, 30 suites, 0 failures
 
 Note that `mainRoutes.test.js` mocks every controller and both middleware modules by hand. **If you
 change a module's export shape, update its mock there**, or the whole suite dies at import with
@@ -469,7 +469,7 @@ Public guides for drivers, with no login needed, all from `controllers/learn.js`
   `partials/learnBoxes.ejs` folds the notes for each step's boxes (`INSPECTION_STEPS`) into
   `<details>`. Their photos stay `loading="lazy"`, so they only download once a note is opened.
 - **"How one box-truck driver does it"** in the pre-trip guide is Bobby's own routine, word for word,
-  typos included (see `learn.test.js`). Change it only when Bobby says so. Anything the manual or the
+  apart from two typos he had fixed (see `learn.test.js`). Change it only when Bobby says so. Anything the manual or the
   rules add goes in a `learn__routineNote` under the step.
 - **Per-page title and description.** `head.ejs` takes optional `pageTitle`, `pageDescription` and
   `pagePath` locals, passed in the page's `include()`. They set the title, description, Open Graph
