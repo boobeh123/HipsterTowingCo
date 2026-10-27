@@ -1830,6 +1830,11 @@ body.has-modal-open {
   color: var(--color-text-muted);
 }
 
+/* New accounts: a pointer to the guides, under the hint */
+.dashboard__emptyGuides {
+  margin-top: var(--space-3);
+}
+
 /* Pagination */
 .dashboard__pagination {
   display: flex;

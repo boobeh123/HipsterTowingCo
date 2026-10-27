@@ -12,7 +12,7 @@ const row = (id, truck, signOff, fields = {}) => ({
   _id: id, truckTractorNo: truck, trailerNo: '', date: '10/25/2026', createdAt: new Date('2026-10-25T20:00:00Z'), signOff, ...fields,
 });
 
-const render = (inspections) => ejs.renderFile(VIEW, {
+const render = (inspections, locals = {}) => ejs.renderFile(VIEW, {
   inspections,
   totalInspections: inspections.length,
   lastInspectionDate: '10/25/2026',
@@ -32,6 +32,7 @@ const render = (inspections) => ejs.renderFile(VIEW, {
   showPrivacyNotice: false,
   dvirChecklist,
   privacyPolicy,
+  ...locals,
 });
 
 describe('dashboard.ejs repair sign-offs', () => {
@@ -100,6 +101,27 @@ describe('dashboard.ejs repair sign-offs', () => {
     const form = html.match(/<form id="inspectionForm"[\s\S]*?<\/form>/)[0];
 
     expect(form).not.toContain('data-signoff-pad');
+  });
+
+});
+
+describe('dashboard.ejs empty states', () => {
+
+  // A new account, with nothing saved yet, gets pointed at the guides
+  it('should point an account with no reports at both guides', async () => {
+    const html = await render([]);
+    const guides = html.match(/<p class="dashboard__emptyHint dashboard__emptyGuides">[\s\S]*?<\/p>/);
+
+    expect(html).toContain('No inspections saved yet.');
+    expect(guides[0]).toContain('<a href="/learn/dvir">How to fill out a DVIR</a>');
+    expect(guides[0]).toContain('<a href="/learn/pre-trip">How to do a pre-trip</a>');
+  });
+
+  it('should leave the guides out when filters match nothing', async () => {
+    const html = await render([], { totalInspections: 3, filtersActive: true, filters: { q: 'TRK-NONE' } });
+
+    expect(html).toContain('No inspections match these filters.');
+    expect(html).not.toContain('dashboard__emptyGuides');
   });
 
 });

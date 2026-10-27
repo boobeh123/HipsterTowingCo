@@ -161,14 +161,15 @@ describe('learn/dvir.ejs', () => {
 
 describe('learn/pre-trip.ejs', () => {
 
-  // Bobby's routine as Bobby wrote it (Oct 12 2026). The page keeps it word for word,
-  // and anything the manual or the rules add goes in a note under the step.
+  // Bobby's routine as Bobby wrote it (Oct 12 2026), with the two typo fixes he
+  // approved. The page keeps it word for word, and anything the manual or the rules
+  // add goes in a note under the step.
   const ROUTINE = [
     'Wipe both driver & passenger side mirrors with microfiber cloth & ammonia-free glass cleaner spray',
     'Kick all 4 tires to check for air pressure (daily) & check tire tread (using a US coin). Visually inspect for punctures. When kicking the tires, my boot should bounce off the rubber. If my boot sinks into the tire, it must be filled up with air. For the tire tread, I believe the saying is: "Use a penny and if the tire tread covers Lincoln\'s hat, then you\'re okay"',
     'I tighten the gas cap',
-    'I look underneath the vehicle for fractures in the metal/frame. Debris that are wrapped underneath. Check safety tag expiration (might be Hawaii only)',
-    'Inspect doors/floor. I open driver/passenger door and remove and debri/obstruction on the steps of the door or floor',
+    'I look underneath the vehicle for fractures in the metal/frame. Debris that\'s wrapped underneath. Check safety tag expiration (might be Hawaii only)',
+    'Inspect doors/floor. I open driver/passenger door and remove any debris/obstruction on the steps of the door or floor',
     'Check lights - left+right signal/blinker front & back, left+right hazard front & back, high beams, automatic/manual on/off light switch',
     'Use windshield wiper/fluid to increase visibility on front windshield',
     'Step on the brakes and observe brake lights through side mirrors (vehicle off)',
