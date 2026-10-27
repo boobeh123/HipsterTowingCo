@@ -33,12 +33,21 @@ It came a long way and there is still so much more that can be added and improve
 I envision that this application has potential to become something with a global reach.
 
 ## Version History 
+# 🛠️ pretriq Patch 1.6.025
+📅 **Release Date:** October 26th, 2026
+
+## 📢 Developer's Notes - Two typo fixes in the pre-trip routine & a pointer to the guides for new accounts, with Claude Code
+
+- PR #25, linked to its thread on GitHub, with the date it merged:
+  - [#25 Fix two typos in the pre-trip routine and point new accounts to guides](https://github.com/boobeh123/HipsterTowingCo/pull/25) · October 26th, 2026
+- 512/512 passing unit tests (up from 510)
+---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.024
 📅 **Release Date:** October 25th, 2026
 
 ## 📢 Developer's Notes - Checklist notes & photos, driver guides, a security release, the new privacy policy & repair sign-offs on saved reports, with Claude Code
 
-- PRs #9–#23, one at a time. Each links to its thread on GitHub, with the date it merged:
+- PRs #9–#24, one at a time. Each links to its thread on GitHub, with the date it merged:
   - [#9 Add help notes to the inspection form, and show the repair section only with defects](https://github.com/boobeh123/HipsterTowingCo/pull/9) · October 12th, 2026
   - [#10 Replace connect-flash with a small flash middleware of our own](https://github.com/boobeh123/HipsterTowingCo/pull/10) · October 12th, 2026
   - [#11 Add "what to check" notes to 19 checklist boxes](https://github.com/boobeh123/HipsterTowingCo/pull/11) · October 12th, 2026
@@ -54,6 +63,7 @@ I envision that this application has potential to become something with a global
   - [#21 Reopen a saved report, part 1: the repair sign-off routes](https://github.com/boobeh123/HipsterTowingCo/pull/21) · October 25th, 2026
   - [#22 Let the mechanic and next driver sign off saved reports](https://github.com/boobeh123/HipsterTowingCo/pull/22) · October 25th, 2026
   - [#23 Give the history row's buttons one size and say both ways to sign](https://github.com/boobeh123/HipsterTowingCo/pull/23) · October 25th, 2026
+  - [#24 Add PRs #20 to #23 to Patch 1.6.024 in the README](https://github.com/boobeh123/HipsterTowingCo/pull/24) · October 25th, 2026
 - 510/510 passing unit tests (up from 295)
 ---------------------------------------------------------------------------------------------------------------------------
 # 🛠️ pretriq Patch 1.6.023
